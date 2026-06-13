@@ -231,9 +231,9 @@
       container.innerHTML =
         '<span class="profile-avatar">' + getInitials(customer.name) + '</span>' +
         '<div class="profile-dropdown" id="profileDropdown">' +
-          '<div class="dropdown-header">' +
-            '<span class="dropdown-name">' + (customer.name || "Customer") + '</span>' +
-            '<span class="dropdown-email">' + customer.email + '</span>' +
+            '<div class="dropdown-header">' +
+            '<div class="dropdown-name">' + (customer.name || "Customer") + '</div>' +
+            '<div class="dropdown-email">' + customer.email + '</div>' +
           '</div>' +
           '<a class="dropdown-item" href="my-orders.html"><i class="fa-solid fa-box"></i> My Orders</a>' +
           '<a class="dropdown-item" href="wishlist.html"><i class="fa-regular fa-heart"></i> My Wishlist</a>' +
@@ -327,11 +327,9 @@
     ".profile-container .profile-avatar{width:28px!important;height:28px!important;border-radius:50%!important;background:linear-gradient(135deg,#f97316,#ea580c)!important;color:#fff!important;display:flex!important;align-items:center;justify-content:center;font-size:12px!important;font-weight:700!important;letter-spacing:0.5px;}" +
     ".profile-dropdown{position:absolute;top:100%;right:-4px;margin-top:8px;background:#1a1a1a;border:1px solid #333;border-radius:12px;box-shadow:0 10px 40px rgba(0,0,0,0.5);min-width:230px;opacity:0;pointer-events:none;transform:translateY(-8px);transition:all 0.2s ease;z-index:9999;overflow:hidden;}" +
     ".profile-dropdown.open{opacity:1;pointer-events:all;transform:translateY(0);}" +
-    ".dropdown-header span{position:static!important;width:auto!important;height:auto!important;top:auto!important;right:auto!important;border-radius:0!important;background:none!important;color:#fff!important;display:block!important;font-size:14px!important;}" +
-    ".dropdown-header span+span{font-size:12px!important;color:#999!important;margin-top:2px;}" +
     ".dropdown-header{padding:14px 16px 10px;border-bottom:1px solid #2a2a2a;}" +
-    ".dropdown-name{display:block;font-size:14px;font-weight:600;color:#fff;}" +
-    ".dropdown-email{display:block;font-size:12px;color:#999;margin-top:2px;}" +
+    ".dropdown-name{font-size:14px;font-weight:600;color:#fff;margin:0 0 2px;}" +
+    ".dropdown-email{font-size:12px;color:#999;margin:0;}" +
     ".dropdown-item{display:flex;align-items:center;gap:10px;padding:10px 16px;color:#ccc;text-decoration:none;font-size:14px;transition:all 0.15s;}" +
     ".dropdown-item:hover{background:#2a2a2a;color:#ff7a00;}" +
     ".dropdown-item i{width:18px;text-align:center;font-size:15px;color:#999;}" +
