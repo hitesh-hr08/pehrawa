@@ -257,6 +257,11 @@ app.post("/api/public/orders", async (req, res) => {
       }
     }
 
+    if (customerId) {
+      var custCheck = await pool.query("SELECT id FROM customers WHERE id = $1", [customerId]);
+      if (custCheck.rows.length === 0) customerId = null;
+    }
+
     const result = await pool.query(
       `INSERT INTO orders (customer_id, customer_name, phone, address, total_amount, status, items)
        VALUES ($1, $2, $3, $4, $5, $6, $7)
