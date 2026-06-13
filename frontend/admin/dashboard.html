@@ -1054,6 +1054,7 @@
     window.deleteCustomer = function (id, name) {
       if (!confirm("Delete customer \"" + name + "\"? This cannot be undone.")) return;
       authFetch(API_URL + "/customers/all/" + id, { method: "DELETE" })
+        .then(function (res) { return res.json(); })
         .then(function (data) {
           if (data.success) { loadCustomers(); }
           else { alert(data.message || "Failed to delete"); }
