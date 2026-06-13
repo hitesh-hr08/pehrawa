@@ -321,10 +321,11 @@
                   <th>Orders</th>
                   <th>Total Spent</th>
                   <th>Joined</th>
+                  <th>Action</th>
                 </tr>
               </thead>
               <tbody id="customersTableBody">
-                <tr><td colspan="6">Loading...</td></tr>
+                <tr><td colspan="7">Loading...</td></tr>
               </tbody>
             </table>
           </div>
@@ -990,7 +991,7 @@
         const customers = data.customers;
         customerTableStatus.textContent = `${customers.length} customer(s)`;
         customersTableBody.innerHTML = customers.length === 0
-          ? `<tr><td colspan="6">No customers yet.</td></tr>`
+          ? `<tr><td colspan="7">No customers yet.</td></tr>`
           : customers.map((c) => `
             <tr>
               <td><strong>${c.name || "Guest"}</strong></td>
@@ -999,6 +1000,7 @@
               <td>${c.order_count || 0}</td>
               <td>₹${Number(c.total_spent || 0).toFixed(2)}</td>
               <td>${new Date(c.created_at).toLocaleDateString()}</td>
+              <td><button class="danger-icon" onclick="deleteCustomer(${c.id},'${c.name || "Guest"}')"><i class="fa-solid fa-trash"></i></button></td>
             </tr>
           `).join("");
       } catch (err) {
@@ -1048,6 +1050,16 @@
     loadOrders();
     loadRequests();
     loadCustomers();
+
+    window.deleteCustomer = function (id, name) {
+      if (!confirm("Delete customer \"" + name + "\"? This cannot be undone.")) return;
+      authFetch(API_URL + "/customers/all/" + id, { method: "DELETE" })
+        .then(function (data) {
+          if (data.success) { loadCustomers(); }
+          else { alert(data.message || "Failed to delete"); }
+        })
+        .catch(function () { alert("Server error"); });
+    };
     loadSettings();
   </script>
 </body>

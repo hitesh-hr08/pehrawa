@@ -121,6 +121,15 @@ app.get("/api/customers/all", verifyAdmin, async (req, res) => {
   }
 });
 
+app.delete("/api/customers/all/:id", verifyAdmin, async (req, res) => {
+  try {
+    await pool.query("DELETE FROM customers WHERE id = $1", [req.params.id]);
+    res.json({ success: true, message: "Customer deleted" });
+  } catch (err) {
+    res.status(500).json({ success: false, message: "Failed to delete customer" });
+  }
+});
+
 app.get("/api/settings", verifyAdmin, async (req, res) => {
   try {
     const result = await pool.query("SELECT * FROM store_settings LIMIT 1");
