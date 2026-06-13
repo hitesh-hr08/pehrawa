@@ -83,7 +83,6 @@ img{
     display:flex;
     align-items:center;
     gap:22px;
-    position:relative;
 }
 
 .nav-icons a{
@@ -574,34 +573,8 @@ font-size:13px !important;
     display:none;
 }
 
-.search-wrapper.search-open{
-    position:absolute;
-    right:0;
-    top:50%;
-    transform:translateY(-50%);
-    z-index:10;
-    display:flex;
-    align-items:center;
-    background:#000;
-    border:1px solid #333;
-    border-radius:30px;
-    padding:4px 10px;
-}
-
-.search-wrapper.search-open .search-input{
-    display:inline-block;
-    width:110px;
-    padding:4px 8px;
-    border:none;
-    background:transparent;
-    color:#fff;
-    font-size:12px;
-    outline:none;
-}
-
-.search-wrapper.search-open .search-icon{
-    font-size:14px;
-    color:#ff7a00;
+.search-wrapper .search-input{
+    display:none !important;
 }
 
 .nav-icons{

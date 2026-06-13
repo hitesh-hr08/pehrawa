@@ -4,25 +4,6 @@
 =================================== */
 
 // ===============================
-// MOBILE SEARCH TOGGLE
-// ===============================
-
-const searchIcon = document.querySelector(".search-icon");
-const searchWrapper = document.querySelector(".search-wrapper");
-
-if (searchIcon && searchWrapper) {
-  searchIcon.addEventListener("click", (e) => {
-    e.stopPropagation();
-    searchWrapper.classList.toggle("search-open");
-  });
-  document.addEventListener("click", (e) => {
-    if (!searchWrapper.contains(e.target)) {
-      searchWrapper.classList.remove("search-open");
-    }
-  });
-}
-
-// ===============================
 // MOBILE MENU
 // ===============================
 
