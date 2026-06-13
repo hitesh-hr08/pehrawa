@@ -372,6 +372,26 @@ font-size:13px !important;
     opacity:.9;
 }
 
+.buy-now-btn{
+    width:100%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:8px;
+    background:#ff7a00;
+    color:#fff;
+    padding:12px;
+    font-size:13px;
+    font-weight:600;
+    border:none;
+    cursor:pointer;
+    transition:.3s;
+}
+
+.buy-now-btn:hover{
+    background:#ff9333;
+}
+
 /* ===========================
    CUSTOM PRINTING
 =========================== */

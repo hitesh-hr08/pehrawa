@@ -1,4 +1,4 @@
-(function () {
+﻿(function () {
   const API_URL = `${window.PEHRAWA_API_BASE || "http://localhost:5000"}/api/public/products`;
   const productGrid = document.querySelector(".product-grid");
   const filterButtons = document.querySelectorAll(".filter-btn");
@@ -63,7 +63,7 @@
           <div class="product-content">
             <p class="sku">${sku}</p>
             <h3>${product.name}</h3>
-            <div class="price">₹${Number(product.price).toFixed(2)}</div>
+            <div class="price">â‚¹${Number(product.price).toFixed(2)}</div>
 
             <div class="product-actions">
               <button onclick="addToWishlist(${product.id})">
@@ -75,7 +75,7 @@
               </button>
             </div>
 
-            <button class="buy-now-btn whatsapp-btn">
+            <button class="buy-now-btn">
               <i class="fa-solid fa-bag-shopping"></i>
               BUY NOW
             </button>
