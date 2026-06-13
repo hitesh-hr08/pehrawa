@@ -159,8 +159,15 @@ function verifyCustomer(req, res, next) {
     if (decoded.role !== "customer") {
       return res.status(403).json({ success: false, message: "Customer access required" });
     }
-    req.customer = decoded;
-    next();
+    pool.query("SELECT id FROM customers WHERE id = $1", [decoded.id]).then(function (result) {
+      if (result.rows.length === 0) {
+        return res.status(401).json({ success: false, message: "Account deleted" });
+      }
+      req.customer = decoded;
+      next();
+    }).catch(function () {
+      return res.status(500).json({ success: false, message: "Server error" });
+    });
   } catch (err) {
     return res.status(401).json({ success: false, message: "Session expired" });
   }
@@ -275,6 +282,18 @@ router.delete("/:id", verifyCustomer, async (req, res) => {
     res.json({ success: true, message: "Account deleted permanently" });
   } catch (err) {
     res.status(500).json({ success: false, message: "Server error" });
+  }
+});
+
+router.get("/:id/check", verifyCustomer, async (req, res) => {
+  try {
+    var result = await pool.query("SELECT id FROM customers WHERE id = $1", [req.params.id]);
+    if (result.rows.length === 0) {
+      return res.json({ success: false, message: "Account not found" });
+    }
+    res.json({ success: true });
+  } catch (err) {
+    res.json({ success: false });
   }
 });
 

@@ -22,6 +22,23 @@
     }
   };
 
+  window.checkAccountExists = function () {
+    var token = window.getCustomerToken();
+    var c = window.getCustomer();
+    if (!token || !c) return Promise.resolve();
+    var api = window.PEHRAWA_API_BASE || "http://localhost:5000";
+    return fetch(api + "/api/customers/" + c.id + "/check", {
+      headers: { "Authorization": "Bearer " + token }
+    }).then(function (r) { return r.json(); }).then(function (d) {
+      if (!d.success) {
+        window.logoutCustomer();
+        if (window.location.pathname.indexOf("my-profile") > -1 || window.location.pathname.indexOf("my-orders") > -1) {
+          window.location.href = "home.html";
+        }
+      }
+    }).catch(function () {});
+  };
+
   window.logoutCustomer = function () {
     localStorage.removeItem(TOKEN_KEY);
     localStorage.removeItem(CUSTOMER_KEY);
@@ -318,14 +335,20 @@
     window.updateProfileIcon();
   };
 
-  if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", initProfileIcon);
-  } else {
+  function initAll() {
     initProfileIcon();
+    setTimeout(window.checkAccountExists, 500);
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initAll);
+  } else {
+    initAll();
   }
   window.addEventListener("load", function () {
     if (!document.getElementById("pehrawaProfileContainer")) {
       initProfileIcon();
+      window.checkAccountExists();
     }
   });
 
