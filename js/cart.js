@@ -133,7 +133,7 @@ async function checkoutWithPayment() {
     return sum + (Number(item.price) * Number(item.quantity || 1));
   }, 0);
 
-  var savedCustomerId = localStorage.getItem("customerId");
+  var savedCustomerId = (window.getCustomer ? window.getCustomer() : null)?.id || localStorage.getItem("customerId");
 
   checkoutBtn.disabled = true;
   checkoutBtn.textContent = "Processing...";
