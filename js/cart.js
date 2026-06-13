@@ -160,9 +160,7 @@ async function checkoutOnWhatsapp() {
     return;
   }
 
-  const { orderText, total } = buildOrderText();
-  const customerText =
-    `Customer: ${customerName}\nPhone: ${customerPhone}\nAddress: ${customerAddress}\n\n`;
+  const { total } = buildOrderText();
 
   try {
     const apiBase = window.PEHRAWA_API_BASE || "http://localhost:5000";
@@ -173,7 +171,7 @@ async function checkoutOnWhatsapp() {
         customer_name: customerName,
         customer_id: savedCustomerId,
         phone: customerPhone,
-        address: customerAddress,
+        address: customerAddress + ", Pincode: " + (document.getElementById("customerPincode")?.value || ""),
         total_amount: total,
         items: cart
       })
@@ -182,21 +180,16 @@ async function checkoutOnWhatsapp() {
     const data = await res.json();
 
     if (!data.success) {
-      alert(data.message || "Order could not be saved.");
+      showToast(data.message || "Order could not be saved.");
       return;
     }
-
-    window.open(
-      `https://wa.me/919855707708?text=${encodeURIComponent(orderText + customerText + "Please confirm availability and delivery charges.")}`,
-      "_blank"
-    );
 
     cart = [];
     saveCart();
     renderCart();
-    alert("Order saved successfully. Admin dashboard will show this order.");
+    showToast("Order placed! We'll contact you soon.");
   } catch (err) {
-    alert("Start backend server before placing order.");
+    showToast("Error placing order. Try again.");
   }
 }
 
