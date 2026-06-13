@@ -29,6 +29,10 @@ app.use(express.json());
 
 app.use(express.static(path.join(__dirname, "..", "frontend")));
 
+app.get("/", (req, res) => {
+  res.redirect("/home.html");
+});
+
 app.use("/api/admin", adminRoutes);
 app.use("/api/products", verifyAdmin, productRoutes);
 app.use("/api/orders", verifyAdmin, orderRoutes);
