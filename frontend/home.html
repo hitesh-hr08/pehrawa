@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -22,7 +22,7 @@
 <div class="announcement-bar">
 
     <p>
-        🚚 FREE SHIPPING ON ORDERS ABOVE ₹999 | 🔥 BUY 2 TEES & GET 10% OFF
+        ðŸšš FREE SHIPPING ON ORDERS ABOVE â‚¹999 | ðŸ”¥ BUY 2 TEES & GET 10% OFF
     </p>
 
 </div>
@@ -205,12 +205,9 @@ More than just clothing <span class="highlight">PEHRAWA</span> is a statement of
 
 <h3><a href="product.html?id=2" class="product-link">Fearless Oversized Tee</a></h3>
 
-<div class="price">₹799</div>
+<div class="price">â‚¹799</div>
 
-<a href="#" class="whatsapp-btn">
-<i class="fab fa-whatsapp"></i>
-ORDER ON WHATSAPP
-</a>
+<button class="buy-now-btn whatsapp-btn"><i class="fa-solid fa-bag-shopping"></i>BUY NOW</button>
 
 </div>
 
@@ -232,12 +229,9 @@ ORDER ON WHATSAPP
 
 <h3><a href="product.html?id=3" class="product-link">Shadow Anime Tee</a></h3>
 
-<div class="price">₹749</div>
+<div class="price">â‚¹749</div>
 
-<a href="#" class="whatsapp-btn">
-<i class="fab fa-whatsapp"></i>
-ORDER ON WHATSAPP
-</a>
+<button class="buy-now-btn whatsapp-btn"><i class="fa-solid fa-bag-shopping"></i>BUY NOW</button>
 
 </div>
 
@@ -259,12 +253,9 @@ ORDER ON WHATSAPP
 
 <h3><a href="product.html?id=4" class="product-link">Abstract Vision Tee</a></h3>
 
-<div class="price">₹749</div>
+<div class="price">â‚¹749</div>
 
-<a href="#" class="whatsapp-btn">
-<i class="fab fa-whatsapp"></i>
-ORDER ON WHATSAPP
-</a>
+<button class="buy-now-btn whatsapp-btn"><i class="fa-solid fa-bag-shopping"></i>BUY NOW</button>
 
 </div>
 
@@ -286,12 +277,9 @@ ORDER ON WHATSAPP
 
 <h3><a href="product.html?id=5" class="product-link">Minimal Logo Oversized Tee</a></h3>
 
-<div class="price">₹699</div>
+<div class="price">â‚¹699</div>
 
-<a href="#" class="whatsapp-btn">
-<i class="fab fa-whatsapp"></i>
-ORDER ON WHATSAPP
-</a>
+<button class="buy-now-btn whatsapp-btn"><i class="fa-solid fa-bag-shopping"></i>BUY NOW</button>
 
 </div>
 
@@ -460,10 +448,37 @@ India
 </div>
 
 <div class="copyright">
-© 2026 Pehrawa Menswear. All Rights Reserved.
+Â© 2026 Pehrawa Menswear. All Rights Reserved.
 </div>
 
 </footer>
+
+<div class="checkout-overlay" id="checkoutOverlay">
+  <div class="checkout-modal">
+    <span class="checkout-close" id="checkoutClose">&times;</span>
+    <h3>Place Your Order</h3>
+    <div class="checkout-product" id="checkoutProduct"></div>
+    <form id="checkoutForm">
+      <input type="hidden" id="checkoutProductId">
+      <input type="hidden" id="checkoutPrice">
+      <input type="text" id="checkoutName" placeholder="Full Name" required>
+      <input type="tel" id="checkoutPhone" placeholder="Phone Number" required>
+      <textarea id="checkoutAddress" placeholder="Full Address" required></textarea>
+      <input type="text" id="checkoutPincode" placeholder="Pincode" required>
+      <div class="checkout-row">
+        <select id="checkoutSize">
+          <option value="S">S</option>
+          <option value="M" selected>M</option>
+          <option value="L">L</option>
+          <option value="XL">XL</option>
+          <option value="XXL">XXL</option>
+        </select>
+        <input type="number" id="checkoutQty" value="1" min="1">
+      </div>
+      <button type="submit" class="checkout-submit">Place Order</button>
+    </form>
+  </div>
+</div>
 
 <script src="../js/script.js"></script>
 

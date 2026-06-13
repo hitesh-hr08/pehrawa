@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -166,7 +166,7 @@ Premium Fashion Essentials - T-Shirts, Shirts, Footwear, Sunglasses, Watches & M
 
 <h3>Fearless Oversized Tee</h3>
 
-<div class="price">₹799</div>
+<div class="price">â‚¹799</div>
 
 <div class="product-actions">
 
@@ -180,10 +180,7 @@ Premium Fashion Essentials - T-Shirts, Shirts, Footwear, Sunglasses, Watches & M
 
 </div>
 
-<a href="#" class="whatsapp-btn">
-<i class="fab fa-whatsapp"></i>
-ORDER ON WHATSAPP
-</a>
+<button class="buy-now-btn whatsapp-btn"><i class="fa-solid fa-bag-shopping"></i>BUY NOW</button>
 
 </div>
 
@@ -205,7 +202,7 @@ ORDER ON WHATSAPP
 
 <h3>Shadow Anime Tee</h3>
 
-<div class="price">₹749</div>
+<div class="price">â‚¹749</div>
 
 <div class="product-actions">
 
@@ -219,10 +216,7 @@ ORDER ON WHATSAPP
 
 </div>
 
-<a href="#" class="whatsapp-btn">
-<i class="fab fa-whatsapp"></i>
-ORDER ON WHATSAPP
-</a>
+<button class="buy-now-btn whatsapp-btn"><i class="fa-solid fa-bag-shopping"></i>BUY NOW</button>
 
 </div>
 
@@ -244,7 +238,7 @@ ORDER ON WHATSAPP
 
 <h3>Abstract Vision Tee</h3>
 
-<div class="price">₹749</div>
+<div class="price">â‚¹749</div>
 
 <div class="product-actions">
 
@@ -258,10 +252,7 @@ ORDER ON WHATSAPP
 
 </div>
 
-<a href="#" class="whatsapp-btn">
-<i class="fab fa-whatsapp"></i>
-ORDER ON WHATSAPP
-</a>
+<button class="buy-now-btn whatsapp-btn"><i class="fa-solid fa-bag-shopping"></i>BUY NOW</button>
 
 </div>
 
@@ -283,7 +274,7 @@ ORDER ON WHATSAPP
 
 <h3>Minimal Logo Tee</h3>
 
-<div class="price">₹699</div>
+<div class="price">â‚¹699</div>
 
 <div class="product-actions">
 
@@ -297,10 +288,7 @@ ORDER ON WHATSAPP
 
 </div>
 
-<a href="#" class="whatsapp-btn">
-<i class="fab fa-whatsapp"></i>
-ORDER ON WHATSAPP
-</a>
+<button class="buy-now-btn whatsapp-btn"><i class="fa-solid fa-bag-shopping"></i>BUY NOW</button>
 
 </div>
 
@@ -322,7 +310,7 @@ ORDER ON WHATSAPP
 
 <h3>Street Graphic Tee</h3>
 
-<div class="price">₹849</div>
+<div class="price">â‚¹849</div>
 
 <div class="product-actions">
 
@@ -336,10 +324,7 @@ ORDER ON WHATSAPP
 
 </div>
 
-<a href="#" class="whatsapp-btn">
-<i class="fab fa-whatsapp"></i>
-ORDER ON WHATSAPP
-</a>
+<button class="buy-now-btn whatsapp-btn"><i class="fa-solid fa-bag-shopping"></i>BUY NOW</button>
 
 </div>
 
@@ -361,7 +346,7 @@ ORDER ON WHATSAPP
 
 <h3>Urban Anime Tee</h3>
 
-<div class="price">₹799</div>
+<div class="price">â‚¹799</div>
 
 <div class="product-actions">
 
@@ -375,10 +360,7 @@ ORDER ON WHATSAPP
 
 </div>
 
-<a href="#" class="whatsapp-btn">
-<i class="fab fa-whatsapp"></i>
-ORDER ON WHATSAPP
-</a>
+<button class="buy-now-btn whatsapp-btn"><i class="fa-solid fa-bag-shopping"></i>BUY NOW</button>
 
 </div>
 
@@ -445,10 +427,37 @@ t-shirts for modern men.
 </div>
 
 <div class="copyright">
-© 2026 Pehrawa Menswear. All Rights Reserved.
+Â© 2026 Pehrawa Menswear. All Rights Reserved.
 </div>
 
 </footer>
+
+<div class="checkout-overlay" id="checkoutOverlay">
+  <div class="checkout-modal">
+    <span class="checkout-close" id="checkoutClose">&times;</span>
+    <h3>Place Your Order</h3>
+    <div class="checkout-product" id="checkoutProduct"></div>
+    <form id="checkoutForm">
+      <input type="hidden" id="checkoutProductId">
+      <input type="hidden" id="checkoutPrice">
+      <input type="text" id="checkoutName" placeholder="Full Name" required>
+      <input type="tel" id="checkoutPhone" placeholder="Phone Number" required>
+      <textarea id="checkoutAddress" placeholder="Full Address" required></textarea>
+      <input type="text" id="checkoutPincode" placeholder="Pincode" required>
+      <div class="checkout-row">
+        <select id="checkoutSize">
+          <option value="S">S</option>
+          <option value="M" selected>M</option>
+          <option value="L">L</option>
+          <option value="XL">XL</option>
+          <option value="XXL">XXL</option>
+        </select>
+        <input type="number" id="checkoutQty" value="1" min="1">
+      </div>
+      <button type="submit" class="checkout-submit">Place Order</button>
+    </form>
+  </div>
+</div>
 
 <script src="../js/script.js"></script>
 <script src="../js/shop.js"></script>

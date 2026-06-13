@@ -76,18 +76,12 @@ document.getElementById("buyWhatsapp").addEventListener("click", () => {
 
   const qty = document.getElementById("quantity").value;
   const productName = document.getElementById("productName").innerText;
-  const productPrice = document.getElementById("productPrice").innerText;
+  const productPrice = document.getElementById("productPrice").innerText.replace("₹", "").trim();
+  const productImage = document.getElementById("productImage").src;
 
-  const message = `PEHRAWA ORDER
-
-Product: ${productName}
-Price: ${productPrice}
-Size: ${selectedSize}
-Quantity: ${qty}
-
-Please confirm availability.`;
-
-  window.open(`https://wa.me/919855707708?text=${encodeURIComponent(message)}`, "_blank");
+  if (typeof openCheckout === "function") {
+    openCheckout(currentProduct.id, productName, productPrice, productImage);
+  }
 });
 
 loadProductDetails();

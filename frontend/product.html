@@ -180,5 +180,32 @@ Buy On WhatsApp
 <script src="../js/script.js"></script>
 <script src="../js/product.js"></script>
 
+<div class="checkout-overlay" id="checkoutOverlay">
+  <div class="checkout-modal">
+    <span class="checkout-close" id="checkoutClose">&times;</span>
+    <h3>Place Your Order</h3>
+    <div class="checkout-product" id="checkoutProduct"></div>
+    <form id="checkoutForm">
+      <input type="hidden" id="checkoutProductId">
+      <input type="hidden" id="checkoutPrice">
+      <input type="text" id="checkoutName" placeholder="Full Name" required>
+      <input type="tel" id="checkoutPhone" placeholder="Phone Number" required>
+      <textarea id="checkoutAddress" placeholder="Full Address" required></textarea>
+      <input type="text" id="checkoutPincode" placeholder="Pincode" required>
+      <div class="checkout-row">
+        <select id="checkoutSize">
+          <option value="S">S</option>
+          <option value="M" selected>M</option>
+          <option value="L">L</option>
+          <option value="XL">XL</option>
+          <option value="XXL">XXL</option>
+        </select>
+        <input type="number" id="checkoutQty" value="1" min="1">
+      </div>
+      <button type="submit" class="checkout-submit">Place Order</button>
+    </form>
+  </div>
+</div>
+
 </body>
 </html>

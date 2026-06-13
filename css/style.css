@@ -1287,5 +1287,111 @@ transform:translateX(-100%);
 }
 
 /* ==========================
+   CHECKOUT MODAL
+========================== */
+
+.checkout-overlay{
+    display:none;
+    position:fixed;
+    top:0;left:0;width:100%;height:100%;
+    background:rgba(0,0,0,.7);
+    z-index:9999;
+    justify-content:center;
+    align-items:center;
+}
+.checkout-overlay.active{
+    display:flex;
+}
+.checkout-modal{
+    background:#111;
+    border:1px solid #333;
+    border-radius:10px;
+    padding:30px;
+    width:90%;
+    max-width:420px;
+    max-height:90vh;
+    overflow-y:auto;
+    position:relative;
+}
+.checkout-close{
+    position:absolute;
+    top:12px;right:16px;
+    font-size:28px;
+    color:#888;
+    cursor:pointer;
+}
+.checkout-close:hover{
+    color:#ff7a00;
+}
+.checkout-modal h3{
+    font-size:22px;
+    margin-bottom:8px;
+    color:#ff7a00;
+}
+.checkout-product{
+    color:#aaa;
+    font-size:14px;
+    margin-bottom:16px;
+    padding-bottom:12px;
+    border-bottom:1px solid #222;
+}
+.checkout-modal form{
+    display:flex;
+    flex-direction:column;
+    gap:12px;
+}
+.checkout-modal input,
+.checkout-modal select,
+.checkout-modal textarea{
+    padding:12px 14px;
+    background:#000;
+    border:1px solid #333;
+    color:#fff;
+    border-radius:6px;
+    font-size:14px;
+    outline:none;
+}
+.checkout-modal textarea{
+    min-height:70px;
+    resize:vertical;
+}
+.checkout-modal input:focus,
+.checkout-modal select:focus,
+.checkout-modal textarea:focus{
+    border-color:#ff7a00;
+}
+.checkout-row{
+    display:flex;
+    gap:12px;
+}
+.checkout-row select,
+.checkout-row input{
+    flex:1;
+}
+.checkout-submit{
+    padding:14px;
+    background:#ff7a00;
+    color:#fff;
+    border:none;
+    border-radius:6px;
+    font-size:16px;
+    font-weight:700;
+    cursor:pointer;
+    transition:.3s;
+}
+.checkout-submit:hover{
+    background:#e06d00;
+}
+
+@media(max-width:480px){
+    .checkout-modal{
+        padding:20px;
+    }
+    .checkout-modal h3{
+        font-size:18px;
+    }
+}
+
+/* ==========================
    Admin Pannel
 ========================== */

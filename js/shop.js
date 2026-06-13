@@ -75,16 +75,14 @@
               </button>
             </div>
 
-            <a href="#" class="whatsapp-btn">
-              <i class="fab fa-whatsapp"></i>
-              ORDER ON WHATSAPP
-            </a>
+            <button class="buy-now-btn whatsapp-btn">
+              <i class="fa-solid fa-bag-shopping"></i>
+              BUY NOW
+            </button>
           </div>
         </div>
       `;
     }).join("");
-
-    attachWhatsappLinks();
   }
 
   function findProduct(productId) {
@@ -119,22 +117,6 @@
     if (badge) {
       badge.textContent = count;
     }
-  }
-
-  function attachWhatsappLinks() {
-    document.querySelectorAll(".whatsapp-btn").forEach((button) => {
-      button.addEventListener("click", function (event) {
-        event.preventDefault();
-
-        const card = button.closest(".product-card");
-        const productName = card.querySelector("h3").innerText;
-        const price = card.querySelector(".price").innerText;
-        const message = `Hello Pehrawa, I want to order:\n\nProduct: ${productName}\nPrice: ${price}\n\nPlease share further details.`;
-        const phone = "919855707708";
-
-        window.open(`https://wa.me/${phone}?text=${encodeURIComponent(message)}`, "_blank");
-      });
-    });
   }
 
   filterButtons.forEach((button) => {

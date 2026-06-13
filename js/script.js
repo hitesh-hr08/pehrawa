@@ -355,6 +355,101 @@ if (copyright) {
 console.log(
   "Pehrawa Menswear Loaded Successfully 🚀"
 );
+
+// ===============================
+// CHECKOUT MODAL
+// ===============================
+
+const checkoutOverlay = document.getElementById("checkoutOverlay");
+const checkoutClose = document.getElementById("checkoutClose");
+const checkoutForm = document.getElementById("checkoutForm");
+
+function openCheckout(productId, productName, price, image) {
+  if (!checkoutOverlay) return;
+  document.getElementById("checkoutProductId").value = productId;
+  document.getElementById("checkoutPrice").value = price;
+  document.getElementById("checkoutProduct").innerHTML =
+    '<img src="' + image + '" style="width:50px;height:50px;object-fit:cover;border-radius:6px;vertical-align:middle;margin-right:10px;">' +
+    '<span>' + productName + ' - ₹' + Number(price).toFixed(2) + '</span>';
+  checkoutOverlay.classList.add("active");
+}
+
+if (checkoutClose) {
+  checkoutClose.addEventListener("click", () => {
+    checkoutOverlay.classList.remove("active");
+  });
+}
+
+if (checkoutOverlay) {
+  checkoutOverlay.addEventListener("click", (e) => {
+    if (e.target === checkoutOverlay) {
+      checkoutOverlay.classList.remove("active");
+    }
+  });
+}
+
+if (checkoutForm) {
+  checkoutForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const btn = checkoutForm.querySelector(".checkout-submit");
+    btn.disabled = true;
+    btn.textContent = "Placing Order...";
+
+    const productId = document.getElementById("checkoutProductId").value;
+    const productNameEl = document.querySelector("#checkoutProduct span");
+    const price = document.getElementById("checkoutPrice").value;
+
+    const payload = {
+      customer_name: document.getElementById("checkoutName").value,
+      phone: document.getElementById("checkoutPhone").value,
+      address: document.getElementById("checkoutAddress").value + ", Pincode: " + document.getElementById("checkoutPincode").value,
+      total_amount: Number(price),
+      items: [{
+        name: productNameEl ? productNameEl.textContent.split(" - ")[0] : "Product",
+        size: document.getElementById("checkoutSize").value,
+        quantity: Number(document.getElementById("checkoutQty").value),
+        price: Number(price)
+      }]
+    };
+
+    try {
+      const api = window.PEHRAWA_API_BASE || "http://localhost:5000";
+      const res = await fetch(api + "/api/public/orders", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
+      const data = await res.json();
+      if (data.success) {
+        showToast("Order placed! We'll contact you soon.");
+        checkoutOverlay.classList.remove("active");
+        checkoutForm.reset();
+      } else {
+        showToast(data.message || "Failed to place order");
+      }
+    } catch (err) {
+      showToast("Error placing order. Try again.");
+    }
+    btn.disabled = false;
+    btn.textContent = "Place Order";
+  });
+}
+
+// ===============================
+// BUY NOW BUTTONS (dynamic)
+// ===============================
+
+document.addEventListener("click", (e) => {
+  const buyBtn = e.target.closest(".buy-now-btn");
+  if (!buyBtn) return;
+  e.preventDefault();
+  const card = buyBtn.closest(".product-card");
+  if (!card) return;
+  const name = card.querySelector("h3") ? card.querySelector("h3").innerText : "Product";
+  const priceText = card.querySelector(".price") ? card.querySelector(".price").innerText.replace("₹", "").trim() : "0";
+  const img = card.querySelector(".product-image img") ? card.querySelector(".product-image img").src : "../images/product1.png";
+  openCheckout(0, name, priceText, img);
+});
 /* WhatsApp code temporary disable 
  ==========================
    CUSTOM PRINT WHATSAPP
