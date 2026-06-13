@@ -182,7 +182,11 @@ router.get("/:id/orders", verifyCustomer, async (req, res) => {
       "SELECT id, customer_name, total_amount, status, items, created_at FROM orders WHERE customer_id = $1 ORDER BY created_at DESC",
       [req.params.id]
     );
-    res.json({ success: true, orders: result.rows });
+    var orders = result.rows.map(function (o) {
+      o.tracking_id = "PHR-" + String(o.id).padStart(6, "0");
+      return o;
+    });
+    res.json({ success: true, orders: orders });
   } catch (err) {
     res.status(500).json({ success: false, message: "Failed to load orders" });
   }

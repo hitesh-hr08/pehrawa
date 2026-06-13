@@ -405,7 +405,7 @@ if (checkoutForm) {
       });
       const data = await res.json();
       if (data.success) {
-        showToast("Order #" + data.order.id + " placed! Track it in My Orders.");
+        showToast("Order " + (data.order.tracking_id || "#" + data.order.id) + " placed! Track it in My Orders.");
         checkoutOverlay.classList.remove("active");
         checkoutForm.reset();
       } else {

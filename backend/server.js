@@ -278,7 +278,9 @@ app.post("/api/public/orders", async (req, res) => {
       }
     }
 
-    res.status(201).json({ success: true, order: result.rows[0] });
+    var order = result.rows[0];
+    order.tracking_id = "PHR-" + String(order.id).padStart(6, "0");
+    res.status(201).json({ success: true, order: order });
   } catch (err) {
     console.error("Order placement error:", err.message, err.stack);
     res.status(500).json({ success: false, message: "Failed to place order" });
@@ -302,7 +304,9 @@ app.get("/api/public/orders/:id", async (req, res) => {
       return res.status(404).json({ success: false, message: "Order not found" });
     }
 
-    res.json({ success: true, order: result.rows[0] });
+    var order = result.rows[0];
+    order.tracking_id = "PHR-" + String(order.id).padStart(6, "0");
+    res.json({ success: true, order: order });
   } catch (err) {
     res.status(500).json({ success: false, message: "Failed to fetch order" });
   }

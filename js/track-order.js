@@ -21,8 +21,10 @@
       return;
     }
 
+    var numericId = orderId.replace(/^PHR-?/i, "");
+
     try {
-      var res = await fetch(API_URL + "/" + encodeURIComponent(orderId) + "?phone=" + encodeURIComponent(phone));
+      var res = await fetch(API_URL + "/" + encodeURIComponent(numericId) + "?phone=" + encodeURIComponent(phone));
       var data = await res.json();
 
       if (!data.success || !data.order) {
@@ -42,7 +44,7 @@
             '<span class="track-status-badge">' + (order.status || "Pending") + '</span>' +
           '</div>' +
           '<div class="track-details">' +
-            '<p><strong>Order ID:</strong> #PHR' + order.id + '</p>' +
+            '<p><strong>Tracking ID:</strong> ' + (order.tracking_id || "PHR-" + String(order.id).padStart(6, "0")) + '</p>' +
             '<p><strong>Customer:</strong> ' + (order.customer_name || "N/A") + '</p>' +
             '<p><strong>Phone:</strong> ' + (order.phone || "N/A") + '</p>' +
             '<p><strong>Address:</strong> ' + (order.address || "N/A") + '</p>' +
