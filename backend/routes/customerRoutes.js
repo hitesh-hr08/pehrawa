@@ -1,10 +1,16 @@
 const path = require("path");
+const fs = require("fs");
 const express = require("express");
 const router = express.Router();
 const pool = require("../db");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const multer = require("multer");
+
+const profileDir = path.join(__dirname, "..", "uploads");
+if (!fs.existsSync(profileDir)) {
+  fs.mkdirSync(profileDir, { recursive: true });
+}
 
 const profileStorage = multer.diskStorage({
   destination: function (req, file, cb) {

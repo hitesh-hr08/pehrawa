@@ -179,8 +179,8 @@
         alert(data.message || "Upload failed");
       }
     })
-    .catch(function () {
-      alert("Upload failed. Try again.");
+    .catch(function (err) {
+      alert("Upload failed: " + (err.message || "Network error"));
     })
     .finally(function () {
       btn.style.pointerEvents = "";
