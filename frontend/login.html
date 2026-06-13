@@ -60,6 +60,10 @@
 
       <button type="submit">Login</button>
       <p id="msg"></p>
+      <div class="divider"><span>OR</span></div>
+      <button class="google-btn" onclick="window.location.href=(window.PEHRAWA_API_BASE||'http://localhost:5000')+'/api/auth/google'">
+        <i class="fa-brands fa-google"></i> Sign in with Google
+      </button>
       <p class="auth-switch">New customer? <a href="register.html">Create account</a></p>
     </form>
   </div>
