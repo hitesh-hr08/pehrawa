@@ -214,4 +214,30 @@ router.post("/:id/profile-picture", verifyCustomer, function (req, res) {
   });
 });
 
+router.delete("/:id/profile-picture", verifyCustomer, async (req, res) => {
+  try {
+    if (Number(req.params.id) !== req.customer.id) {
+      return res.status(403).json({ success: false, message: "Access denied" });
+    }
+    const result = await pool.query(
+      "UPDATE customers SET image_url = NULL, updated_at = NOW() WHERE id = $1 RETURNING id, name, email, phone, image_url",
+      [req.params.id]
+    );
+    const customer = result.rows[0];
+    res.json({
+      success: true,
+      message: "Profile picture removed",
+      customer: {
+        id: customer.id,
+        name: customer.name,
+        email: customer.email,
+        phone: customer.phone,
+        image_url: null
+      }
+    });
+  } catch (err) {
+    res.status(500).json({ success: false, message: "Database error" });
+  }
+});
+
 module.exports = router;

@@ -12,7 +12,7 @@
 .profile-page{min-height:60vh;padding:60px 20px;background:#0d0d0d;}
 .profile-card{max-width:480px;margin:0 auto;background:linear-gradient(145deg,#1a1a1a,#0f0f0f);border-radius:24px;padding:48px 36px 36px;border:1px solid #2a2a2a;box-shadow:0 20px 60px rgba(0,0,0,0.5);position:relative;overflow:hidden;}
 .profile-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#f97316,#ff7a00,#ea580c);}
-.profile-avatar-wrap{width:96px;height:96px;border-radius:50%;margin:0 auto 20px;position:relative;background:linear-gradient(135deg,#f97316,#ea580c);padding:3px;cursor:pointer;}
+.profile-avatar-wrap{width:96px;height:96px;border-radius:50%;margin:0 auto 16px;position:relative;background:linear-gradient(135deg,#f97316,#ea580c);padding:3px;cursor:pointer;}
 .profile-avatar-inner{width:100%;height:100%;border-radius:50%;background:#0d0d0d;display:flex;align-items:center;justify-content:center;font-size:32px;font-weight:700;color:#fff;overflow:hidden;}
 .profile-avatar-inner img{width:100%;height:100%;object-fit:cover;}
 .profile-avatar-wrap::after{content:'';position:absolute;inset:-4px;border-radius:50%;border:1px solid rgba(249,115,22,0.3);animation:pulse-ring 2s ease-in-out infinite;}
@@ -21,7 +21,20 @@
 .profile-avatar-wrap:hover .profile-avatar-overlay{opacity:1;}
 .profile-avatar-overlay i{font-size:20px;}
 #profilePicInput{display:none;}
-.upload-success{text-align:center;color:#22c55e;font-size:13px;margin:-12px 0 16px;display:none;}
+.upload-success{text-align:center;color:#22c55e;font-size:13px;margin:-8px 0 16px;display:none;}
+.pic-menu{position:absolute;top:100%;left:50%;transform:translateX(-50%);margin-top:8px;background:#1a1a1a;border:1px solid #333;border-radius:12px;box-shadow:0 10px 40px rgba(0,0,0,0.5);min-width:160px;z-index:99;overflow:hidden;display:none;}
+.pic-menu.open{display:block;}
+.pic-menu-item{display:flex;align-items:center;gap:10px;padding:10px 16px;color:#ccc;font-size:13px;cursor:pointer;transition:all 0.15s;border:none;background:none;width:100%;text-align:left;font-family:inherit;}
+.pic-menu-item:hover{background:#2a2a2a;color:#ff7a00;}
+.pic-menu-item i{width:16px;text-align:center;font-size:14px;color:#999;}
+.pic-menu-item:hover i{color:#ff7a00;}
+.pic-menu-item.danger{color:#e74c3c;}
+.pic-menu-item.danger i{color:#e74c3c;}
+.pic-menu-item.danger:hover{background:#2a0000;}
+.pic-modal-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.8);z-index:9999;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity 0.2s;}
+.pic-modal-overlay.open{opacity:1;pointer-events:all;}
+.pic-modal-overlay img{max-width:90vw;max-height:90vh;border-radius:12px;object-fit:contain;}
+.pic-modal-close{position:absolute;top:20px;right:30px;color:#fff;font-size:36px;cursor:pointer;background:none;border:none;}
 .profile-name{text-align:center;font-size:24px;font-weight:700;color:#fff;margin:0 0 4px;}
 .profile-email{text-align:center;font-size:14px;color:#999;margin:0 0 30px;}
 .profile-divider{height:1px;background:linear-gradient(90deg,transparent,#2a2a2a,transparent);margin:0 0 24px;}
@@ -109,14 +122,28 @@
   var initials = c.name ? c.name.split(" ").map(function(w){return w[0]}).join("").toUpperCase().slice(0,2) : "?";
   var avatarImg = c.image_url ? '<img src="' + c.image_url + '" alt="avatar">' : initials;
 
+  var hasPic = !!c.image_url;
+  var picMenuHtml = hasPic
+    ? '<div class="pic-menu" id="picMenu">' +
+        '<button class="pic-menu-item" data-action="view"><i class="fa-solid fa-eye"></i> View</button>' +
+        '<button class="pic-menu-item" data-action="change"><i class="fa-solid fa-camera"></i> Change</button>' +
+        '<button class="pic-menu-item danger" data-action="remove"><i class="fa-solid fa-trash-can"></i> Remove</button>' +
+      '</div>'
+    : '';
+
   container.innerHTML =
     '<div class="profile-card">' +
-      '<div class="profile-avatar-wrap" id="profilePicTrigger" title="Change profile picture">' +
+      '<div class="profile-avatar-wrap" id="profilePicTrigger" title="Profile picture">' +
         '<div class="profile-avatar-inner">' + avatarImg + '</div>' +
         '<div class="profile-avatar-overlay"><i class="fa-solid fa-camera"></i></div>' +
+        picMenuHtml +
       '</div>' +
       '<input type="file" id="profilePicInput" accept="image/*">' +
       '<p class="upload-success" id="uploadSuccess"><i class="fa-solid fa-check-circle"></i> Profile picture updated</p>' +
+      '<div class="pic-modal-overlay" id="picModal">' +
+        '<button class="pic-modal-close" id="picModalClose">&times;</button>' +
+        '<img id="picModalImg" src="">' +
+      '</div>' +
       '<h2 class="profile-name">' + (c.name || "Customer") + '</h2>' +
       '<p class="profile-email">' + (c.email || "") + '</p>' +
       '<div class="profile-divider"></div>' +
@@ -147,18 +174,79 @@
       '</div>' +
     '</div>';
 
-  document.getElementById("profilePicTrigger").addEventListener("click", function () {
-    document.getElementById("profilePicInput").click();
+  function closePicMenu() {
+    var m = document.getElementById("picMenu");
+    if (m) m.classList.remove("open");
+  }
+
+  document.addEventListener("click", function (e) {
+    if (!e.target.closest("#profilePicTrigger")) closePicMenu();
   });
+
+  document.getElementById("profilePicTrigger").addEventListener("click", function (e) {
+    e.stopPropagation();
+    var menu = document.getElementById("picMenu");
+    if (menu) {
+      menu.classList.toggle("open");
+    } else {
+      document.getElementById("profilePicInput").click();
+    }
+  });
+
+  function bindPicMenu() {
+    var menu = document.getElementById("picMenu");
+    if (!menu) return;
+    var newMenu = menu.cloneNode(true);
+    menu.parentNode.replaceChild(newMenu, menu);
+    newMenu.addEventListener("click", function (e) {
+    var item = e.target.closest(".pic-menu-item");
+    if (!item) return;
+    closePicMenu();
+    var action = item.dataset.action;
+    if (action === "view") {
+      var img = document.getElementById("picModalImg");
+      img.src = c.image_url;
+      document.getElementById("picModal").classList.add("open");
+    } else if (action === "change") {
+      document.getElementById("profilePicInput").click();
+    } else if (action === "remove") {
+      if (!confirm("Remove profile picture?")) return;
+      fetch(api + "/api/customers/" + c.id + "/profile-picture", {
+        method: "DELETE",
+        headers: { "Authorization": "Bearer " + token }
+      })
+      .then(function (r) { return r.json(); })
+      .then(function (data) {
+        if (data.success) {
+          c.image_url = null;
+          localStorage.setItem("pehrawa_customer", JSON.stringify(c));
+          var initials = c.name ? c.name.split(" ").map(function(w){return w[0]}).join("").toUpperCase().slice(0,2) : "?";
+          var wrap = document.getElementById("profilePicTrigger");
+          wrap.innerHTML =
+            '<div class="profile-avatar-inner">' + initials + '</div>' +
+            '<div class="profile-avatar-overlay"><i class="fa-solid fa-camera"></i></div>';
+          if (typeof window.updateProfileIcon === "function") window.updateProfileIcon();
+        } else {
+          alert(data.message || "Failed to remove");
+        }
+      })
+      .catch(function () {
+        alert("Failed to remove profile picture");
+      });
+    }
+  });
+  }
+
+  bindPicMenu();
 
   document.getElementById("profilePicInput").addEventListener("change", function (e) {
     var file = e.target.files[0];
     if (!file) return;
     var formData = new FormData();
     formData.append("profile_picture", file);
-    var btn = document.getElementById("profilePicTrigger");
-    btn.style.pointerEvents = "none";
-    btn.style.opacity = "0.6";
+    var wrap = document.getElementById("profilePicTrigger");
+    wrap.style.pointerEvents = "none";
+    wrap.style.opacity = "0.6";
     fetch(api + "/api/customers/" + c.id + "/profile-picture", {
       method: "POST",
       headers: { "Authorization": "Bearer " + token },
@@ -171,6 +259,16 @@
         localStorage.setItem("pehrawa_customer", JSON.stringify(c));
         var inner = document.querySelector(".profile-avatar-inner");
         if (inner) inner.innerHTML = '<img src="' + c.image_url + '?t=' + Date.now() + '" alt="avatar">';
+        var wrap = document.getElementById("profilePicTrigger");
+        wrap.innerHTML =
+          '<div class="profile-avatar-inner"><img src="' + c.image_url + '?t=' + Date.now() + '" alt="avatar"></div>' +
+          '<div class="profile-avatar-overlay"><i class="fa-solid fa-camera"></i></div>' +
+          '<div class="pic-menu" id="picMenu">' +
+            '<button class="pic-menu-item" data-action="view"><i class="fa-solid fa-eye"></i> View</button>' +
+            '<button class="pic-menu-item" data-action="change"><i class="fa-solid fa-camera"></i> Change</button>' +
+            '<button class="pic-menu-item danger" data-action="remove"><i class="fa-solid fa-trash-can"></i> Remove</button>' +
+          '</div>';
+        bindPicMenu();
         var success = document.getElementById("uploadSuccess");
         success.style.display = "block";
         setTimeout(function () { success.style.display = "none"; }, 3000);
@@ -183,9 +281,15 @@
       alert("Upload failed: " + (err.message || "Network error"));
     })
     .finally(function () {
-      btn.style.pointerEvents = "";
-      btn.style.opacity = "1";
+      wrap.style.pointerEvents = "";
+      wrap.style.opacity = "1";
     });
+  });
+
+  document.getElementById("picModal").addEventListener("click", function (e) {
+    if (e.target === this || e.target.id === "picModalClose") {
+      this.classList.remove("open");
+    }
   });
 
   document.getElementById("profileLogoutBtn").addEventListener("click", function () {
