@@ -1,8 +1,33 @@
+const path = require("path");
 const express = require("express");
 const router = express.Router();
 const pool = require("../db");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const multer = require("multer");
+
+const profileStorage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    const dir = path.join(__dirname, "..", "uploads");
+    cb(null, dir);
+  },
+  filename: function (req, file, cb) {
+    const unique = Date.now() + "-" + Math.round(Math.random() * 1e9);
+    const ext = path.extname(file.originalname) || ".png";
+    cb(null, "profile-" + unique + ext);
+  }
+});
+const profileUpload = multer({
+  storage: profileStorage,
+  limits: { fileSize: 5 * 1024 * 1024 },
+  fileFilter: function (req, file, cb) {
+    const allowed = /jpeg|jpg|png|gif|webp/;
+    const extOk = allowed.test(path.extname(file.originalname).toLowerCase());
+    const mimeOk = allowed.test(file.mimetype.split("/")[1]);
+    if (extOk || mimeOk) return cb(null, true);
+    cb(new Error("Only image files (jpg, png, gif, webp) are allowed"));
+  }
+});
 
 function makeToken(customer) {
   return jwt.sign(
@@ -62,7 +87,8 @@ router.post("/login", async (req, res) => {
         id: customer.id,
         name: customer.name || customer.email.split("@")[0],
         email: customer.email,
-        phone: customer.phone
+        phone: customer.phone,
+        image_url: customer.image_url || null
       }
     });
   } catch (err) {
@@ -101,7 +127,8 @@ router.post("/register", async (req, res) => {
         id: customer.id,
         name: customer.name,
         email: customer.email,
-        phone: customer.phone
+        phone: customer.phone,
+        image_url: customer.image_url || null
       }
     });
   } catch (err) {
@@ -146,6 +173,39 @@ router.get("/:id/orders", verifyCustomer, async (req, res) => {
   } catch (err) {
     res.status(500).json({ success: false, message: "Failed to load orders" });
   }
+});
+
+router.post("/:id/profile-picture", verifyCustomer, function (req, res) {
+  if (Number(req.params.id) !== req.customer.id) {
+    return res.status(403).json({ success: false, message: "Access denied" });
+  }
+  profileUpload.single("profile_picture")(req, res, async function (err) {
+    if (err) {
+      return res.status(400).json({ success: false, message: err.message });
+    }
+    if (!req.file) {
+      return res.status(400).json({ success: false, message: "No file uploaded" });
+    }
+    try {
+      const url = "/uploads/" + req.file.filename;
+      await pool.query("UPDATE customers SET image_url = $1, updated_at = NOW() WHERE id = $2", [url, req.params.id]);
+      const result = await pool.query("SELECT id, name, email, phone, image_url FROM customers WHERE id = $1", [req.params.id]);
+      const customer = result.rows[0];
+      res.json({
+        success: true,
+        message: "Profile picture updated",
+        customer: {
+          id: customer.id,
+          name: customer.name,
+          email: customer.email,
+          phone: customer.phone,
+          image_url: customer.image_url
+        }
+      });
+    } catch (dbErr) {
+      res.status(500).json({ success: false, message: "Database error" });
+    }
+  });
 });
 
 module.exports = router;

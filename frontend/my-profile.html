@@ -12,10 +12,16 @@
 .profile-page{min-height:60vh;padding:60px 20px;background:#0d0d0d;}
 .profile-card{max-width:480px;margin:0 auto;background:linear-gradient(145deg,#1a1a1a,#0f0f0f);border-radius:24px;padding:48px 36px 36px;border:1px solid #2a2a2a;box-shadow:0 20px 60px rgba(0,0,0,0.5);position:relative;overflow:hidden;}
 .profile-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#f97316,#ff7a00,#ea580c);}
-.profile-avatar-wrap{width:96px;height:96px;border-radius:50%;margin:0 auto 20px;position:relative;background:linear-gradient(135deg,#f97316,#ea580c);padding:3px;}
-.profile-avatar-inner{width:100%;height:100%;border-radius:50%;background:#0d0d0d;display:flex;align-items:center;justify-content:center;font-size:32px;font-weight:700;color:#fff;}
+.profile-avatar-wrap{width:96px;height:96px;border-radius:50%;margin:0 auto 20px;position:relative;background:linear-gradient(135deg,#f97316,#ea580c);padding:3px;cursor:pointer;}
+.profile-avatar-inner{width:100%;height:100%;border-radius:50%;background:#0d0d0d;display:flex;align-items:center;justify-content:center;font-size:32px;font-weight:700;color:#fff;overflow:hidden;}
+.profile-avatar-inner img{width:100%;height:100%;object-fit:cover;}
 .profile-avatar-wrap::after{content:'';position:absolute;inset:-4px;border-radius:50%;border:1px solid rgba(249,115,22,0.3);animation:pulse-ring 2s ease-in-out infinite;}
 @keyframes pulse-ring{0%,100%{transform:scale(1);opacity:1;}50%{transform:scale(1.08);opacity:0.5;}}
+.profile-avatar-overlay{position:absolute;inset:0;border-radius:50%;background:rgba(0,0,0,0.5);display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity 0.2s;color:#fff;font-size:14px;z-index:2;}
+.profile-avatar-wrap:hover .profile-avatar-overlay{opacity:1;}
+.profile-avatar-overlay i{font-size:20px;}
+#profilePicInput{display:none;}
+.upload-success{text-align:center;color:#22c55e;font-size:13px;margin:-12px 0 16px;display:none;}
 .profile-name{text-align:center;font-size:24px;font-weight:700;color:#fff;margin:0 0 4px;}
 .profile-email{text-align:center;font-size:14px;color:#999;margin:0 0 30px;}
 .profile-divider{height:1px;background:linear-gradient(90deg,transparent,#2a2a2a,transparent);margin:0 0 24px;}
@@ -98,13 +104,19 @@
   }
 
   var c = window.getCustomer();
+  var api = window.PEHRAWA_API_BASE || "http://localhost:5000";
+  var token = window.getCustomerToken();
   var initials = c.name ? c.name.split(" ").map(function(w){return w[0]}).join("").toUpperCase().slice(0,2) : "?";
+  var avatarImg = c.image_url ? '<img src="' + c.image_url + '" alt="avatar">' : initials;
 
   container.innerHTML =
     '<div class="profile-card">' +
-      '<div class="profile-avatar-wrap">' +
-        '<div class="profile-avatar-inner">' + initials + '</div>' +
+      '<div class="profile-avatar-wrap" id="profilePicTrigger" title="Change profile picture">' +
+        '<div class="profile-avatar-inner">' + avatarImg + '</div>' +
+        '<div class="profile-avatar-overlay"><i class="fa-solid fa-camera"></i></div>' +
       '</div>' +
+      '<input type="file" id="profilePicInput" accept="image/*">' +
+      '<p class="upload-success" id="uploadSuccess"><i class="fa-solid fa-check-circle"></i> Profile picture updated</p>' +
       '<h2 class="profile-name">' + (c.name || "Customer") + '</h2>' +
       '<p class="profile-email">' + (c.email || "") + '</p>' +
       '<div class="profile-divider"></div>' +
@@ -134,6 +146,47 @@
         '<button class="profile-btn profile-btn-secondary" id="profileLogoutBtn"><i class="fa-solid fa-sign-out-alt"></i> Logout</button>' +
       '</div>' +
     '</div>';
+
+  document.getElementById("profilePicTrigger").addEventListener("click", function () {
+    document.getElementById("profilePicInput").click();
+  });
+
+  document.getElementById("profilePicInput").addEventListener("change", function (e) {
+    var file = e.target.files[0];
+    if (!file) return;
+    var formData = new FormData();
+    formData.append("profile_picture", file);
+    var btn = document.getElementById("profilePicTrigger");
+    btn.style.pointerEvents = "none";
+    btn.style.opacity = "0.6";
+    fetch(api + "/api/customers/" + c.id + "/profile-picture", {
+      method: "POST",
+      headers: { "Authorization": "Bearer " + token },
+      body: formData
+    })
+    .then(function (r) { return r.json(); })
+    .then(function (data) {
+      if (data.success) {
+        c.image_url = data.customer.image_url;
+        localStorage.setItem("pehrawa_customer", JSON.stringify(c));
+        var inner = document.querySelector(".profile-avatar-inner");
+        if (inner) inner.innerHTML = '<img src="' + c.image_url + '?t=' + Date.now() + '" alt="avatar">';
+        var success = document.getElementById("uploadSuccess");
+        success.style.display = "block";
+        setTimeout(function () { success.style.display = "none"; }, 3000);
+        if (typeof window.updateProfileIcon === "function") window.updateProfileIcon();
+      } else {
+        alert(data.message || "Upload failed");
+      }
+    })
+    .catch(function () {
+      alert("Upload failed. Try again.");
+    })
+    .finally(function () {
+      btn.style.pointerEvents = "";
+      btn.style.opacity = "1";
+    });
+  });
 
   document.getElementById("profileLogoutBtn").addEventListener("click", function () {
     window.logoutCustomer();
