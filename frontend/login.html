@@ -60,11 +60,12 @@
 
       <button type="submit">Login</button>
       <p id="msg"></p>
-      <div class="divider"><span>OR</span></div>
-      <button class="google-btn" onclick="window.location.href=(window.PEHRAWA_API_BASE||'http://localhost:5000')+'/api/auth/google'">
+      <div class="divider" id="googleDivider"><span>OR</span></div>
+      <button class="google-btn" id="googleBtn" onclick="window.location.href=(window.PEHRAWA_API_BASE||'http://localhost:5000')+'/api/auth/google'">
         <i class="fa-brands fa-google"></i> Sign in with Google
       </button>
       <p class="auth-switch">New customer? <a href="register.html">Create account</a></p>
+      <script>(function(){if(location.hostname==='localhost'||location.hostname==='127.0.0.1'){var e=document.getElementById('googleBtn'),d=document.getElementById('googleDivider');if(e)e.style.display='none';if(d)d.style.display='none'}})();</script>
     </form>
   </div>
 

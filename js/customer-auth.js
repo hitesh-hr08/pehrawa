@@ -104,11 +104,18 @@
       }
     });
 
-    document.getElementById("googleSignInBtn").addEventListener("click", function () {
-      var api = window.PEHRAWA_API_BASE || "http://localhost:5000";
-      var currentPage = window.location.pathname.split("/").pop() || "home.html";
-      window.location.href = api + "/api/auth/google?state=" + encodeURIComponent(currentPage);
-    });
+    if (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1") {
+      var gBtn = document.getElementById("googleSignInBtn");
+      if (gBtn) gBtn.style.display = "none";
+      var gDiv = document.querySelector(".auth-divider");
+      if (gDiv) gDiv.style.display = "none";
+    } else {
+      document.getElementById("googleSignInBtn").addEventListener("click", function () {
+        var api = window.PEHRAWA_API_BASE || "http://localhost:5000";
+        var currentPage = window.location.pathname.split("/").pop() || "home.html";
+        window.location.href = api + "/api/auth/google?state=" + encodeURIComponent(currentPage);
+      });
+    }
 
     tabs.forEach(function (tab) {
       tab.addEventListener("click", function () {
@@ -150,7 +157,29 @@
             window._authCallback = null;
           }
         } else {
-          errEl.textContent = data.message || "Login failed";
+          if (data.message && data.message.includes("Google")) {
+            errEl.innerHTML = data.message + '</p><div class="set-pw-box"><input type="password" id="modalSetPwInput" placeholder="Set a password (min 6 chars)" style="margin:6px 0;padding:8px;border:1px solid #ddd;border-radius:6px;width:100%;box-sizing:border-box"><button class="auth-submit" id="modalSetPwBtn">Set Password & Login</button></div>';
+            var api = window.PEHRAWA_API_BASE || "http://localhost:5000";
+            document.getElementById("modalSetPwBtn").addEventListener("click", function () {
+              var newPw = document.getElementById("modalSetPwInput").value;
+              if (!newPw || newPw.length < 6) { alert("Password must be at least 6 characters"); return; }
+              var email = document.getElementById("authLoginEmail").value.trim();
+              fetch(api + "/api/customers/set-password", {
+                method: "POST", headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ email: email, password: newPw })
+              })
+              .then(function (r) { return r.json(); })
+              .then(function (d) {
+                if (d.success) {
+                  document.getElementById("authLoginPassword").value = newPw;
+                  loginForm.dispatchEvent(new Event("submit"));
+                } else { alert(d.message || "Failed"); }
+              })
+              .catch(function () { alert("Server error"); });
+            });
+          } else {
+            errEl.textContent = data.message || "Login failed";
+          }
         }
       } catch (err) {
         errEl.textContent = "Connection error. Try again.";
