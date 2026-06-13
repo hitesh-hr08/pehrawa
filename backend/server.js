@@ -275,6 +275,7 @@ app.post("/api/public/orders", async (req, res) => {
 
     res.status(201).json({ success: true, order: result.rows[0] });
   } catch (err) {
+    console.error("Order placement error:", err.message, err.stack);
     res.status(500).json({ success: false, message: "Failed to place order" });
   }
 });
