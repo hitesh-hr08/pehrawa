@@ -27,7 +27,27 @@ async function login(event) {
       window.location.href = "home.html";
     } else {
       if (data.message && data.message.includes("Google")) {
-        messageBox.innerHTML = data.message + ' <button class="google-btn-inline" onclick="window.location.href=\'' + apiBase + '/api/auth/google\'"><i class="fa-brands fa-google"></i> Sign in with Google</button>';
+        messageBox.innerHTML = data.message + '</p><div class="set-pw-box"><p style="color:#aaa;margin:8px 0;">Set a password for your Google account to login directly:</p><input type="password" id="setPwInput" placeholder="New password (min 6 chars)" style="margin-bottom:8px"><button class="google-btn-inline" id="setPwBtn"><i class="fa-solid fa-key"></i> Set Password & Login</button></div>';
+        document.getElementById("setPwBtn").addEventListener("click", function () {
+          var newPw = document.getElementById("setPwInput").value;
+          if (!newPw || newPw.length < 6) { alert("Password must be at least 6 characters"); return; }
+          var email = document.getElementById("email").value.trim();
+          fetch(apiBase + "/api/customers/set-password", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email: email, password: newPw })
+          })
+          .then(function (r) { return r.json(); })
+          .then(function (d) {
+            if (d.success) {
+              document.getElementById("password").value = newPw;
+              login();
+            } else {
+              alert(d.message || "Failed");
+            }
+          })
+          .catch(function () { alert("Server error"); });
+        });
       } else {
         messageBox.innerText = data.message || "Login failed";
       }

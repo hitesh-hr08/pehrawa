@@ -240,4 +240,30 @@ router.delete("/:id/profile-picture", verifyCustomer, async (req, res) => {
   }
 });
 
+router.post("/set-password", async (req, res) => {
+  try {
+    var email = String(req.body.email || "").trim().toLowerCase();
+    var password = String(req.body.password || "");
+    if (!email || !password) {
+      return res.status(400).json({ success: false, message: "Email and password are required" });
+    }
+    if (password.length < 6) {
+      return res.status(400).json({ success: false, message: "Password must be at least 6 characters" });
+    }
+    var existing = await pool.query("SELECT * FROM customers WHERE email = $1", [email]);
+    var customer = existing.rows[0];
+    if (!customer) {
+      return res.status(404).json({ success: false, message: "Account not found" });
+    }
+    if (customer.password) {
+      return res.status(400).json({ success: false, message: "Password already set. Use Forgot Password to reset." });
+    }
+    var hashed = await bcrypt.hash(password, 10);
+    await pool.query("UPDATE customers SET password = $1, updated_at = NOW() WHERE id = $2", [hashed, customer.id]);
+    res.json({ success: true, message: "Password set successfully. You can now login with email and password." });
+  } catch (err) {
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+});
+
 module.exports = router;
