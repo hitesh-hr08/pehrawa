@@ -69,11 +69,12 @@ router.get("/google/callback",
     }
 
     var token = makeToken(req.user);
+    var hasPassword = req.user.password ? "true" : "false";
     var customer = JSON.stringify({ id: req.user.id, name: req.user.name, email: req.user.email, phone: req.user.phone || "" });
     var redirect = req.query.state || "home.html";
     if (redirect === "redirect" || !redirect) redirect = "home.html";
 
-    res.redirect("/auth-callback.html?token=" + encodeURIComponent(token) + "&customer=" + encodeURIComponent(customer) + "&redirect=" + encodeURIComponent(redirect));
+    res.redirect("/auth-callback.html?token=" + encodeURIComponent(token) + "&customer=" + encodeURIComponent(customer) + "&redirect=" + encodeURIComponent(redirect) + "&hasPassword=" + hasPassword);
   }
 );
 

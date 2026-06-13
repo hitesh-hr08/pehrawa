@@ -12,24 +12,30 @@
       var token = params.get("token");
       var customerStr = params.get("customer");
       var redirect = params.get("redirect") || "home.html";
-      var authStatus = params.get("auth");
+      var hasPassword = params.get("hasPassword");
 
       if (token && customerStr) {
         try {
           var customer = JSON.parse(decodeURIComponent(customerStr));
           localStorage.setItem("pehrawa_customer_token", token);
           localStorage.setItem("pehrawa_customer", JSON.stringify(customer));
-          localStorage.setItem("customerId", customer.id);
         } catch (e) {}
       }
 
-      var target = redirect === "redirect" || !redirect ? "home.html" : redirect;
-
-      if (window.opener) {
-        window.opener.location.reload();
-        window.close();
+      if (hasPassword === "false" && customerStr) {
+        try {
+          var c = JSON.parse(decodeURIComponent(customerStr));
+          window.location.replace("login.html?setpw=1&email=" + encodeURIComponent(c.email));
+        } catch (e) {
+          window.location.replace(redirect);
+        }
       } else {
-        window.location.replace(target);
+        if (window.opener) {
+          window.opener.location.reload();
+          window.close();
+        } else {
+          window.location.replace(redirect);
+        }
       }
     })();
   </script>
