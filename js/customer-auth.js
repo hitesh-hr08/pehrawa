@@ -249,23 +249,23 @@
 
   function bindProfileEvents() {
     var container = document.getElementById("pehrawaProfileContainer");
-    var dropdown = document.getElementById("profileDropdown");
-    if (container && dropdown) {
-      container.addEventListener("click", function (e) {
-        e.preventDefault();
-        e.stopPropagation();
-        dropdown.classList.toggle("open");
-      });
-    }
-    var logoutBtn = document.getElementById("profileLogoutBtn");
-    if (logoutBtn) {
-      logoutBtn.addEventListener("click", function (e) {
-        e.preventDefault();
-        window.logoutCustomer();
-        window.updateProfileIcon();
-        window.location.href = "home.html";
-      });
-    }
+    if (!container || container.dataset.bound) return;
+    container.dataset.bound = "1";
+    container.addEventListener("click", function (e) {
+      var dropdown = document.getElementById("profileDropdown");
+      if (!dropdown) return;
+      if (e.target.closest(".profile-dropdown")) {
+        var logoutBtn = e.target.closest("#profileLogoutBtn");
+        if (logoutBtn) {
+          e.preventDefault();
+          window.logoutCustomer();
+          window.location.href = "home.html";
+        }
+        return;
+      }
+      e.stopPropagation();
+      dropdown.classList.toggle("open");
+    });
   }
 
   document.addEventListener("click", function () {
@@ -322,7 +322,7 @@
     ".auth-submit:disabled{opacity:0.6;cursor:not-allowed;}" +
     ".auth-error{color:#e74c3c;font-size:13px;margin:8px 0 0;text-align:center;}" +
     ".profile-container{position:relative;display:flex;align-items:center;justify-content:center;width:34px;height:34px;cursor:pointer;margin-top:-3px;}" +
-    ".profile-container .profile-avatar{width:28px!important;height:28px!important;border-radius:50%!important;background:linear-gradient(135deg,#f97316,#ea580c)!important;color:#fff!important;display:flex!important;align-items:center;justify-content:center;font-size:12px!important;font-weight:700!important;letter-spacing:0.5px;flex-shrink:0;}" +
+    ".profile-container .profile-avatar{width:28px!important;height:28px!important;border-radius:50%!important;background:linear-gradient(135deg,#f97316,#ea580c)!important;color:#fff!important;display:flex!important;align-items:center;justify-content:center;font-size:12px!important;font-weight:700!important;letter-spacing:0.5px;flex-shrink:0;position:static!important;top:auto!important;right:auto!important;}" +
     ".profile-dropdown{position:absolute;top:100%;right:-4px;margin-top:8px;background:#1a1a1a;border:1px solid #333;border-radius:12px;box-shadow:0 10px 40px rgba(0,0,0,0.5);min-width:230px;opacity:0;pointer-events:none;transform:translateY(-8px);transition:all 0.2s ease;z-index:9999;overflow:hidden;}" +
     ".profile-dropdown.open{opacity:1;pointer-events:all;transform:translateY(0);}" +
     ".dropdown-header{padding:14px 16px 10px;border-bottom:1px solid #2a2a2a;}" +
