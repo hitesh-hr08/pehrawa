@@ -324,11 +324,11 @@
     ".auth-submit{width:100%;padding:12px;margin-top:16px;background:#f97316;color:#fff;border:none;border-radius:8px;font-size:16px;font-weight:600;cursor:pointer;}" +
     ".auth-submit:disabled{opacity:0.6;cursor:not-allowed;}" +
     ".auth-error{color:#e74c3c;font-size:13px;margin:8px 0 0;text-align:center;}" +
-    ".profile-container{position:relative;display:inline-flex;align-items:center;}" +
+    ".profile-container{position:relative;display:flex;align-items:center;align-self:stretch;}" +
     ".profile-container span{position:static!important;width:auto!important;height:auto!important;top:auto!important;right:auto!important;border-radius:0!important;background:none!important;font-size:inherit!important;color:inherit!important;display:inline!important;line-height:normal!important;}" +
-    ".profile-icon-wrapper{position:relative;display:flex;}" +
-    ".profile-icon{cursor:pointer;display:flex;align-items:center;justify-content:center;width:36px;height:36px;}" +
-    ".profile-container .profile-avatar{width:30px!important;height:30px!important;border-radius:50%!important;background:linear-gradient(135deg,#f97316,#ea580c)!important;color:#fff!important;display:flex!important;align-items:center;justify-content:center;font-size:12px!important;font-weight:700!important;letter-spacing:0.5px;box-shadow:0 2px 8px rgba(249,115,22,0.3);}" +
+    ".profile-icon-wrapper{display:flex;align-items:center;}" +
+    ".profile-icon{cursor:pointer;display:flex;align-items:center;justify-content:center;width:36px;padding:2px 0;}" +
+    ".profile-container .profile-avatar{width:26px!important;height:26px!important;border-radius:50%!important;background:linear-gradient(135deg,#f97316,#ea580c)!important;color:#fff!important;display:flex!important;align-items:center;justify-content:center;font-size:11px!important;font-weight:700!important;letter-spacing:0.5px;box-shadow:0 2px 6px rgba(249,115,22,0.3);}" +
     ".profile-dropdown{position:absolute;top:100%;right:-8px;margin-top:10px;background:#fff;border-radius:12px;box-shadow:0 10px 40px rgba(0,0,0,0.15);min-width:230px;opacity:0;pointer-events:none;transform:translateY(-8px);transition:all 0.2s ease;z-index:9999;overflow:hidden;}" +
     ".profile-dropdown.open{opacity:1;pointer-events:all;transform:translateY(0);}" +
     ".dropdown-header{padding:14px 16px 10px;border-bottom:1px solid #f0f0f0;}" +
