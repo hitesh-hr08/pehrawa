@@ -558,21 +558,20 @@ font-size:13px !important;
 }
 
 .header .container{
-    flex-wrap:nowrap;
     justify-content:flex-start;
-    gap:15px;
+    gap:12px;
 }
 
 .menu-btn{
     margin-left:auto;
 }
 
-.nav-icons .search-wrapper{
-    display:none;
-}
-
 .logo img{
     width:130px;
+}
+
+.search-wrapper .search-input{
+    display:none;
 }
 }
 
@@ -588,19 +587,19 @@ font-size:13px !important;
 }
 
 .nav-icons{
-    gap:10px;
+    gap:8px;
 }
 
 .nav-icons a{
-    font-size:16px;
+    font-size:15px;
 }
 
 .nav-icons span{
-    width:16px;
-    height:16px;
-    font-size:9px;
-    top:-6px;
-    right:-8px;
+    width:15px;
+    height:15px;
+    font-size:8px;
+    top:-5px;
+    right:-6px;
 }
 
 .login-btn{
@@ -613,26 +612,11 @@ font-size:13px !important;
 }
 
 .menu-btn{
-    font-size:18px;
+    font-size:17px;
 }
 
 .navbar.active{
-    top:65px;
-}
-
-.search-wrapper{
-    display:block;
-}
-
-.search-wrapper .search-input{
-    width:120px;
-    opacity:1;
-    padding:6px 10px;
-    font-size:12px;
-}
-
-.search-wrapper .search-icon{
-    font-size:14px;
+    top:62px;
 }
 }
 
@@ -642,26 +626,25 @@ font-size:13px !important;
     width:75px;
 }
 
+.header .container{
+    gap:5px;
+}
+
 .nav-icons{
-    gap:6px;
+    gap:5px;
 }
 
 .nav-icons a{
-    font-size:14px;
+    font-size:13px;
 }
 
 .login-btn{
-    padding:4px 8px;
+    padding:4px 7px;
+    font-size:10px;
 }
 
 .menu-btn{
-    font-size:16px;
-}
-
-.search-wrapper .search-input{
-    width:90px;
-    font-size:11px;
-    padding:4px 8px;
+    font-size:15px;
 }
 }
 
