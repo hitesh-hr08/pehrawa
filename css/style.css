@@ -558,8 +558,11 @@ font-size:13px !important;
 }
 
 .header .container{
-    justify-content:space-between;
-    gap:0;
+    justify-content:flex-start;
+}
+
+.logo{
+    margin-right:auto;
 }
 
 .logo img{
@@ -572,6 +575,14 @@ font-size:13px !important;
 
 .nav-icons{
     gap:14px;
+}
+
+.menu-btn{
+    margin-left:14px;
+}
+
+.login-btn{
+    margin-left:14px;
 }
 }
 
@@ -612,7 +623,14 @@ font-size:13px !important;
 
 .menu-btn{
     font-size:16px;
-    margin-left:6px;
+}
+
+.menu-btn{
+    margin-left:10px;
+}
+
+.login-btn{
+    margin-left:10px;
 }
 
 .navbar.active{
@@ -649,7 +667,14 @@ font-size:13px !important;
 
 .menu-btn{
     font-size:14px;
-    margin-left:4px;
+}
+
+.menu-btn{
+    margin-left:6px;
+}
+
+.login-btn{
+    margin-left:6px;
 }
 }
 
