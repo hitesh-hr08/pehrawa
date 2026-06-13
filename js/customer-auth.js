@@ -229,21 +229,19 @@
 
     if (loggedIn && customer) {
       container.innerHTML =
-        '<div class="profile-icon-wrapper">' +
-          '<div class="profile-icon" id="profileIconBtn">' +
-            '<span class="profile-avatar">' + getInitials(customer.name) + '</span>' +
+        '<a class="profile-icon" id="profileIconBtn" href="javascript:void(0)">' +
+          '<span class="profile-avatar">' + getInitials(customer.name) + '</span>' +
+        '</a>' +
+        '<div class="profile-dropdown" id="profileDropdown">' +
+          '<div class="dropdown-header">' +
+            '<span class="dropdown-name">' + (customer.name || "Customer") + '</span>' +
+            '<span class="dropdown-email">' + customer.email + '</span>' +
           '</div>' +
-          '<div class="profile-dropdown" id="profileDropdown">' +
-            '<div class="dropdown-header">' +
-              '<span class="dropdown-name">' + (customer.name || "Customer") + '</span>' +
-              '<span class="dropdown-email">' + customer.email + '</span>' +
-            '</div>' +
-            '<a class="dropdown-item" href="my-orders.html"><i class="fa-solid fa-box"></i> My Orders</a>' +
-            '<a class="dropdown-item" href="wishlist.html"><i class="fa-regular fa-heart"></i> My Wishlist</a>' +
-            '<a class="dropdown-item" href="my-profile.html"><i class="fa-regular fa-user"></i> My Profile</a>' +
-            '<div class="dropdown-divider"></div>' +
-            '<a class="dropdown-item logout-item" id="profileLogoutBtn" href="#"><i class="fa-solid fa-sign-out-alt"></i> Logout</a>' +
-          '</div>' +
+          '<a class="dropdown-item" href="my-orders.html"><i class="fa-solid fa-box"></i> My Orders</a>' +
+          '<a class="dropdown-item" href="wishlist.html"><i class="fa-regular fa-heart"></i> My Wishlist</a>' +
+          '<a class="dropdown-item" href="my-profile.html"><i class="fa-regular fa-user"></i> My Profile</a>' +
+          '<div class="dropdown-divider"></div>' +
+          '<a class="dropdown-item logout-item" id="profileLogoutBtn" href="#"><i class="fa-solid fa-sign-out-alt"></i> Logout</a>' +
         '</div>';
     } else {
       container.innerHTML = "";
@@ -256,6 +254,7 @@
     var dropdown = document.getElementById("profileDropdown");
     if (iconBtn && dropdown) {
       iconBtn.addEventListener("click", function (e) {
+        e.preventDefault();
         e.stopPropagation();
         dropdown.classList.toggle("open");
       });
@@ -283,7 +282,7 @@
       setTimeout(window.initProfileIcon, 300);
       return;
     }
-    var container = document.createElement("div");
+    var container = document.createElement("span");
     container.id = "pehrawaProfileContainer";
     container.className = "profile-container";
     navIcons.appendChild(container);
@@ -324,21 +323,22 @@
     ".auth-submit{width:100%;padding:12px;margin-top:16px;background:#f97316;color:#fff;border:none;border-radius:8px;font-size:16px;font-weight:600;cursor:pointer;}" +
     ".auth-submit:disabled{opacity:0.6;cursor:not-allowed;}" +
     ".auth-error{color:#e74c3c;font-size:13px;margin:8px 0 0;text-align:center;}" +
-    ".profile-container{display:inline-flex;align-items:center;vertical-align:middle;font-size:18px;}" +
+    ".profile-container{position:relative;display:inline-flex;align-items:center;}" +
     ".profile-container span{position:static!important;width:auto!important;height:auto!important;top:auto!important;right:auto!important;border-radius:0!important;background:none!important;font-size:inherit!important;color:inherit!important;display:inline!important;line-height:normal!important;}" +
-    ".profile-icon-wrapper{position:relative;display:flex;align-items:center;}" +
-    ".profile-icon{cursor:pointer;display:flex;align-items:center;justify-content:center;width:34px;height:34px;}" +
+    ".profile-icon{display:flex;align-items:center;justify-content:center;width:34px;height:34px;color:#fff;font-size:18px;text-decoration:none;}" +
     ".profile-container .profile-avatar{width:28px!important;height:28px!important;border-radius:50%!important;background:linear-gradient(135deg,#f97316,#ea580c)!important;color:#fff!important;display:flex!important;align-items:center;justify-content:center;font-size:12px!important;font-weight:700!important;letter-spacing:0.5px;box-shadow:0 2px 6px rgba(249,115,22,0.3);}" +
-    ".profile-dropdown{position:absolute;top:100%;right:-8px;margin-top:10px;background:#fff;border-radius:12px;box-shadow:0 10px 40px rgba(0,0,0,0.15);min-width:230px;opacity:0;pointer-events:none;transform:translateY(-8px);transition:all 0.2s ease;z-index:9999;overflow:hidden;}" +
+    ".profile-dropdown{position:absolute;top:100%;right:-4px;margin-top:8px;background:#1a1a1a;border:1px solid #333;border-radius:12px;box-shadow:0 10px 40px rgba(0,0,0,0.5);min-width:230px;opacity:0;pointer-events:none;transform:translateY(-8px);transition:all 0.2s ease;z-index:9999;overflow:hidden;}" +
     ".profile-dropdown.open{opacity:1;pointer-events:all;transform:translateY(0);}" +
-    ".dropdown-header{padding:14px 16px 10px;border-bottom:1px solid #f0f0f0;}" +
-    ".dropdown-name{display:block;font-size:14px;font-weight:600;color:#222;}" +
-    ".dropdown-email{display:block;font-size:12px;color:#888;margin-top:2px;}" +
-    ".dropdown-item{display:flex;align-items:center;gap:10px;padding:10px 16px;color:#444;text-decoration:none;font-size:14px;transition:background 0.15s;}" +
-    ".dropdown-item:hover{background:#f9f9f9;color:#f97316;}" +
-    ".dropdown-item i{width:18px;text-align:center;font-size:15px;}" +
-    ".dropdown-divider{height:1px;background:#f0f0f0;margin:4px 0;}" +
-    ".logout-item{color:#e74c3c;}" +
-    ".logout-item:hover{color:#e74c3c!important;background:#fef2f2;}";
+    ".dropdown-header{padding:14px 16px 10px;border-bottom:1px solid #2a2a2a;}" +
+    ".dropdown-name{display:block;font-size:14px;font-weight:600;color:#fff;}" +
+    ".dropdown-email{display:block;font-size:12px;color:#999;margin-top:2px;}" +
+    ".dropdown-item{display:flex;align-items:center;gap:10px;padding:10px 16px;color:#ccc;text-decoration:none;font-size:14px;transition:all 0.15s;}" +
+    ".dropdown-item:hover{background:#2a2a2a;color:#ff7a00;}" +
+    ".dropdown-item i{width:18px;text-align:center;font-size:15px;color:#999;}" +
+    ".dropdown-item:hover i{color:#ff7a00;}" +
+    ".dropdown-divider{height:1px;background:#2a2a2a;margin:4px 0;}" +
+    ".logout-item{color:#e74c3c!important;}" +
+    ".logout-item i{color:#e74c3c!important;}" +
+    ".logout-item:hover{background:#2a0000!important;}";
   document.head.appendChild(style);
 })();
