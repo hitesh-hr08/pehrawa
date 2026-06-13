@@ -448,12 +448,15 @@ font-size:13px !important;
 .step span{
     width:50px;
     height:50px;
+    min-width:50px;
     border-radius:50%;
     background:#ff7a00;
     display:flex;
     align-items:center;
     justify-content:center;
     font-weight:700;
+    flex-shrink:0;
+    line-height:1;
 }
 
 .step h4{
