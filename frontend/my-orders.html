@@ -9,30 +9,48 @@
 <link rel="stylesheet" href="../css/style.css">
 <script src="../js/config.js"></script>
 <style>
-.orders-page{min-height:60vh;padding:60px 20px;background:#0d0d0d;}
-.orders-container{max-width:640px;margin:0 auto;display:flex;flex-direction:column;gap:16px;}
-.order-card{background:linear-gradient(145deg,#1a1a1a,#0f0f0f);border-radius:16px;padding:24px;border:1px solid #2a2a2a;box-shadow:0 8px 30px rgba(0,0,0,0.3);transition:all 0.2s;}
-.order-card:hover{border-color:#3a3a3a;}
-.order-header{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:12px;}
-.order-id{font-size:16px;font-weight:700;color:#fff;}
-.order-date{color:#888;font-size:13px;margin-left:10px;}
-.order-status{padding:5px 16px;border-radius:20px;font-size:12px;font-weight:600;background:rgba(249,115,22,0.15);color:#f97316;}
-.order-status.Delivered{background:rgba(34,197,94,0.15);color:#22c55e;}
-.order-status.Shipped{background:rgba(59,130,246,0.15);color:#3b82f6;}
-.order-status.Cancelled{background:rgba(231,76,60,0.15);color:#e74c3c;}
-.order-items{color:#aaa;font-size:14px;margin-bottom:12px;line-height:1.6;}
-.order-items div{padding:2px 0;}
-.order-footer{display:flex;justify-content:space-between;align-items:center;padding-top:14px;border-top:1px solid #2a2a2a;}
-.order-total{font-size:18px;font-weight:700;color:#fff;}
-.order-track-link{color:#f97316;font-size:13px;font-weight:600;text-decoration:none;display:flex;align-items:center;gap:6px;transition:all 0.2s;}
-.order-track-link:hover{color:#ff7a00;gap:10px;}
-.empty-orders{text-align:center;padding:60px 20px;}
-.empty-orders i{font-size:48px;color:#f97316;margin-bottom:16px;}
-.empty-orders h3{color:#fff;font-size:20px;margin:0 0 8px;}
-.empty-orders p{color:#888;margin:0 0 20px;}
-.empty-orders .shop-now-btn{display:inline-flex;align-items:center;gap:8px;padding:12px 28px;background:linear-gradient(135deg,#f97316,#ea580c);color:#fff;border-radius:12px;font-size:14px;font-weight:600;text-decoration:none;transition:all 0.2s;}
-.empty-orders .shop-now-btn:hover{transform:translateY(-1px);box-shadow:0 8px 24px rgba(249,115,22,0.3);}
-@media(max-width:480px){.order-card{padding:18px;}}
+ .orders-page{min-height:60vh;padding:60px 20px;background:#0d0d0d;}
+ .orders-container{max-width:680px;margin:0 auto;display:flex;flex-direction:column;gap:20px;}
+ .order-card{background:linear-gradient(145deg,#1a1a1a,#0f0f0f);border-radius:16px;border:1px solid #2a2a2a;box-shadow:0 8px 30px rgba(0,0,0,0.3);overflow:hidden;}
+ .order-card-header{display:flex;justify-content:space-between;align-items:center;padding:16px 20px;background:#141414;border-bottom:1px solid #2a2a2a;flex-wrap:wrap;gap:8px;}
+ .order-tracking-id{font-size:15px;font-weight:700;color:#f97316;letter-spacing:0.5px;}
+ .order-date{color:#888;font-size:12px;margin-left:10px;}
+ .order-status-badge{padding:4px 14px;border-radius:20px;font-size:11px;font-weight:600;background:rgba(249,115,22,0.15);color:#f97316;text-transform:uppercase;}
+ .order-status-badge.delivered{background:rgba(34,197,94,0.15);color:#22c55e;}
+ .order-status-badge.shipped{background:rgba(59,130,246,0.15);color:#3b82f6;}
+ .order-status-badge.cancelled{background:rgba(231,76,60,0.15);color:#e74c3c;}
+ .order-status-badge.processing{background:rgba(249,115,22,0.15);color:#f97316;}
+ .order-body{padding:16px 20px;}
+ .order-item{display:flex;align-items:center;gap:14px;padding:10px 0;border-bottom:1px solid #1f1f1f;}
+ .order-item:last-child{border-bottom:none;}
+ .order-item-icon{width:44px;height:44px;border-radius:10px;background:linear-gradient(135deg,rgba(249,115,22,0.15),rgba(234,88,12,0.1));display:flex;align-items:center;justify-content:center;color:#f97316;font-size:20px;flex-shrink:0;}
+ .order-item-info{flex:1;min-width:0;}
+ .order-item-name{font-size:14px;font-weight:600;color:#fff;}
+ .order-item-meta{font-size:12px;color:#888;margin-top:2px;}
+ .order-item-price{font-size:14px;font-weight:600;color:#fff;white-space:nowrap;}
+ .order-total-row{display:flex;justify-content:space-between;align-items:center;padding:12px 20px;background:#141414;border-top:1px solid #2a2a2a;}
+ .order-total-label{font-size:13px;color:#888;}
+ .order-total-value{font-size:18px;font-weight:700;color:#fff;}
+ .order-timeline{display:flex;padding:14px 20px;border-top:1px solid #2a2a2a;gap:0;}
+ .tl-step{flex:1;text-align:center;position:relative;padding-top:20px;font-size:10px;color:#555;text-transform:uppercase;letter-spacing:0.5px;}
+ .tl-step::before{content:'';position:absolute;top:8px;left:50%;transform:translateX(-50%);width:10px;height:10px;border-radius:50%;background:#2a2a2a;border:2px solid #333;z-index:1;}
+ .tl-step::after{content:'';position:absolute;top:12px;left:calc(50% + 10px);right:calc(-50% + 10px);height:2px;background:#2a2a2a;}
+ .tl-step:last-child::after{display:none;}
+ .tl-step.completed{color:#f97316;}
+ .tl-step.completed::before{background:#f97316;border-color:#f97316;box-shadow:0 0 8px rgba(249,115,22,0.4);}
+ .tl-step.completed::after{background:#f97316;}
+ .order-footer-actions{display:flex;gap:10px;padding:12px 20px;border-top:1px solid #2a2a2a;}
+ .order-track-btn{flex:1;padding:10px;border-radius:10px;font-size:13px;font-weight:600;cursor:pointer;text-align:center;text-decoration:none;transition:all 0.2s;display:flex;align-items:center;justify-content:center;gap:6px;background:linear-gradient(135deg,#f97316,#ea580c);color:#fff;border:none;}
+ .order-track-btn:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(249,115,22,0.3);}
+ .order-help-btn{flex:1;padding:10px;border-radius:10px;font-size:13px;font-weight:600;cursor:pointer;text-align:center;text-decoration:none;transition:all 0.2s;display:flex;align-items:center;justify-content:center;gap:6px;background:transparent;color:#25d366;border:1px solid #25d366;}
+ .order-help-btn:hover{background:rgba(37,211,102,0.1);}
+ .empty-orders{text-align:center;padding:60px 20px;}
+ .empty-orders i{font-size:48px;color:#f97316;margin-bottom:16px;}
+ .empty-orders h3{color:#fff;font-size:20px;margin:0 0 8px;}
+ .empty-orders p{color:#888;margin:0 0 20px;}
+ .empty-orders .shop-now-btn{display:inline-flex;align-items:center;gap:8px;padding:12px 28px;background:linear-gradient(135deg,#f97316,#ea580c);color:#fff;border-radius:12px;font-size:14px;font-weight:600;text-decoration:none;transition:all 0.2s;}
+ .empty-orders .shop-now-btn:hover{transform:translateY(-1px);box-shadow:0 8px 24px rgba(249,115,22,0.3);}
+ @media(max-width:480px){.order-card-header,.order-body,.order-total-row,.order-timeline,.order-footer-actions{padding-left:14px;padding-right:14px;}}
 </style>
 </head>
 <body>
@@ -118,20 +136,73 @@
       return;
     }
 
+    function parseItems(text) {
+      if (!text) return [];
+      return text.split("\n").filter(Boolean).map(function (line) {
+        var name = line.split("|")[0]?.trim() || "Item";
+        var size = (line.match(/Size:\s*(\S+)/i) || [])[1] || "M";
+        var qty = parseInt((line.match(/Qty:\s*(\d+)/i) || [])[1]) || 1;
+        var price = parseFloat((line.match(/Rs\.?\s*([\d.]+)/i) || [])[1]) || 0;
+        var img = "../images/product1.png";
+        var cat = (name || "").toLowerCase();
+        if (cat.includes("premium")||cat.includes("printed")) img = "../images/product2.png";
+        if (cat.includes("cotton")) img = "../images/product3.png";
+        if (cat.includes("oversized")) img = "../images/product4.png";
+        if (cat.includes("custom")) img = "../images/product5.png";
+        if (cat.includes("minimal")) img = "../images/product6.png";
+        return { name: name, size: size, qty: qty, price: price, image: img };
+      });
+    }
+
+    function statusClass(s) { return (s || "pending").toLowerCase().replace(/\s+/g, "-"); }
+
     var html = '';
     data.orders.forEach(function (order) {
       var status = order.status || "Pending";
+      var sc = statusClass(status);
+      var trackingId = order.tracking_id || "PHR-" + String(order.id).padStart(6, "0");
+      var items = parseItems(order.items);
+
+      var steps = [
+        { label: "Placed", done: true },
+        { label: "Processing", done: ["processing","shipped","delivered"].includes(sc) },
+        { label: "Shipped", done: ["shipped","delivered"].includes(sc) },
+        { label: "Delivered", done: sc === "delivered" }
+      ];
+
+      var itemsHtml = items.length
+        ? items.map(function (item) {
+            return '<div class="order-item">' +
+              '<div class="order-item-icon"><i class="fa-solid fa-shirt"></i></div>' +
+              '<div class="order-item-info">' +
+                '<div class="order-item-name">' + item.name + '</div>' +
+                '<div class="order-item-meta">Size: ' + item.size + ' | Qty: ' + item.qty + '</div>' +
+              '</div>' +
+              '<div class="order-item-price">₹' + (item.price * item.qty).toFixed(2) + '</div>' +
+            '</div>';
+          }).join("")
+        : '<div class="order-item"><div class="order-item-info"><div class="order-item-name">' + (order.items || "Order items") + '</div></div></div>';
+
+      var timelineHtml = steps.map(function (s) {
+        return '<div class="tl-step' + (s.done ? " completed" : "") + '"><span>' + s.label + '</span></div>';
+      }).join("");
+
       html +=
         '<div class="order-card">' +
-          '<div class="order-header">' +
-            '<div><span class="order-id">' + (order.tracking_id || "Order #" + order.id) + '</span>' +
+          '<div class="order-card-header">' +
+            '<div><span class="order-tracking-id">' + trackingId + '</span>' +
             '<span class="order-date">' + new Date(order.created_at).toLocaleDateString("en-IN", { day:"numeric", month:"short", year:"numeric" }) + '</span></div>' +
-            '<span class="order-status ' + status + '">' + status + '</span>' +
+            '<span class="order-status-badge ' + sc + '">' + status + '</span>' +
           '</div>' +
-          '<div class="order-items">' + (order.items || "").split("\n").map(function (l) { return "<div>" + l + "</div>"; }).join("") + '</div>' +
-          '<div class="order-footer">' +
-            '<span class="order-total">₹' + parseFloat(order.total_amount).toFixed(2) + '</span>' +
-            '<a href="track-order.html?id=' + order.id + '" class="order-track-link">Track Order <i class="fa-solid fa-arrow-right"></i></a>' +
+          '<div class="order-body">' + itemsHtml + '</div>' +
+          '<div class="order-total-row">' +
+            '<span class="order-total-label">Order Total</span>' +
+            '<span class="order-total-value">₹' + parseFloat(order.total_amount).toFixed(2) + '</span>' +
+          '</div>' +
+          '<div class="order-timeline">' + timelineHtml + '</div>' +
+          '<div class="order-footer-actions">' +
+            '<a href="track-order.html?id=' + order.id + '" class="order-track-btn"><i class="fa-solid fa-location-dot"></i> Track Order</a>' +
+            '<a href="https://wa.me/919855707708?text=Help%20with%20order%20' + encodeURIComponent(trackingId) + '" target="_blank" class="order-help-btn"><i class="fa-brands fa-whatsapp"></i> Help</a>' +
           '</div>' +
         '</div>';
     });
