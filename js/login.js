@@ -22,11 +22,8 @@ async function login(event) {
     const data = await res.json();
 
     if (data.success) {
-      localStorage.setItem("customerToken", data.token);
-      localStorage.setItem("customerId", data.customer.id);
-      localStorage.setItem("customerName", data.customer.name || "");
-      localStorage.setItem("customerEmail", data.customer.email);
-      localStorage.setItem("customerPhone", data.customer.phone || "");
+      localStorage.setItem("pehrawa_customer_token", data.token);
+      localStorage.setItem("pehrawa_customer", JSON.stringify(data.customer));
       window.location.href = "home.html";
     } else {
       messageBox.innerText = data.message || "Login failed";
