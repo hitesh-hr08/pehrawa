@@ -981,6 +981,16 @@ flex-direction:column;
 }
 
 }
+.product-link{
+    color:#fff;
+    text-decoration:none;
+}
+.product-link:hover{
+    color:#ff7a00;
+}
+.product-image a{
+    display:block;
+}
 /* CUSTOM PRINT PAGE */
 
 .custom-hero{
