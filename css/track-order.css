@@ -1,0 +1,78 @@
+.track-hero{
+padding:100px 0;
+text-align:center;
+background:#050505;
+}
+
+.track-hero h1{
+font-size:60px;
+color:#ff7a00;
+margin-bottom:15px;
+}
+
+.track-hero p{
+color:#bbb;
+max-width:700px;
+margin:auto;
+}
+
+.track-section{
+padding:80px 0;
+}
+
+.track-box{
+max-width:650px;
+margin:auto;
+background:#111;
+padding:40px;
+border:1px solid rgba(255,255,255,.08);
+}
+
+.track-box h2{
+text-align:center;
+margin-bottom:25px;
+}
+
+.track-box form{
+display:flex;
+flex-direction:column;
+gap:15px;
+}
+
+.track-box input{
+padding:15px;
+background:#000;
+border:1px solid #333;
+color:#fff;
+outline:none;
+}
+
+.track-box input:focus{
+border-color:#ff7a00;
+}
+
+.track-btn{
+padding:15px;
+background:#ff7a00;
+border:none;
+color:#fff;
+font-weight:600;
+cursor:pointer;
+transition:.3s;
+}
+
+.track-btn:hover{
+background:#ff9333;
+}
+
+@media(max-width:768px){
+
+.track-hero h1{
+font-size:42px;
+}
+
+.track-box{
+padding:25px;
+}
+
+}

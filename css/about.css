@@ -1,0 +1,167 @@
+.about-hero{
+padding:100px 0;
+text-align:center;
+background:#050505;
+}
+
+.about-hero h1{
+font-size:60px;
+color:#ff7a00;
+margin-bottom:15px;
+}
+
+.about-hero p{
+max-width:750px;
+margin:auto;
+color:#bbb;
+line-height:1.8;
+}
+
+.about-story{
+padding:90px 0;
+}
+
+.story-grid{
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:60px;
+align-items:center;
+}
+
+.story-content h2{
+font-size:40px;
+margin-bottom:20px;
+}
+
+.story-content p{
+color:#bbb;
+line-height:1.9;
+margin-bottom:18px;
+}
+
+.story-image{
+height:400px;
+background:#111;
+border:1px solid #222;
+display:flex;
+align-items:center;
+justify-content:center;
+}
+
+.story-image i{
+font-size:120px;
+color:#ff7a00;
+}
+
+.why-pehrawa{
+padding:90px 0;
+background:#070707;
+}
+
+.why-grid{
+display:grid;
+grid-template-columns:repeat(4,1fr);
+gap:25px;
+}
+
+.why-card{
+background:#111;
+padding:35px;
+text-align:center;
+border:1px solid rgba(255,255,255,.08);
+transition:.3s;
+}
+
+.why-card:hover{
+transform:translateY(-8px);
+border-color:#ff7a00;
+}
+
+.why-card i{
+font-size:40px;
+color:#ff7a00;
+margin-bottom:15px;
+}
+
+.why-card h3{
+margin-bottom:10px;
+}
+
+.why-card p{
+color:#aaa;
+}
+
+.mission-section{
+padding:90px 0;
+}
+
+.mission-box{
+max-width:900px;
+margin:auto;
+background:#111;
+padding:50px;
+text-align:center;
+border:1px solid #222;
+}
+
+.mission-box h2{
+font-size:40px;
+margin-bottom:20px;
+}
+
+.mission-box p{
+color:#bbb;
+line-height:2;
+}
+
+.about-cta{
+padding:90px 0;
+background:#070707;
+text-align:center;
+}
+
+.about-cta h2{
+font-size:42px;
+margin-bottom:15px;
+}
+
+.about-cta p{
+color:#bbb;
+margin-bottom:25px;
+}
+
+.cta-buttons{
+display:flex;
+justify-content:center;
+gap:15px;
+}
+
+@media(max-width:991px){
+
+.story-grid{
+grid-template-columns:1fr;
+}
+
+.why-grid{
+grid-template-columns:1fr 1fr;
+}
+}
+
+@media(max-width:768px){
+
+.about-hero h1{
+font-size:42px;
+}
+
+.why-grid{
+grid-template-columns:1fr;
+}
+
+.cta-buttons{
+flex-direction:column;
+}
+
+.cta-buttons .btn{
+width:100%;
+}
+}

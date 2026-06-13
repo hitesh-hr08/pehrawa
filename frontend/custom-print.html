@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Custom Print | Pehrawa Menswear</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+<link rel="stylesheet"
+href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+<link rel="stylesheet" href="../css/style.css">
+</head>
+
+<body>
+
+<header class="header">
+
+<div class="container">
+
+<a href="#" class="logo">
+<img src="../images/logo.png" alt="Pehrawa Logo">
+</a>
+
+<nav class="navbar">
+
+<ul class="nav-links">
+<li><a href="home.html">HOME</a></li>
+<li><a href="shop.html">SHOP</a></li>
+<li><a href="custom-print.html">CUSTOM PRINT</a></li>
+<li><a href="track-order.html">TRACK ORDER</a></li>
+<li><a href="about.html">ABOUT US</a></li>
+<li><a href="contact.html">CONTACT US</a></li>
+</ul>
+
+</nav>
+
+<div class="nav-icons">
+
+<div class="search-wrapper">
+
+    <i class="fa-solid fa-magnifying-glass search-icon"></i>
+
+    <input
+    type="text"
+    class="search-input"
+    placeholder="Search products...">
+
+</div>
+
+
+<a href="wishlist.html">
+<i class="fa-regular fa-heart"></i>
+<span>0</span>
+</a>
+
+<a href="cart.html">
+<i class="fa-solid fa-cart-shopping"></i>
+<span>0</span>
+</a>
+
+</div>
+
+<div class="menu-btn">
+<i class="fa-solid fa-bars"></i>
+</div>
+
+</div>
+
+</header>
+
+<!-- HERO -->
+
+<section class="custom-hero">
+
+<div class="container">
+
+<h1>CREATE YOUR OWN T-SHIRT</h1>
+
+<p>
+Upload your design and get premium quality
+custom printed t-shirts delivered to your door.
+</p>
+
+</div>
+
+</section>
+
+<!-- FORM -->
+
+<section class="custom-form-section">
+
+<div class="container">
+
+<div class="custom-form-box">
+
+<h2>Custom Order Request</h2>
+
+<form id="customPrintForm">
+
+<input type="text" id="name" placeholder="Full Name" required>
+
+<input type="tel" id="phone" placeholder="Phone Number" required>
+
+<input type="email" id="email" placeholder="Email Address">
+
+<select id="size" required>
+<option value="">Select Size</option>
+<option>S</option>
+<option>M</option>
+<option>L</option>
+<option>XL</option>
+<option>XXL</option>
+</select>
+
+<input type="number" id="quantity" placeholder="Quantity" min="1" required>
+
+<textarea
+id="requirements"
+rows="5"
+placeholder="Describe your design requirements">
+</textarea>
+<button type="submit" class="custom-submit-btn">
+Submit Request
+</button>
+
+</form>
+
+</div>
+
+</div>
+
+</section>
+
+<!-- PROCESS -->
+
+<section class="custom-process">
+
+<div class="container">
+
+<h2>How It Works</h2>
+
+<div class="process-grid">
+
+<div class="process-card">
+<span>1</span>
+<h3>Upload Design</h3>
+<p>Send your artwork, logo or idea.</p>
+</div>
+
+<div class="process-card">
+<span>2</span>
+<h3>Approve Mockup</h3>
+<p>We create a preview for approval.</p>
+</div>
+
+<div class="process-card">
+<span>3</span>
+<h3>Print & Deliver</h3>
+<p>Premium print delivered to your location.</p>
+</div>
+
+</div>
+
+</div>
+
+</section>
+
+<!-- CTA -->
+
+<section class="custom-cta">
+
+<div class="container">
+
+<h2>Need Help?</h2>
+
+<p>
+Talk directly with us on WhatsApp.
+</p>
+
+<a href="https://wa.me/919855707708"
+target="_blank"
+class="whatsapp-btn">
+
+<i class="fab fa-whatsapp"></i>
+CHAT ON WHATSAPP
+
+</a>
+
+</div>
+
+</section>
+
+<footer class="footer">
+
+<div class="copyright">
+© 2026 Pehrawa Menswear
+</div>
+
+</footer>
+<script src="../js/config.js"></script>
+<script>
+var API = (window.PEHRAWA_API_BASE || "http://localhost:5000") + "/api/public/requests";
+
+document.getElementById("customPrintForm").addEventListener("submit", async function(e) {
+  e.preventDefault();
+  var data = {
+    customer_name: document.getElementById("name").value,
+    phone: document.getElementById("phone").value,
+    note: "Size: " + document.getElementById("size").value + ", Qty: " + document.getElementById("quantity").value + ", Requirements: " + document.getElementById("requirements").value
+  };
+
+  try {
+    var res = await fetch(API, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data)
+    });
+    var result = await res.json();
+    if (result.success) {
+      alert("Request submitted successfully! We will contact you soon.");
+      this.reset();
+    } else {
+      alert(result.message || "Request failed");
+    }
+  } catch (err) {
+    console.error(err);
+    alert("Server Connection Error");
+  }
+});
+</script>
+
+<script src="../js/script.js"></script>
+
+</body>
+</html>

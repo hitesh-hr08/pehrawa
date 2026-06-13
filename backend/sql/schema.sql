@@ -1,0 +1,61 @@
+CREATE TABLE IF NOT EXISTS admins (
+  id SERIAL PRIMARY KEY,
+  name VARCHAR(100) NOT NULL,
+  email VARCHAR(150) UNIQUE NOT NULL,
+  password VARCHAR(255) NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS products (
+  id SERIAL PRIMARY KEY,
+  name VARCHAR(255) NOT NULL,
+  description TEXT,
+  price NUMERIC(10,2) NOT NULL,
+  image_url TEXT,
+  stock INTEGER DEFAULT 0,
+  category VARCHAR(100),
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS customers (
+  id SERIAL PRIMARY KEY,
+  name VARCHAR(150),
+  email VARCHAR(255) UNIQUE,
+  password VARCHAR(255),
+  phone VARCHAR(30) UNIQUE,
+  address TEXT,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS orders (
+  id SERIAL PRIMARY KEY,
+  customer_id INTEGER REFERENCES customers(id),
+  customer_name VARCHAR(255),
+  phone VARCHAR(20),
+  address TEXT,
+  total_amount NUMERIC(10,2),
+  status VARCHAR(50) DEFAULT 'Pending',
+  items TEXT,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS custom_requests (
+  id SERIAL PRIMARY KEY,
+  customer_name VARCHAR(255),
+  phone VARCHAR(20),
+  note TEXT,
+  image_url TEXT,
+  status VARCHAR(50) DEFAULT 'Pending',
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS store_settings (
+  id SERIAL PRIMARY KEY,
+  store_name VARCHAR(255) NOT NULL DEFAULT 'Pehrawa',
+  store_tagline VARCHAR(500) DEFAULT 'Premium Menswear',
+  currency VARCHAR(10) DEFAULT 'INR',
+  delivery_charge NUMERIC(10,2) DEFAULT 0,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);

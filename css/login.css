@@ -1,0 +1,113 @@
+body{
+  margin:0;
+  font-family:Poppins, sans-serif;
+  height:100vh;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  background:#0b0b0b;
+  overflow:hidden;
+}
+
+/* LOGO BACKGROUND */
+.logo-bg{
+  position:absolute;
+  top:50%;
+  left:50%;
+  transform:translate(-50%, -50%);
+  
+  width:1200px;
+  height:1200px;
+
+  background:url("../images/logo.png") no-repeat center;
+  background-size:contain;
+
+  opacity:0.06;
+
+  z-index:0;
+  pointer-events:none;
+
+  filter: blur(0px);
+}
+
+/* ORANGE GLOW EFFECT */
+.logo-bg::after{
+  content:"";
+  position:absolute;
+  width:100%;
+  height:100%;
+  background:radial-gradient(circle, rgba(255,102,0,0.25), transparent 60%);
+  top:0;
+  left:0;
+}
+
+.login-box{
+  position:relative;
+  width:360px;
+  padding:35px;
+  background:#111;
+  border:1px solid rgba(255,102,0,0.25);
+  border-radius:14px;
+  text-align:center;
+  box-shadow:0 0 30px rgba(255,102,0,0.15);
+}
+
+h2{
+  color:#ff6a00;
+  letter-spacing:4px;
+  margin-bottom:5px;
+}
+
+p{
+  color:#aaa;
+  font-size:13px;
+  margin-bottom:20px;
+}
+
+input{
+  width:100%;
+  padding:12px;
+  margin:10px 0;
+  background:#0f0f0f;
+  border:1px solid rgba(255,106,0,0.3);
+  border-radius:8px;
+  color:#fff;
+  outline:none;
+}
+
+input:focus{
+  border-color:#ff6a00;
+  box-shadow:0 0 10px rgba(255,106,0,0.3);
+}
+
+button{
+  width:100%;
+  padding:12px;
+  margin-top:10px;
+  border:none;
+  border-radius:8px;
+  background:#ff6a00;
+  color:#000;
+  font-weight:700;
+  cursor:pointer;
+  transition:0.3s;
+}
+
+button:hover{
+  background:#ff7a1a;
+}
+
+#msg{
+  color:#ff4d4d;
+  font-size:13px;
+  margin-top:10px;
+}
+
+.auth-switch{
+  margin-top:16px;
+}
+
+.auth-switch a{
+  color:#ff6a00;
+  font-weight:700;
+}

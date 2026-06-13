@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Cart | Pehrawa Menswear</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+<link rel="stylesheet"
+href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/cart.css">
+
+</head>
+
+<body>
+
+<header class="header">
+
+<div class="container">
+
+<a href="#" class="logo">
+<img src="../images/logo.png" alt="Pehrawa Logo">
+</a>
+
+<nav class="navbar">
+
+<ul class="nav-links">
+<li><a href="home.html">HOME</a></li>
+<li><a href="shop.html">SHOP</a></li>
+<li><a href="custom-print.html">CUSTOM PRINT</a></li>
+<li><a href="track-order.html">TRACK ORDER</a></li>
+<li><a href="about.html">ABOUT US</a></li>
+<li><a href="contact.html">CONTACT US</a></li>
+</ul>
+
+</nav>
+
+<div class="nav-icons">
+
+<div class="search-wrapper">
+
+    <i class="fa-solid fa-magnifying-glass search-icon"></i>
+
+    <input
+    type="text"
+    class="search-input"
+    placeholder="Search products...">
+
+</div>
+
+<a href="wishlist.html">
+<i class="fa-regular fa-heart"></i>
+<span>0</span>
+</a>
+
+<a href="cart.html">
+<i class="fa-solid fa-cart-shopping"></i>
+<span>0</span>
+</a>
+
+</div>
+
+<div class="menu-btn">
+<i class="fa-solid fa-bars"></i>
+</div>
+
+</div>
+
+</header>
+
+<section class="cart-hero">
+
+<div class="container">
+
+<h1>YOUR CART</h1>
+
+<p>
+Review your selected products before placing your order.
+</p>
+
+</div>
+
+</section>
+
+<section class="cart-section">
+
+<div class="container">
+
+<div class="cart-layout">
+
+<div class="cart-panel">
+<div class="cart-panel-head">
+<h2>Selected Items</h2>
+<button id="clearCartBtn" class="clear-cart-btn">Clear Cart</button>
+</div>
+
+<div id="cartItems"></div>
+</div>
+
+<aside class="cart-summary">
+
+<h2>Order Summary</h2>
+
+<div class="checkout-form">
+<label for="customerName">Full Name</label>
+<input type="text" id="customerName" placeholder="Your name">
+
+<label for="customerPhone">Phone Number</label>
+<input type="tel" id="customerPhone" placeholder="9876543210">
+
+<label for="customerAddress">Delivery Address</label>
+<textarea id="customerAddress" rows="4" placeholder="House no, street, city, state"></textarea>
+</div>
+
+<div class="summary-row">
+<span>Items</span>
+<strong id="cartItemCount">0</strong>
+</div>
+
+<div class="summary-row">
+<span>Subtotal</span>
+<strong>Rs. <span id="cartSubtotal">0</span></strong>
+</div>
+
+<div class="summary-row">
+<span>Shipping</span>
+<strong>Calculated on WhatsApp</strong>
+</div>
+
+<div class="summary-total">
+<span>Total</span>
+<strong>Rs. <span id="cartTotal">0</span></strong>
+</div>
+
+<button id="checkoutBtn"
+class="checkout-btn">
+
+<i class="fab fa-whatsapp"></i>
+ORDER ON WHATSAPP
+
+</button>
+
+<a href="shop.html" class="continue-shopping">Continue Shopping</a>
+
+</aside>
+
+</div>
+
+</div>
+
+</section>
+
+<footer class="footer">
+
+<div class="copyright">
+© 2026 Pehrawa Menswear. All Rights Reserved.
+</div>
+
+</footer>
+
+<script src="../js/cart.js"></script>
+
+</body>
+</html>

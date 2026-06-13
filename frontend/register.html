@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Create Account | Pehrawa</title>
+<link rel="stylesheet" href="../css/login.css">
+<link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+
+<header class="header" style="position: absolute;">
+<div class="container">
+<a href="home.html" class="logo">
+<img src="../images/logo.png" alt="Pehrawa Logo">
+</a>
+</div>
+</header>
+
+<div>
+<div class="logo-bg"></div>
+<div class="login-container">
+  <div class="login-box">
+    <h2>Create Account</h2>
+    <p>Save your Pehrawa orders and checkout faster</p>
+
+    <form id="registerForm">
+      <input type="text" id="name" placeholder="Full Name" autocomplete="name" required>
+      <input type="email" id="email" placeholder="Email" autocomplete="email" required>
+      <input type="tel" id="phone" placeholder="Phone Number" autocomplete="tel">
+      <input type="password" id="password" placeholder="Password" autocomplete="new-password" required>
+
+      <button type="submit">Create Account</button>
+      <p id="msg"></p>
+      <p class="auth-switch">Already have an account? <a href="login.html">Login</a></p>
+    </form>
+  </div>
+</div>
+</div>
+
+<script src="../js/config.js"></script>
+<script>
+const registerForm = document.getElementById("registerForm");
+const msg = document.getElementById("msg");
+
+registerForm.addEventListener("submit", async (event) => {
+  event.preventDefault();
+  msg.innerText = "";
+
+  const apiBase = window.PEHRAWA_API_BASE || "http://localhost:5000";
+  const payload = {
+    name: document.getElementById("name").value.trim(),
+    email: document.getElementById("email").value.trim(),
+    phone: document.getElementById("phone").value.trim(),
+    password: document.getElementById("password").value
+  };
+
+  try {
+    const res = await fetch(`${apiBase}/api/customers/register`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload)
+    });
+
+    const data = await res.json();
+
+    if (!data.success) {
+      msg.innerText = data.message || "Account could not be created";
+      return;
+    }
+
+    localStorage.setItem("customerToken", data.token);
+    localStorage.setItem("customerId", data.customer.id);
+    localStorage.setItem("customerName", data.customer.name || "");
+    localStorage.setItem("customerEmail", data.customer.email || "");
+    localStorage.setItem("customerPhone", data.customer.phone || "");
+    window.location.href = "home.html";
+  } catch (error) {
+    msg.innerText = "Start backend server before creating account.";
+  }
+});
+</script>
+
+</body>
+</html>
