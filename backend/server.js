@@ -28,6 +28,7 @@ app.use(cors({ origin: allowedOrigins, credentials: true }));
 app.use(express.json());
 
 app.use(express.static(path.join(__dirname, "..", "frontend")));
+app.use(express.static(path.join(__dirname, "..")));
 
 app.get("/", (req, res) => {
   res.redirect("/home.html");
