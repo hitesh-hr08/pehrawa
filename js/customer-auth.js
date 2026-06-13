@@ -251,10 +251,7 @@
           '</div>' +
         '</div>';
     } else {
-      container.innerHTML =
-        '<a href="#" class="profile-login-btn" id="profileLoginBtn">' +
-          '<i class="fa-regular fa-user"></i>' +
-        '</a>';
+      container.innerHTML = "";
     }
 
     bindProfileEvents();
@@ -297,11 +294,14 @@
   window.initProfileIcon = function () {
     if (document.getElementById("pehrawaProfileContainer")) return;
     var navIcons = document.querySelector(".nav-icons");
-    if (!navIcons) return;
+    if (!navIcons) {
+      setTimeout(window.initProfileIcon, 300);
+      return;
+    }
     var container = document.createElement("div");
     container.id = "pehrawaProfileContainer";
     container.className = "profile-container";
-    navIcons.insertBefore(container, navIcons.querySelector(".menu-btn") || null);
+    navIcons.appendChild(container);
     window.updateProfileIcon();
   };
 
@@ -310,6 +310,12 @@
   } else {
     initProfileIcon();
   }
+
+  window.addEventListener("load", function () {
+    if (!document.getElementById("pehrawaProfileContainer")) {
+      initProfileIcon();
+    }
+  });
 
 // ==============================
 // STYLES
@@ -344,13 +350,11 @@
     ".auth-submit:disabled { opacity:0.6;cursor:not-allowed; }" +
     ".auth-error { color:#e74c3c;font-size:13px;margin:8px 0 0;text-align:center; }" +
     // Profile icon styles
-    ".profile-container { position:relative; display:inline-flex; align-items:center; }" +
-    ".profile-login-btn { color:#fff;font-size:20px;display:flex;align-items:center;padding:0 8px; }" +
-    ".profile-login-btn:hover { color:#f97316; }" +
-    ".profile-icon-wrapper { position:relative; }" +
-    ".profile-icon { cursor:pointer;padding:2px;display:flex;align-items:center; }" +
-    ".profile-avatar { width:32px;height:32px;border-radius:50%;background:#f97316;color:#fff;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700; }" +
-    ".profile-dropdown { position:absolute;top:100%;right:0;margin-top:8px;background:#fff;border-radius:12px;box-shadow:0 10px 40px rgba(0,0,0,0.15);min-width:220px;opacity:0;pointer-events:none;transform:translateY(-8px);transition:all 0.2s;z-index:9999; }" +
+    ".profile-container { position:relative; display:inline-flex; align-items:center; margin-left:4px; }" +
+    ".profile-icon-wrapper { position:relative; display:flex; }" +
+    ".profile-icon { cursor:pointer;display:flex;align-items:center;justify-content:center;width:36px;height:36px; }" +
+    ".profile-avatar { width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,#f97316,#ea580c);color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;letter-spacing:0.5px;box-shadow:0 2px 8px rgba(249,115,22,0.3); }" +
+    ".profile-dropdown { position:absolute;top:100%;right:-8px;margin-top:10px;background:#fff;border-radius:12px;box-shadow:0 10px 40px rgba(0,0,0,0.15);min-width:230px;opacity:0;pointer-events:none;transform:translateY(-8px);transition:all 0.2s;z-index:9999;overflow:hidden; }" +
     ".profile-dropdown.open { opacity:1;pointer-events:all;transform:translateY(0); }" +
     ".dropdown-header { padding:14px 16px 10px;border-bottom:1px solid #f0f0f0; }" +
     ".dropdown-name { display:block;font-size:14px;font-weight:600;color:#222; }" +
