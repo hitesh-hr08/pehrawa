@@ -19,13 +19,16 @@ if (savedCustomerPhone && document.getElementById("customerPhone")) {
 }
 
 function normalizeCart() {
-  cart = cart.map((item) => ({
-    ...item,
-    price: Number(item.price) || 0,
-    quantity: Number(item.quantity) || 1,
-    size: item.size || "M",
-    image: item.image || "../images/product1.png",
-  }));
+  cart = cart.map(function (item) {
+    return {
+      ...item,
+      id: item.id || null,
+      price: Number(item.price) || 0,
+      quantity: Number(item.quantity) || 1,
+      size: item.size || "M",
+      image: item.image || "../images/product1.png"
+    };
+  });
 }
 
 function saveCart() {
@@ -36,54 +39,46 @@ function renderCart() {
   normalizeCart();
 
   if (cart.length === 0) {
-    cartContainer.innerHTML = `
-      <div class="empty-cart">
-        <i class="fa-solid fa-cart-shopping"></i>
-        <h3>Your cart is empty</h3>
-        <p>Add Pehrawa products from the shop to place your order.</p>
-        <a href="shop.html">Shop Collection</a>
-      </div>
-    `;
-
+    cartContainer.innerHTML =
+      '<div class="empty-cart">' +
+        '<i class="fa-solid fa-cart-shopping"></i>' +
+        '<h3>Your cart is empty</h3>' +
+        '<p>Add Pehrawa products from the shop to place your order.</p>' +
+        '<a href="shop.html">Shop Collection</a>' +
+      '</div>';
     updateSummary(0, 0);
     return;
   }
 
-  let total = 0;
-  let itemCount = 0;
+  var total = 0;
+  var itemCount = 0;
 
-  cartContainer.innerHTML = cart.map((product, index) => {
-    const itemTotal = product.price * product.quantity;
+  cartContainer.innerHTML = cart.map(function (product, index) {
+    var itemTotal = product.price * product.quantity;
     total += itemTotal;
     itemCount += product.quantity;
 
-    return `
-      <div class="cart-item">
-        <img src="${product.image}" alt="${product.name}">
-
-        <div class="cart-item-info">
-          <span class="cart-sku">PEHRAWA ITEM</span>
-          <h3>${product.name}</h3>
-          <p>Size: ${product.size}</p>
-          <strong>Rs. ${product.price.toFixed(2)}</strong>
-        </div>
-
-        <div class="quantity-control">
-          <button onclick="updateQuantity(${index}, -1)">-</button>
-          <span>${product.quantity}</span>
-          <button onclick="updateQuantity(${index}, 1)">+</button>
-        </div>
-
-        <div class="item-total">
-          <span>Subtotal</span>
-          <strong>Rs. ${itemTotal.toFixed(2)}</strong>
-        </div>
-
-        <button class="remove-btn" onclick="removeItem(${index})">
-          <i class="fa-solid fa-trash"></i>
-        </button>
-      </div>
-    `;
+    return '<div class="cart-item">' +
+        '<img src="' + product.image + '" alt="' + product.name + '">' +
+        '<div class="cart-item-info">' +
+          '<span class="cart-sku">PEHRAWA ITEM</span>' +
+          '<h3>' + product.name + '</h3>' +
+          '<p>Size: ' + product.size + '</p>' +
+          '<strong>Rs. ' + product.price.toFixed(2) + '</strong>' +
+        '</div>' +
+        '<div class="quantity-control">' +
+          '<button onclick="updateQuantity(' + index + ', -1)">-</button>' +
+          '<span>' + product.quantity + '</span>' +
+          '<button onclick="updateQuantity(' + index + ', 1)">+</button>' +
+        '</div>' +
+        '<div class="item-total">' +
+          '<span>Subtotal</span>' +
+          '<strong>Rs. ' + itemTotal.toFixed(2) + '</strong>' +
+        '</div>' +
+        '<button class="remove-btn" onclick="removeItem(' + index + ')">' +
+          '<i class="fa-solid fa-trash"></i>' +
+        '</button>' +
+      '</div>';
   }).join("");
 
   updateSummary(itemCount, total);
@@ -98,9 +93,8 @@ function updateSummary(itemCount, total) {
 }
 
 function updateHeaderCartCount(count) {
-  const cartIcon = document.querySelector(".fa-cart-shopping");
-  const badge = cartIcon && cartIcon.parentElement.querySelector("span");
-
+  var cartIcon = document.querySelector(".fa-cart-shopping");
+  var badge = cartIcon && cartIcon.parentElement.querySelector("span");
   if (badge) {
     badge.innerText = count;
   }
@@ -120,51 +114,54 @@ function removeItem(index) {
 function clearCart() {
   if (cart.length === 0) return;
   if (!confirm("Clear all items from cart?")) return;
-
   cart = [];
   saveCart();
   renderCart();
 }
 
-function buildOrderText() {
-  let orderText = "PEHRAWA ORDER\n\n";
-  let total = 0;
-
-  cart.forEach((item, index) => {
-    const itemTotal = Number(item.price) * Number(item.quantity || 1);
-    total += itemTotal;
-
-    orderText += `${index + 1}. ${item.name}\n`;
-    orderText += `Size: ${item.size || "M"}\n`;
-    orderText += `Qty: ${item.quantity || 1}\n`;
-    orderText += `Price: Rs. ${Number(item.price).toFixed(2)}\n`;
-    orderText += `Subtotal: Rs. ${itemTotal.toFixed(2)}\n\n`;
-  });
-
-  orderText += `Total: Rs. ${total.toFixed(2)}\n\n`;
-  return { orderText, total };
-}
-
-async function checkoutOnWhatsapp() {
+async function checkoutWithPayment() {
   if (cart.length === 0) {
     alert("Cart is empty");
     return;
   }
 
-  const customerName = document.getElementById("customerName").value.trim();
-  const customerPhone = document.getElementById("customerPhone").value.trim();
-  const customerAddress = document.getElementById("customerAddress").value.trim();
+  var customerName = document.getElementById("customerName").value.trim();
+  var customerPhone = document.getElementById("customerPhone").value.trim();
+  var customerAddress = document.getElementById("customerAddress").value.trim();
 
   if (!customerName || !customerPhone || !customerAddress) {
     alert("Please enter your name, phone number, and delivery address.");
     return;
   }
 
-  const { total } = buildOrderText();
+  var total = cart.reduce(function (sum, item) {
+    return sum + (Number(item.price) * Number(item.quantity || 1));
+  }, 0);
+
+  checkoutBtn.disabled = true;
+  checkoutBtn.textContent = "Processing...";
+
+  var apiBase = window.PEHRAWA_API_BASE || "http://localhost:5000";
 
   try {
-    const apiBase = window.PEHRAWA_API_BASE || "http://localhost:5000";
-    const res = await fetch(`${apiBase}/api/public/orders`, {
+    var rzpRes = await fetch(apiBase + "/api/public/razorpay-order", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ amount: total, currency: "INR" })
+    });
+
+    var rzpData = await rzpRes.json();
+
+    if (rzpData.success && rzpData.order && rzpData.key !== "rzp_test_xxxxxxxxxxxx") {
+      var paymentDone = await openRazorpay(rzpData, customerName, customerPhone, customerAddress);
+      if (!paymentDone) {
+        checkoutBtn.disabled = false;
+        checkoutBtn.innerHTML = '<i class="fa-solid fa-bag-shopping"></i> BUY NOW';
+        return;
+      }
+    }
+
+    var res = await fetch(apiBase + "/api/public/orders", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -173,14 +170,24 @@ async function checkoutOnWhatsapp() {
         phone: customerPhone,
         address: customerAddress + ", Pincode: " + (document.getElementById("customerPincode")?.value || ""),
         total_amount: total,
-        items: cart
+        items: cart.map(function (item) {
+          return {
+            id: item.id,
+            name: item.name,
+            price: item.price,
+            quantity: item.quantity,
+            size: item.size
+          };
+        })
       })
     });
 
-    const data = await res.json();
+    var data = await res.json();
 
     if (!data.success) {
       showToast(data.message || "Order could not be saved.");
+      checkoutBtn.disabled = false;
+      checkoutBtn.innerHTML = '<i class="fa-solid fa-bag-shopping"></i> BUY NOW';
       return;
     }
 
@@ -191,9 +198,43 @@ async function checkoutOnWhatsapp() {
   } catch (err) {
     showToast("Error placing order. Try again.");
   }
+
+  checkoutBtn.disabled = false;
+  checkoutBtn.innerHTML = '<i class="fa-solid fa-bag-shopping"></i> BUY NOW';
 }
 
-checkoutBtn.addEventListener("click", checkoutOnWhatsapp);
+function openRazorpay(rzpData, name, phone, address) {
+  return new Promise(function (resolve) {
+    var options = {
+      key: rzpData.key,
+      amount: rzpData.order.amount,
+      currency: rzpData.order.currency || "INR",
+      name: "Pehrawa Menswear",
+      description: "Premium Menswear Order",
+      image: "../images/logo.png",
+      order_id: rzpData.order.id,
+      prefill: {
+        name: name,
+        contact: phone,
+        email: localStorage.getItem("customerEmail") || ""
+      },
+      theme: { color: "#f97316" },
+      handler: function () {
+        resolve(true);
+      },
+      modal: {
+        ondismiss: function () {
+          resolve(false);
+        }
+      }
+    };
+
+    var rzp = new Razorpay(options);
+    rzp.open();
+  });
+}
+
+checkoutBtn.addEventListener("click", checkoutWithPayment);
 clearCartBtn.addEventListener("click", clearCart);
 
 renderCart();

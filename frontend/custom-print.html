@@ -120,6 +120,13 @@ custom printed t-shirts delivered to your door.
 
 <input type="number" id="quantity" placeholder="Quantity" min="1" required>
 
+<label style="color:#aaa;font-size:14px;display:flex;align-items:center;gap:10px;cursor:pointer;padding:10px 14px;background:#000;border:1px solid #333;border-radius:6px;">
+  <i class="fa-solid fa-image" style="color:#ff7a00;font-size:18px;"></i>
+  <span>Upload Design Image (optional)</span>
+  <input type="file" id="designImage" accept="image/*" style="display:none;">
+</label>
+<span id="fileName" style="color:#888;font-size:13px;display:none;"></span>
+
 <textarea
 id="requirements"
 rows="5"
@@ -207,11 +214,46 @@ CHAT ON WHATSAPP
 <script>
 var API = (window.PEHRAWA_API_BASE || "http://localhost:5000") + "/api/public/requests";
 
+var uploadBtn = document.getElementById("designImage");
+var fileNameSpan = document.getElementById("fileName");
+
+uploadBtn.addEventListener("change", function() {
+  if (this.files && this.files[0]) {
+    fileNameSpan.style.display = "block";
+    fileNameSpan.innerHTML = '<i class="fa-solid fa-check-circle" style="color:#10b981;"></i> ' + this.files[0].name;
+  }
+});
+
 document.getElementById("customPrintForm").addEventListener("submit", async function(e) {
   e.preventDefault();
+  var btn = this.querySelector(".custom-submit-btn");
+  btn.disabled = true;
+  btn.textContent = "Submitting...";
+
+  var imageUrl = "";
+  var fileInput = document.getElementById("designImage");
+
+  if (fileInput.files && fileInput.files[0]) {
+    var formData = new FormData();
+    formData.append("image", fileInput.files[0]);
+    try {
+      var uploadRes = await fetch((window.PEHRAWA_API_BASE || "http://localhost:5000") + "/api/upload", {
+        method: "POST",
+        body: formData
+      });
+      var uploadData = await uploadRes.json();
+      if (uploadData.success) {
+        imageUrl = uploadData.url;
+      }
+    } catch (err) {
+      // Image upload failed, continue without image
+    }
+  }
+
   var data = {
     customer_name: document.getElementById("name").value,
     phone: document.getElementById("phone").value,
+    image_url: imageUrl,
     note: "Size: " + document.getElementById("size").value + ", Qty: " + document.getElementById("quantity").value + ", Requirements: " + document.getElementById("requirements").value
   };
 
@@ -225,13 +267,15 @@ document.getElementById("customPrintForm").addEventListener("submit", async func
     if (result.success) {
       alert("Request submitted successfully! We will contact you soon.");
       this.reset();
+      fileNameSpan.style.display = "none";
     } else {
       alert(result.message || "Request failed");
     }
   } catch (err) {
-    console.error(err);
     alert("Server Connection Error");
   }
+  btn.disabled = false;
+  btn.textContent = "Submit Request";
 });
 </script>
 

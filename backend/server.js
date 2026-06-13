@@ -1,6 +1,7 @@
 const path = require("path");
 const express = require("express");
 const cors = require("cors");
+const multer = require("multer");
 require("dotenv").config();
 
 process.on("unhandledRejection", (reason) => {
@@ -22,13 +23,37 @@ const verifyAdmin = require("./middleware/auth");
 
 const app = express();
 
-const allowedOrigins = (process.env.CORS_ORIGIN || "http://localhost:5173,http://localhost:5500,http://localhost:3000").split(",");
+const allowedOrigins = (process.env.CORS_ORIGIN || "http://localhost:5173,http://localhost:5500,http://localhost:3000,http://localhost:5000").split(",");
 app.use(cors({ origin: allowedOrigins, credentials: true }));
 
 app.use(express.json());
 
 app.use(express.static(path.join(__dirname, "..", "frontend")));
 app.use(express.static(path.join(__dirname, "..")));
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    const dir = path.join(__dirname, "uploads");
+    cb(null, dir);
+  },
+  filename: function (req, file, cb) {
+    const unique = Date.now() + "-" + Math.round(Math.random() * 1e9);
+    const ext = path.extname(file.originalname) || ".png";
+    cb(null, unique + ext);
+  }
+});
+const upload = multer({
+  storage: storage,
+  limits: { fileSize: 5 * 1024 * 1024 },
+  fileFilter: function (req, file, cb) {
+    const allowed = /jpeg|jpg|png|gif|webp|svg/;
+    const extOk = allowed.test(path.extname(file.originalname).toLowerCase());
+    const mimeOk = allowed.test(file.mimetype.split("/")[1]);
+    if (extOk || mimeOk) return cb(null, true);
+    cb(new Error("Only image files (jpg, png, gif, webp, svg) are allowed"));
+  }
+});
 
 app.get("/", (req, res) => {
   res.redirect("/home.html");
@@ -40,6 +65,32 @@ app.use("/api/orders", verifyAdmin, orderRoutes);
 app.use("/api/requests", verifyAdmin, requestRoutes);
 app.use("/api/customers", customerRoutes);
 app.use("/api/user", customerRoutes);
+
+app.post("/api/upload", (req, res) => {
+  upload.single("image")(req, res, function (err) {
+    if (err) {
+      return res.status(400).json({ success: false, message: err.message });
+    }
+    if (!req.file) {
+      return res.status(400).json({ success: false, message: "No file uploaded" });
+    }
+    const url = "/uploads/" + req.file.filename;
+    res.json({ success: true, url: url, filename: req.file.filename });
+  });
+});
+
+app.post("/api/admin/upload", verifyAdmin, (req, res) => {
+  upload.single("image")(req, res, function (err) {
+    if (err) {
+      return res.status(400).json({ success: false, message: err.message });
+    }
+    if (!req.file) {
+      return res.status(400).json({ success: false, message: "No file uploaded" });
+    }
+    const url = "/uploads/" + req.file.filename;
+    res.json({ success: true, url: url, filename: req.file.filename });
+  });
+});
 
 app.get("/api/customers/all", verifyAdmin, async (req, res) => {
   try {
@@ -92,7 +143,18 @@ app.put("/api/settings", verifyAdmin, async (req, res) => {
 
 app.get("/api/public/products", async (req, res) => {
   try {
-    const result = await pool.query("SELECT * FROM products ORDER BY id DESC");
+    const search = req.query.search || "";
+    let query = "SELECT * FROM products";
+    let params = [];
+
+    if (search.trim()) {
+      query += " WHERE LOWER(name) LIKE LOWER($1) OR LOWER(description) LIKE LOWER($1) OR LOWER(category) LIKE LOWER($1)";
+      params.push("%" + search.trim() + "%");
+    }
+
+    query += " ORDER BY id DESC";
+
+    const result = await pool.query(query, params);
     res.json({ success: true, products: result.rows });
   } catch (err) {
     res.status(500).json({ success: false, message: "Failed to load products" });
@@ -102,14 +164,21 @@ app.get("/api/public/products", async (req, res) => {
 app.get("/api/public/products/:id", async (req, res) => {
   try {
     const result = await pool.query("SELECT * FROM products WHERE id = $1", [req.params.id]);
-
     if (result.rows.length === 0) {
       return res.status(404).json({ success: false, message: "Product not found" });
     }
-
     res.json({ success: true, product: result.rows[0] });
   } catch (err) {
     res.status(500).json({ success: false, message: "Failed to load product" });
+  }
+});
+
+app.get("/api/public/settings", async (req, res) => {
+  try {
+    const result = await pool.query("SELECT store_name, store_tagline, currency, delivery_charge FROM store_settings LIMIT 1");
+    res.json({ success: true, settings: result.rows[0] || { store_name: "Pehrawa", store_tagline: "Premium Menswear", currency: "INR", delivery_charge: 0 } });
+  } catch (err) {
+    res.json({ success: true, settings: { store_name: "Pehrawa", store_tagline: "Premium Menswear", currency: "INR", delivery_charge: 0 } });
   }
 });
 
@@ -124,10 +193,26 @@ app.post("/api/public/orders", async (req, res) => {
       });
     }
 
+    for (const item of items) {
+      if (item.id) {
+        const stockResult = await pool.query("SELECT stock FROM products WHERE id = $1", [item.id]);
+        if (stockResult.rows.length > 0) {
+          const currentStock = stockResult.rows[0].stock;
+          const qty = Number(item.quantity) || 1;
+          if (currentStock < qty) {
+            return res.status(400).json({
+              success: false,
+              message: "Insufficient stock for " + item.name + ". Available: " + currentStock
+            });
+          }
+        }
+      }
+    }
+
     const itemSummary = items.map((item) => {
       const qty = Number(item.quantity) || 1;
       const price = Number(item.price) || 0;
-      return `${item.name} | Size: ${item.size || "M"} | Qty: ${qty} | Rs. ${(price * qty).toFixed(2)}`;
+      return item.name + " | Size: " + (item.size || "M") + " | Qty: " + qty + " | Rs. " + (price * qty).toFixed(2);
     }).join("\n");
 
     let customerId = customer_id || null;
@@ -159,6 +244,15 @@ app.post("/api/public/orders", async (req, res) => {
        RETURNING *`,
       [customerId, customer_name, phone, address, total_amount, "Pending", itemSummary]
     );
+
+    for (const item of items) {
+      if (item.id) {
+        await pool.query(
+          "UPDATE products SET stock = GREATEST(stock - $1, 0) WHERE id = $2",
+          [Number(item.quantity) || 1, item.id]
+        );
+      }
+    }
 
     res.status(201).json({ success: true, order: result.rows[0] });
   } catch (err) {
@@ -213,6 +307,33 @@ app.post("/api/public/requests", async (req, res) => {
   }
 });
 
+app.post("/api/public/razorpay-order", async (req, res) => {
+  try {
+    const Razorpay = require("razorpay");
+    const { amount, currency } = req.body;
+
+    if (!process.env.RAZORPAY_KEY_ID || !process.env.RAZORPAY_KEY_SECRET) {
+      return res.status(400).json({ success: false, message: "Razorpay not configured" });
+    }
+
+    const razorpay = new Razorpay({
+      key_id: process.env.RAZORPAY_KEY_ID,
+      key_secret: process.env.RAZORPAY_KEY_SECRET
+    });
+
+    const options = {
+      amount: Math.round(amount * 100),
+      currency: currency || "INR",
+      receipt: "rcpt_" + Date.now()
+    };
+
+    const order = await razorpay.orders.create(options);
+    res.json({ success: true, order: order, key: process.env.RAZORPAY_KEY_ID });
+  } catch (err) {
+    res.status(500).json({ success: false, message: "Payment initialization failed" });
+  }
+});
+
 app.get("/api/health", async (req, res) => {
   try {
     await pool.query("SELECT 1");
@@ -231,8 +352,9 @@ app.use((err, req, res, next) => {
   res.status(500).json({ success: false, message: "Internal server error" });
 });
 
-const PORT = process.env.PORT || 5000;
+var PORT = process.env.PORT || 5000;
+var HOST = process.env.HOST || "0.0.0.0";
 
-app.listen(PORT, () => {
-  console.log(`🚀 Server running on port ${PORT}`);
+app.listen(PORT, HOST, function () {
+  console.log("Pehrawa server running on " + HOST + ":" + PORT);
 });

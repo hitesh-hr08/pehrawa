@@ -3,3 +3,4 @@ node_modules/
 backend/.env
 pehrawa.db
 *.log
+backend/uploads/

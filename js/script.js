@@ -54,67 +54,32 @@ document.querySelectorAll('a[href^="#"]').forEach(link => {
 });
 
 // ===============================
-// PRODUCT DATA
-// ===============================
-
-const products = [
-  {
-    id: 1,
-    name: "Fearless Oversized Tee",
-    price: 799
-  },
-  {
-    id: 2,
-    name: "Shadow Anime Tee",
-    price: 749
-  },
-  {
-    id: 3,
-    name: "Abstract Vision Tee",
-    price: 749
-  },
-  {
-    id: 4,
-    name: "Minimal Logo Tee",
-    price: 699
-  }
-];
-
-// ===============================
 // CART SYSTEM
 // ===============================
 
 let cart = JSON.parse(localStorage.getItem("cart")) || [];
 
 function updateCartCount() {
-
-  const cartBadge = document.querySelector(
-    ".fa-cart-shopping + span"
-  );
-
+  const cartBadge = document.querySelector(".fa-cart-shopping + span");
   if (cartBadge) {
     cartBadge.innerText = cart.length;
   }
 }
 
 function addToCart(productId) {
-
-  const product = products.find(
-    item => item.id === productId
-  );
-
+  var product = findProductInDOM(productId);
   if (!product) return;
 
-  cart.push(product);
+  cart.push({
+    id: productId,
+    name: product.name,
+    price: product.price,
+    image: product.image || "../images/product1.png"
+  });
 
-  localStorage.setItem(
-    "cart",
-    JSON.stringify(cart)
-  );
-
+  localStorage.setItem("cart", JSON.stringify(cart));
   updateCartCount();
-
-  showToast(`${product.name} added to cart`);
+  showToast(product.name + " added to cart");
 }
 
 updateCartCount();
@@ -123,41 +88,52 @@ updateCartCount();
 // WISHLIST SYSTEM
 // ===============================
 
-let wishlist =
-  JSON.parse(localStorage.getItem("wishlist")) || [];
+let wishlist = JSON.parse(localStorage.getItem("wishlist")) || [];
 
 function updateWishlistCount() {
-
-  const wishBadge = document.querySelector(
-    ".fa-heart + span"
-  );
-
+  const wishBadge = document.querySelector(".fa-heart + span");
   if (wishBadge) {
     wishBadge.innerText = wishlist.length;
   }
 }
 
 function addToWishlist(productId) {
-
-  const product = products.find(
-    item => item.id === productId
-  );
-
+  var product = findProductInDOM(productId);
   if (!product) return;
 
-  wishlist.push(product);
+  wishlist.push({
+    id: productId,
+    name: product.name,
+    price: product.price,
+    image: product.image || "../images/product1.png"
+  });
 
-  localStorage.setItem(
-    "wishlist",
-    JSON.stringify(wishlist)
-  );
-
+  localStorage.setItem("wishlist", JSON.stringify(wishlist));
   updateWishlistCount();
-
-  showToast(`${product.name} added to wishlist`);
+  showToast(product.name + " added to wishlist");
 }
 
 updateWishlistCount();
+
+function findProductInDOM(productId) {
+  var cards = document.querySelectorAll(".product-card");
+  for (var i = 0; i < cards.length; i++) {
+    var card = cards[i];
+    var h3 = card.querySelector("h3");
+    var priceEl = card.querySelector(".price");
+    var img = card.querySelector(".product-image img");
+    if (h3 && priceEl) {
+      var name = h3.innerText || h3.textContent;
+      var priceText = (priceEl.innerText || priceEl.textContent).replace(/[^0-9.]/g, "");
+      return {
+        name: name.trim(),
+        price: parseFloat(priceText) || 0,
+        image: img ? img.src : "../images/product1.png"
+      };
+    }
+  }
+  return null;
+}
 
 // ===============================
 // WHATSAPP ORDER BUTTONS
@@ -360,28 +336,34 @@ console.log(
 // CHECKOUT MODAL
 // ===============================
 
-const checkoutOverlay = document.getElementById("checkoutOverlay");
-const checkoutClose = document.getElementById("checkoutClose");
-const checkoutForm = document.getElementById("checkoutForm");
+var checkoutOverlay = document.getElementById("checkoutOverlay");
+var checkoutClose = document.getElementById("checkoutClose");
+var checkoutForm = document.getElementById("checkoutForm");
 
 function openCheckout(productId, productName, price, image) {
-  if (!checkoutOverlay) return;
-  document.getElementById("checkoutProductId").value = productId;
-  document.getElementById("checkoutPrice").value = price;
-  document.getElementById("checkoutProduct").innerHTML =
-    '<img src="' + image + '" style="width:50px;height:50px;object-fit:cover;border-radius:6px;vertical-align:middle;margin-right:10px;">' +
-    '<span>' + productName + ' - ₹' + Number(price).toFixed(2) + '</span>';
-  checkoutOverlay.classList.add("active");
+  var overlay = document.getElementById("checkoutOverlay");
+  if (!overlay) return;
+  var pid = document.getElementById("checkoutProductId");
+  var pprice = document.getElementById("checkoutPrice");
+  var pname = document.getElementById("checkoutProduct");
+  if (pid) pid.value = productId;
+  if (pprice) pprice.value = price;
+  if (pname) {
+    pname.innerHTML = image
+      ? '<img src="' + image + '" style="width:50px;height:50px;object-fit:cover;border-radius:6px;vertical-align:middle;margin-right:10px;"><span>' + productName + ' - ₹' + Number(price).toFixed(2) + '</span>'
+      : '<span>' + productName + ' - ₹' + Number(price).toFixed(2) + '</span>';
+  }
+  overlay.classList.add("active");
 }
 
-if (checkoutClose) {
-  checkoutClose.addEventListener("click", () => {
+if (checkoutClose && checkoutOverlay) {
+  checkoutClose.addEventListener("click", function () {
     checkoutOverlay.classList.remove("active");
   });
 }
 
 if (checkoutOverlay) {
-  checkoutOverlay.addEventListener("click", (e) => {
+  checkoutOverlay.addEventListener("click", function (e) {
     if (e.target === checkoutOverlay) {
       checkoutOverlay.classList.remove("active");
     }
@@ -439,16 +421,30 @@ if (checkoutForm) {
 // BUY NOW BUTTONS (dynamic)
 // ===============================
 
-document.addEventListener("click", (e) => {
-  const buyBtn = e.target.closest(".buy-now-btn");
+document.addEventListener("click", function (e) {
+  var buyBtn = e.target.closest(".buy-now-btn");
   if (!buyBtn) return;
   e.preventDefault();
-  const card = buyBtn.closest(".product-card");
+  var card = buyBtn.closest(".product-card");
   if (!card) return;
-  const name = card.querySelector("h3") ? card.querySelector("h3").innerText : "Product";
-  const priceText = card.querySelector(".price") ? card.querySelector(".price").innerText.replace("₹", "").trim() : "0";
-  const img = card.querySelector(".product-image img") ? card.querySelector(".product-image img").src : "../images/product1.png";
-  openCheckout(0, name, priceText, img);
+
+  // Use data attributes if available (dynamic products)
+  var id = buyBtn.getAttribute("data-id");
+  var name = buyBtn.getAttribute("data-name");
+  var price = buyBtn.getAttribute("data-price");
+  var img = buyBtn.getAttribute("data-image");
+
+  if (!name) {
+    name = card.querySelector("h3") ? card.querySelector("h3").innerText : "Product";
+  }
+  if (!price) {
+    var priceText = card.querySelector(".price") ? card.querySelector(".price").innerText.replace(/[^0-9.]/g, "") : "0";
+    price = parseFloat(priceText) || 0;
+  }
+  if (!img) {
+    img = card.querySelector(".product-image img") ? card.querySelector(".product-image img").src : "../images/product1.png";
+  }
+  openCheckout(id || 0, name, price, img);
 });
 /* WhatsApp code temporary disable 
  ==========================
