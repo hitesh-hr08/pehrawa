@@ -165,7 +165,7 @@ async function checkoutWithPayment() {
         customer_name: customerName,
         customer_id: savedCustomerId,
         phone: customerPhone,
-        address: customerAddress + ", Pincode: " + (document.getElementById("customerPincode")?.value || ""),
+        address: customerAddress + ", " + (document.getElementById("customerCity")?.value || "") + ", " + (document.getElementById("customerState")?.value || "") + ", Pincode: " + (document.getElementById("customerPincode")?.value || ""),
         total_amount: total,
         items: cart.map(function (item) {
           return {

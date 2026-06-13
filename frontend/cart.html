@@ -119,7 +119,13 @@ Review your selected products before placing your order.
 <textarea id="customerAddress" rows="4" placeholder="House no, street, city, state"></textarea>
 
 <label for="customerPincode">Pincode</label>
-<input type="text" id="customerPincode" placeholder="6 digit pincode">
+<input type="text" id="customerPincode" placeholder="6 digit pincode" oninput="window.fetchPincode && window.fetchPincode(this.value, 'customer')">
+
+<label for="customerCity">City</label>
+<input type="text" id="customerCity" placeholder="Auto-fetched from pincode" readonly>
+
+<label for="customerState">State</label>
+<input type="text" id="customerState" placeholder="Auto-fetched from pincode" readonly>
 </div>
 
 <div class="summary-row">
