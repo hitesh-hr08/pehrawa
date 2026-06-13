@@ -381,11 +381,14 @@ if (checkoutForm) {
     const productNameEl = document.querySelector("#checkoutProduct span");
     const price = document.getElementById("checkoutPrice").value;
 
-    const payload = {
+    var savedCustomerId = localStorage.getItem("customerId");
+    var cust = window.getCustomer ? window.getCustomer() : null;
+    var payload = {
       customer_name: document.getElementById("checkoutName").value,
       phone: document.getElementById("checkoutPhone").value,
       address: document.getElementById("checkoutAddress").value + ", Pincode: " + document.getElementById("checkoutPincode").value,
       total_amount: Number(price),
+      customer_id: savedCustomerId || (cust ? cust.id : null),
       items: [{
         name: productNameEl ? productNameEl.textContent.split(" - ")[0] : "Product",
         size: document.getElementById("checkoutSize").value,
@@ -403,7 +406,7 @@ if (checkoutForm) {
       });
       const data = await res.json();
       if (data.success) {
-        showToast("Order placed! We'll contact you soon.");
+        showToast("Order #" + data.order.id + " placed! Track it in My Orders.");
         checkoutOverlay.classList.remove("active");
         checkoutForm.reset();
       } else {

@@ -133,6 +133,8 @@ async function checkoutWithPayment() {
     return sum + (Number(item.price) * Number(item.quantity || 1));
   }, 0);
 
+  var savedCustomerId = localStorage.getItem("customerId");
+
   checkoutBtn.disabled = true;
   checkoutBtn.textContent = "Processing...";
 
@@ -189,7 +191,7 @@ async function checkoutWithPayment() {
     cart = [];
     saveCart();
     renderCart();
-    showToast("Order placed! We'll contact you soon.");
+    showToast("Order #" + data.order.id + " placed! Track it in My Orders.");
   } catch (err) {
     showToast("Error placing order. Try again.");
   }

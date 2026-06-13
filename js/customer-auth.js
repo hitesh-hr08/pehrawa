@@ -42,12 +42,14 @@
   window.logoutCustomer = function () {
     localStorage.removeItem(TOKEN_KEY);
     localStorage.removeItem(CUSTOMER_KEY);
+    localStorage.removeItem("customerId");
     updateProfileIcon();
   };
 
   function saveAuth(token, customer) {
     localStorage.setItem(TOKEN_KEY, token);
     localStorage.setItem(CUSTOMER_KEY, JSON.stringify(customer));
+    localStorage.setItem("customerId", customer.id);
     updateProfileIcon();
   }
 
