@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head><meta charset="UTF-8"><title>Signing in...</title></head>
+<body style="display:flex;align-items:center;justify-content:center;height:100vh;margin:0;font-family:sans-serif;background:#f5f5f5;">
+  <div style="text-align:center;">
+    <h2>Signing you in...</h2>
+    <p style="color:#666;">Please wait a moment.</p>
+  </div>
+  <script>
+    (function () {
+      var params = new URLSearchParams(window.location.search);
+      var token = params.get("token");
+      var customerStr = params.get("customer");
+      var redirect = params.get("redirect") || "home.html";
+      var authStatus = params.get("auth");
+
+      if (token && customerStr) {
+        try {
+          var customer = JSON.parse(decodeURIComponent(customerStr));
+          localStorage.setItem("pehrawa_customer_token", token);
+          localStorage.setItem("pehrawa_customer", JSON.stringify(customer));
+          localStorage.setItem("customerId", customer.id);
+        } catch (e) {}
+      }
+
+      var target = redirect === "redirect" || !redirect ? "home.html" : redirect;
+
+      if (window.opener) {
+        window.opener.location.reload();
+        window.close();
+      } else {
+        window.location.replace(target);
+      }
+    })();
+  </script>
+</body>
+</html>

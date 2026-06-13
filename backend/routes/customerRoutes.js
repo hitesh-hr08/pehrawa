@@ -41,7 +41,7 @@ router.post("/login", async (req, res) => {
     if (!customer.password) {
       return res.status(401).json({
         success: false,
-        message: "Please set a password by registering first."
+        message: "This account uses Google Sign-In. Please sign in with Google."
       });
     }
 

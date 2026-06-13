@@ -2,6 +2,7 @@ const path = require("path");
 const express = require("express");
 const cors = require("cors");
 const multer = require("multer");
+const passport = require("passport");
 require("dotenv").config();
 
 process.on("unhandledRejection", (reason) => {
@@ -20,6 +21,7 @@ const productRoutes = require("./routes/productRoutes");
 const orderRoutes = require("./routes/orderRoutes");
 const requestRoutes = require("./routes/requestRoutes");
 const verifyAdmin = require("./middleware/auth");
+const authRoutes = require("./routes/authRoutes");
 
 const app = express();
 
@@ -59,6 +61,8 @@ app.get("/", (req, res) => {
   res.redirect("/home.html");
 });
 
+app.use(passport.initialize());
+app.use("/api/auth", authRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/products", verifyAdmin, productRoutes);
 app.use("/api/orders", verifyAdmin, orderRoutes);
