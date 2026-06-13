@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My Orders | Pehrawa Menswear</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/track-order.css">
+<script src="../js/config.js"></script>
+</head>
+<body>
+
+<header class="header">
+<div class="container">
+<a href="home.html" class="logo"><img src="../images/logo.png" alt="Pehrawa Logo"></a>
+<nav class="navbar">
+<ul class="nav-links">
+<li><a href="home.html">HOME</a></li>
+<li><a href="shop.html">SHOP</a></li>
+<li><a href="custom-print.html">CUSTOM PRINT</a></li>
+<li><a href="track-order.html">TRACK ORDER</a></li>
+<li><a href="about.html">ABOUT US</a></li>
+<li><a href="contact.html">CONTACT US</a></li>
+</ul>
+</nav>
+<div class="nav-icons">
+<div class="search-wrapper">
+<i class="fa-solid fa-magnifying-glass search-icon"></i>
+<input type="text" class="search-input" placeholder="Search products...">
+</div>
+<a href="wishlist.html"><i class="fa-regular fa-heart"></i><span>0</span></a>
+<a href="cart.html"><i class="fa-solid fa-cart-shopping"></i><span>0</span></a>
+</div>
+<div class="menu-btn"><i class="fa-solid fa-bars"></i></div>
+</div>
+</header>
+
+<section class="cart-hero">
+<div class="container">
+<h1>MY ORDERS</h1>
+<p>View your order history and track status.</p>
+</div>
+</section>
+
+<section class="cart-section">
+<div class="container">
+<div id="myOrdersContainer">
+<div class="empty-cart">
+<i class="fa-solid fa-box"></i>
+<h3>Loading orders...</h3>
+</div>
+</div>
+</div>
+</section>
+
+<footer class="footer">
+<div class="copyright">© 2026 Pehrawa Menswear. All Rights Reserved.</div>
+</footer>
+
+<script src="../js/script.js"></script>
+<script src="../js/customer-auth.js"></script>
+<script>
+(function () {
+  var container = document.getElementById("myOrdersContainer");
+
+  if (!window.isCustomerLoggedIn()) {
+    container.innerHTML =
+      '<div class="empty-cart">' +
+        '<i class="fa-solid fa-lock"></i>' +
+        '<h3>Please login to view your orders</h3>' +
+        '<p><a href="home.html" style="color:#f97316;text-decoration:underline;">Go to Home</a></p>' +
+      '</div>';
+    return;
+  }
+
+  var customer = window.getCustomer();
+  var api = window.PEHRAWA_API_BASE || "http://localhost:5000";
+  var token = window.getCustomerToken();
+
+  fetch(api + "/api/customers/" + customer.id + "/orders", {
+    headers: { "Authorization": "Bearer " + token }
+  })
+  .then(function (r) { return r.json(); })
+  .then(function (data) {
+    if (!data.success || !data.orders || data.orders.length === 0) {
+      container.innerHTML =
+        '<div class="empty-cart">' +
+          '<i class="fa-solid fa-box"></i>' +
+          '<h3>No orders yet</h3>' +
+          '<p>Start shopping to see your orders here.</p>' +
+          '<a href="shop.html" class="buy-now-btn" style="display:inline-block;padding:10px 24px;text-decoration:none;">Shop Now</a>' +
+        '</div>';
+      return;
+    }
+
+    var html = '<div style="display:flex;flex-direction:column;gap:16px;">';
+    data.orders.forEach(function (order) {
+      var statusClass = order.status === "Delivered" ? "status-delivered" : order.status === "Shipped" ? "status-shipped" : order.status === "Cancelled" ? "status-cancelled" : "status-pending";
+      html +=
+        '<div style="background:#fff;border-radius:12px;padding:20px;box-shadow:0 2px 12px rgba(0,0,0,0.06);">' +
+          '<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:10px;">' +
+            '<div><strong style="font-size:16px;">Order #' + order.id + '</strong>' +
+            '<span style="color:#888;font-size:13px;margin-left:10px;">' + new Date(order.created_at).toLocaleDateString("en-IN", { day:"numeric", month:"short", year:"numeric" }) + '</span></div>' +
+            '<span class="' + statusClass + '" style="padding:4px 14px;border-radius:20px;font-size:12px;font-weight:600;">' + order.status + '</span>' +
+          '</div>' +
+          '<div style="color:#555;font-size:14px;margin-bottom:6px;">' + (order.items || "").split("\n").map(function (l) { return "<div>" + l + "</div>"; }).join("") + '</div>' +
+          '<div style="display:flex;justify-content:space-between;align-items:center;margin-top:10px;padding-top:10px;border-top:1px solid #f0f0f0;">' +
+            '<strong style="font-size:16px;">Total: ₹' + parseFloat(order.total_amount).toFixed(2) + '</strong>' +
+            '<a href="track-order.html?id=' + order.id + '" style="color:#f97316;font-size:13px;font-weight:600;text-decoration:none;">Track Order →</a>' +
+          '</div>' +
+        '</div>';
+    });
+    html += '</div>';
+    container.innerHTML = html;
+  })
+  .catch(function () {
+    container.innerHTML =
+      '<div class="empty-cart">' +
+        '<i class="fa-solid fa-exclamation-triangle"></i>' +
+        '<h3>Could not load orders</h3>' +
+        '<p>Please try again later.</p>' +
+      '</div>';
+  });
+})();
+</script>
+</body>
+</html>

@@ -116,4 +116,36 @@ router.post("/register", async (req, res) => {
   }
 });
 
+function verifyCustomer(req, res, next) {
+  const auth = req.headers.authorization;
+  if (!auth || !auth.startsWith("Bearer ")) {
+    return res.status(401).json({ success: false, message: "Login required" });
+  }
+  try {
+    const decoded = jwt.verify(auth.split(" ")[1], process.env.JWT_SECRET);
+    if (decoded.role !== "customer") {
+      return res.status(403).json({ success: false, message: "Customer access required" });
+    }
+    req.customer = decoded;
+    next();
+  } catch (err) {
+    return res.status(401).json({ success: false, message: "Session expired" });
+  }
+}
+
+router.get("/:id/orders", verifyCustomer, async (req, res) => {
+  try {
+    if (Number(req.params.id) !== req.customer.id) {
+      return res.status(403).json({ success: false, message: "Access denied" });
+    }
+    const result = await pool.query(
+      "SELECT id, customer_name, total_amount, status, items, created_at FROM orders WHERE customer_id = $1 ORDER BY created_at DESC",
+      [req.params.id]
+    );
+    res.json({ success: true, orders: result.rows });
+  } catch (err) {
+    res.status(500).json({ success: false, message: "Failed to load orders" });
+  }
+});
+
 module.exports = router;

@@ -25,11 +25,13 @@
   window.logoutCustomer = function () {
     localStorage.removeItem(TOKEN_KEY);
     localStorage.removeItem(CUSTOMER_KEY);
+    updateProfileIcon();
   };
 
   function saveAuth(token, customer) {
     localStorage.setItem(TOKEN_KEY, token);
     localStorage.setItem(CUSTOMER_KEY, JSON.stringify(customer));
+    updateProfileIcon();
   }
 
   function createModal() {
@@ -215,6 +217,104 @@
     document.getElementById("pehrawaAuthModal").classList.add("active");
   };
 
+// ==============================
+// PROFILE ICON / DROPDOWN
+// ==============================
+
+  function getInitials(name) {
+    if (!name) return "?";
+    return name.split(" ").map(function (w) { return w[0]; }).join("").toUpperCase().slice(0, 2);
+  }
+
+  window.updateProfileIcon = function () {
+    var container = document.getElementById("pehrawaProfileContainer");
+    if (!container) return;
+    var loggedIn = window.isCustomerLoggedIn();
+    var customer = window.getCustomer();
+
+    if (loggedIn && customer) {
+      container.innerHTML =
+        '<div class="profile-icon-wrapper" id="profileIconWrapper">' +
+          '<div class="profile-icon" id="profileIconBtn">' +
+            '<span class="profile-avatar">' + getInitials(customer.name) + '</span>' +
+          '</div>' +
+          '<div class="profile-dropdown" id="profileDropdown">' +
+            '<div class="dropdown-header">' +
+              '<span class="dropdown-name">' + (customer.name || "Customer") + '</span>' +
+              '<span class="dropdown-email">' + customer.email + '</span>' +
+            '</div>' +
+            '<a class="dropdown-item" href="my-orders.html"><i class="fa-solid fa-box"></i> My Orders</a>' +
+            '<a class="dropdown-item" href="wishlist.html"><i class="fa-regular fa-heart"></i> My Wishlist</a>' +
+            '<a class="dropdown-item" href="my-profile.html"><i class="fa-regular fa-user"></i> My Profile</a>' +
+            '<div class="dropdown-divider"></div>' +
+            '<a class="dropdown-item logout-item" id="profileLogoutBtn" href="#"><i class="fa-solid fa-sign-out-alt"></i> Logout</a>' +
+          '</div>' +
+        '</div>';
+    } else {
+      container.innerHTML =
+        '<a href="#" class="profile-login-btn" id="profileLoginBtn">' +
+          '<i class="fa-regular fa-user"></i>' +
+        '</a>';
+    }
+
+    bindProfileEvents();
+  };
+
+  function bindProfileEvents() {
+    var loginBtn = document.getElementById("profileLoginBtn");
+    if (loginBtn) {
+      loginBtn.addEventListener("click", function (e) {
+        e.preventDefault();
+        window.requireAuth(function () {});
+      });
+    }
+
+    var iconBtn = document.getElementById("profileIconBtn");
+    var dropdown = document.getElementById("profileDropdown");
+    if (iconBtn && dropdown) {
+      iconBtn.addEventListener("click", function (e) {
+        e.stopPropagation();
+        dropdown.classList.toggle("open");
+      });
+    }
+
+    var logoutBtn = document.getElementById("profileLogoutBtn");
+    if (logoutBtn) {
+      logoutBtn.addEventListener("click", function (e) {
+        e.preventDefault();
+        window.logoutCustomer();
+        window.updateProfileIcon();
+        window.location.href = "home.html";
+      });
+    }
+  }
+
+  document.addEventListener("click", function () {
+    var dropdown = document.getElementById("profileDropdown");
+    if (dropdown) dropdown.classList.remove("open");
+  });
+
+  window.initProfileIcon = function () {
+    if (document.getElementById("pehrawaProfileContainer")) return;
+    var navIcons = document.querySelector(".nav-icons");
+    if (!navIcons) return;
+    var container = document.createElement("div");
+    container.id = "pehrawaProfileContainer";
+    container.className = "profile-container";
+    navIcons.insertBefore(container, navIcons.querySelector(".menu-btn") || null);
+    window.updateProfileIcon();
+  };
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initProfileIcon);
+  } else {
+    initProfileIcon();
+  }
+
+// ==============================
+// STYLES
+// ==============================
+
   var style = document.createElement("style");
   style.textContent =
     ".auth-modal-overlay {" +
@@ -242,6 +342,24 @@
     ".auth-form input:focus { outline:none;border-color:#f97316; }" +
     ".auth-submit { width:100%;padding:12px;margin-top:16px;background:#f97316;color:#fff;border:none;border-radius:8px;font-size:16px;font-weight:600;cursor:pointer; }" +
     ".auth-submit:disabled { opacity:0.6;cursor:not-allowed; }" +
-    ".auth-error { color:#e74c3c;font-size:13px;margin:8px 0 0;text-align:center; }";
+    ".auth-error { color:#e74c3c;font-size:13px;margin:8px 0 0;text-align:center; }" +
+    // Profile icon styles
+    ".profile-container { position:relative; display:inline-flex; align-items:center; }" +
+    ".profile-login-btn { color:#fff;font-size:20px;display:flex;align-items:center;padding:0 8px; }" +
+    ".profile-login-btn:hover { color:#f97316; }" +
+    ".profile-icon-wrapper { position:relative; }" +
+    ".profile-icon { cursor:pointer;padding:2px;display:flex;align-items:center; }" +
+    ".profile-avatar { width:32px;height:32px;border-radius:50%;background:#f97316;color:#fff;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700; }" +
+    ".profile-dropdown { position:absolute;top:100%;right:0;margin-top:8px;background:#fff;border-radius:12px;box-shadow:0 10px 40px rgba(0,0,0,0.15);min-width:220px;opacity:0;pointer-events:none;transform:translateY(-8px);transition:all 0.2s;z-index:9999; }" +
+    ".profile-dropdown.open { opacity:1;pointer-events:all;transform:translateY(0); }" +
+    ".dropdown-header { padding:14px 16px 10px;border-bottom:1px solid #f0f0f0; }" +
+    ".dropdown-name { display:block;font-size:14px;font-weight:600;color:#222; }" +
+    ".dropdown-email { display:block;font-size:12px;color:#888;margin-top:2px; }" +
+    ".dropdown-item { display:flex;align-items:center;gap:10px;padding:10px 16px;color:#444;text-decoration:none;font-size:14px;transition:background 0.15s; }" +
+    ".dropdown-item:hover { background:#f9f9f9;color:#f97316; }" +
+    ".dropdown-item i { width:18px;text-align:center;font-size:15px; }" +
+    ".dropdown-divider { height:1px;background:#f0f0f0;margin:4px 0; }" +
+    ".logout-item { color:#e74c3c; }" +
+    ".logout-item:hover { color:#e74c3c !important;background:#fef2f2; }";
   document.head.appendChild(style);
 })();

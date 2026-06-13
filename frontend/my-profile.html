@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My Profile | Pehrawa Menswear</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link rel="stylesheet" href="../css/style.css">
+<script src="../js/config.js"></script>
+</head>
+<body>
+
+<header class="header">
+<div class="container">
+<a href="home.html" class="logo"><img src="../images/logo.png" alt="Pehrawa Logo"></a>
+<nav class="navbar">
+<ul class="nav-links">
+<li><a href="home.html">HOME</a></li>
+<li><a href="shop.html">SHOP</a></li>
+<li><a href="custom-print.html">CUSTOM PRINT</a></li>
+<li><a href="track-order.html">TRACK ORDER</a></li>
+<li><a href="about.html">ABOUT US</a></li>
+<li><a href="contact.html">CONTACT US</a></li>
+</ul>
+</nav>
+<div class="nav-icons">
+<div class="search-wrapper">
+<i class="fa-solid fa-magnifying-glass search-icon"></i>
+<input type="text" class="search-input" placeholder="Search products...">
+</div>
+<a href="wishlist.html"><i class="fa-regular fa-heart"></i><span>0</span></a>
+<a href="cart.html"><i class="fa-solid fa-cart-shopping"></i><span>0</span></a>
+</div>
+<div class="menu-btn"><i class="fa-solid fa-bars"></i></div>
+</div>
+</header>
+
+<section class="cart-hero">
+<div class="container">
+<h1>MY PROFILE</h1>
+<p>Manage your account details.</p>
+</div>
+</section>
+
+<section class="cart-section">
+<div class="container" style="max-width:500px;margin:0 auto;">
+<div id="profileContainer">
+<div class="empty-cart"><i class="fa-solid fa-spinner fa-spin"></i><h3>Loading...</h3></div>
+</div>
+</div>
+</section>
+
+<footer class="footer">
+<div class="copyright">© 2026 Pehrawa Menswear. All Rights Reserved.</div>
+</footer>
+
+<script src="../js/script.js"></script>
+<script src="../js/customer-auth.js"></script>
+<script>
+(function () {
+  var container = document.getElementById("profileContainer");
+
+  if (!window.isCustomerLoggedIn()) {
+    container.innerHTML =
+      '<div class="empty-cart">' +
+        '<i class="fa-solid fa-lock"></i>' +
+        '<h3>Please login to view your profile</h3>' +
+        '<p><a href="home.html" style="color:#f97316;text-decoration:underline;">Go to Home</a></p>' +
+      '</div>';
+    return;
+  }
+
+  var c = window.getCustomer();
+  container.innerHTML =
+    '<div style="background:#fff;border-radius:16px;padding:32px;box-shadow:0 2px 12px rgba(0,0,0,0.06);text-align:center;">' +
+      '<div style="width:72px;height:72px;border-radius:50%;background:#f97316;color:#fff;display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:700;margin:0 auto 16px;">' +
+        (c.name ? c.name.split(" ").map(function(w){return w[0]}).join("").toUpperCase().slice(0,2) : "?") +
+      '</div>' +
+      '<h2 style="margin:0 0 4px;">' + (c.name || "Customer") + '</h2>' +
+      '<p style="color:#888;margin:0 0 20px;">' + (c.email || "") + '</p>' +
+      '<div style="text-align:left;border-top:1px solid #f0f0f0;padding-top:16px;">' +
+        '<div style="display:flex;justify-content:space-between;padding:8px 0;"><span style="color:#888;">Name</span><span style="font-weight:500;">' + (c.name || "-") + '</span></div>' +
+        '<div style="display:flex;justify-content:space-between;padding:8px 0;"><span style="color:#888;">Email</span><span style="font-weight:500;">' + (c.email || "-") + '</span></div>' +
+        '<div style="display:flex;justify-content:space-between;padding:8px 0;"><span style="color:#888;">Phone</span><span style="font-weight:500;">' + (c.phone || "-") + '</span></div>' +
+      '</div>' +
+      '<button onclick="window.logoutCustomer();window.location.href=\'home.html\';" style="margin-top:20px;width:100%;padding:12px;background:#fff;border:1px solid #e74c3c;color:#e74c3c;border-radius:8px;font-size:15px;font-weight:600;cursor:pointer;">Logout</button>' +
+    '</div>';
+})();
+</script>
+</body>
+</html>
