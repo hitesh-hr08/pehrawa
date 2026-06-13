@@ -570,19 +570,20 @@ font-size:13px !important;
 }
 
 .search-wrapper .search-input{
-    width:0;
-    opacity:0;
-    padding:0;
-    border:none;
-    margin-left:0;
+    display:none;
 }
 
 .search-wrapper.search-open .search-input{
+    display:block;
     width:130px;
-    opacity:1;
     padding:6px 12px;
     margin-left:8px;
     border:1px solid #333;
+    background:#111;
+    color:#fff;
+    border-radius:30px;
+    font-size:13px;
+    outline:none;
 }
 
 .nav-icons{
