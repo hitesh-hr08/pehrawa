@@ -29,42 +29,41 @@ router.post("/login", async (req, res) => {
     }
 
     const existing = await pool.query("SELECT * FROM customers WHERE email = $1", [email]);
-    let customer = existing.rows[0];
-    let isNewCustomer = false;
+    const customer = existing.rows[0];
 
-    if (customer) {
-      const isPasswordValid = await bcrypt.compare(password, customer.password);
+    if (!customer) {
+      return res.status(404).json({
+        success: false,
+        message: "Account not found. Please register first."
+      });
+    }
 
-      if (!isPasswordValid) {
-        return res.status(401).json({
-          success: false,
-          message: "Invalid email or password"
-        });
-      }
-    } else {
-      const hashedPassword = await bcrypt.hash(password, 10);
-      const result = await pool.query(
-        `INSERT INTO customers (email, password, name)
-         VALUES ($1, $2, $3)
-         RETURNING *`,
-        [email, hashedPassword, email.split("@")[0]]
-      );
+    if (!customer.password) {
+      return res.status(401).json({
+        success: false,
+        message: "Please set a password by registering first."
+      });
+    }
 
-      customer = result.rows[0];
-      isNewCustomer = true;
+    const isPasswordValid = await bcrypt.compare(password, customer.password);
+
+    if (!isPasswordValid) {
+      return res.status(401).json({
+        success: false,
+        message: "Invalid email or password"
+      });
     }
 
     res.json({
       success: true,
-      message: isNewCustomer ? "Customer account created" : "Login successful",
+      message: "Login successful",
       token: makeToken(customer),
       customer: {
         id: customer.id,
         name: customer.name || customer.email.split("@")[0],
         email: customer.email,
         phone: customer.phone
-      },
-      created: isNewCustomer
+      }
     });
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });

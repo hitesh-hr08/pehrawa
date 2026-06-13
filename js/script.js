@@ -425,26 +425,29 @@ document.addEventListener("click", function (e) {
   var buyBtn = e.target.closest(".buy-now-btn");
   if (!buyBtn) return;
   e.preventDefault();
-  var card = buyBtn.closest(".product-card");
-  if (!card) return;
 
-  // Use data attributes if available (dynamic products)
-  var id = buyBtn.getAttribute("data-id");
-  var name = buyBtn.getAttribute("data-name");
-  var price = buyBtn.getAttribute("data-price");
-  var img = buyBtn.getAttribute("data-image");
+  window.requireAuth(function (loggedIn) {
+    if (!loggedIn) return;
+    var card = buyBtn.closest(".product-card");
+    if (!card) return;
 
-  if (!name) {
-    name = card.querySelector("h3") ? card.querySelector("h3").innerText : "Product";
-  }
-  if (!price) {
-    var priceText = card.querySelector(".price") ? card.querySelector(".price").innerText.replace(/[^0-9.]/g, "") : "0";
-    price = parseFloat(priceText) || 0;
-  }
-  if (!img) {
-    img = card.querySelector(".product-image img") ? card.querySelector(".product-image img").src : "../images/product1.png";
-  }
-  openCheckout(id || 0, name, price, img);
+    var id = buyBtn.getAttribute("data-id");
+    var name = buyBtn.getAttribute("data-name");
+    var price = buyBtn.getAttribute("data-price");
+    var img = buyBtn.getAttribute("data-image");
+
+    if (!name) {
+      name = card.querySelector("h3") ? card.querySelector("h3").innerText : "Product";
+    }
+    if (!price) {
+      var priceText = card.querySelector(".price") ? card.querySelector(".price").innerText.replace(/[^0-9.]/g, "") : "0";
+      price = parseFloat(priceText) || 0;
+    }
+    if (!img) {
+      img = card.querySelector(".product-image img") ? card.querySelector(".product-image img").src : "../images/product1.png";
+    }
+    openCheckout(id || 0, name, price, img);
+  });
 });
 /* WhatsApp code temporary disable 
  ==========================

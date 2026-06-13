@@ -211,6 +211,7 @@ CHAT ON WHATSAPP
 
 </footer>
 <script src="../js/config.js"></script>
+<script src="../js/customer-auth.js"></script>
 <script>
 var API = (window.PEHRAWA_API_BASE || "http://localhost:5000") + "/api/public/requests";
 
@@ -226,56 +227,60 @@ uploadBtn.addEventListener("change", function() {
 
 document.getElementById("customPrintForm").addEventListener("submit", async function(e) {
   e.preventDefault();
-  var btn = this.querySelector(".custom-submit-btn");
-  btn.disabled = true;
-  btn.textContent = "Submitting...";
+  window.requireAuth(async function (loggedIn) {
+    if (!loggedIn) return;
+    var btn = document.querySelector(".custom-submit-btn");
+    btn.disabled = true;
+    btn.textContent = "Submitting...";
 
-  var imageUrl = "";
-  var fileInput = document.getElementById("designImage");
+    var imageUrl = "";
+    var fileInput = document.getElementById("designImage");
 
-  if (fileInput.files && fileInput.files[0]) {
-    var formData = new FormData();
-    formData.append("image", fileInput.files[0]);
+    if (fileInput.files && fileInput.files[0]) {
+      var formData = new FormData();
+      formData.append("image", fileInput.files[0]);
+      try {
+        var uploadRes = await fetch((window.PEHRAWA_API_BASE || "http://localhost:5000") + "/api/upload", {
+          method: "POST",
+          body: formData
+        });
+        var uploadData = await uploadRes.json();
+        if (uploadData.success) {
+          imageUrl = uploadData.url;
+        }
+      } catch (err) {
+        // Image upload failed, continue without image
+      }
+    }
+
+    var customer = window.getCustomer();
+    var data = {
+      customer_name: customer ? customer.name : document.getElementById("name").value,
+      phone: customer ? customer.phone : document.getElementById("phone").value,
+      image_url: imageUrl,
+      note: "Size: " + document.getElementById("size").value + ", Qty: " + document.getElementById("quantity").value + ", Requirements: " + document.getElementById("requirements").value
+    };
+
     try {
-      var uploadRes = await fetch((window.PEHRAWA_API_BASE || "http://localhost:5000") + "/api/upload", {
+      var res = await fetch(API, {
         method: "POST",
-        body: formData
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data)
       });
-      var uploadData = await uploadRes.json();
-      if (uploadData.success) {
-        imageUrl = uploadData.url;
+      var result = await res.json();
+      if (result.success) {
+        alert("Request submitted successfully! We will contact you soon.");
+        document.getElementById("customPrintForm").reset();
+        fileNameSpan.style.display = "none";
+      } else {
+        alert(result.message || "Request failed");
       }
     } catch (err) {
-      // Image upload failed, continue without image
+      alert("Server Connection Error");
     }
-  }
-
-  var data = {
-    customer_name: document.getElementById("name").value,
-    phone: document.getElementById("phone").value,
-    image_url: imageUrl,
-    note: "Size: " + document.getElementById("size").value + ", Qty: " + document.getElementById("quantity").value + ", Requirements: " + document.getElementById("requirements").value
-  };
-
-  try {
-    var res = await fetch(API, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(data)
-    });
-    var result = await res.json();
-    if (result.success) {
-      alert("Request submitted successfully! We will contact you soon.");
-      this.reset();
-      fileNameSpan.style.display = "none";
-    } else {
-      alert(result.message || "Request failed");
-    }
-  } catch (err) {
-    alert("Server Connection Error");
-  }
-  btn.disabled = false;
-  btn.textContent = "Submit Request";
+    btn.disabled = false;
+    btn.textContent = "Submit Request";
+  });
 });
 </script>
 

@@ -6,16 +6,11 @@ const cartSubtotal = document.getElementById("cartSubtotal");
 const cartTotal = document.getElementById("cartTotal");
 const checkoutBtn = document.getElementById("checkoutBtn");
 const clearCartBtn = document.getElementById("clearCartBtn");
-const savedCustomerId = localStorage.getItem("customerId");
-const savedCustomerName = localStorage.getItem("customerName");
-const savedCustomerPhone = localStorage.getItem("customerPhone");
-
-if (savedCustomerName && document.getElementById("customerName")) {
-  document.getElementById("customerName").value = savedCustomerName;
-}
-
-if (savedCustomerPhone && document.getElementById("customerPhone")) {
-  document.getElementById("customerPhone").value = savedCustomerPhone;
+var customer = window.getCustomer ? window.getCustomer() : null;
+if (customer) {
+  if (document.getElementById("customerName")) document.getElementById("customerName").value = customer.name || "";
+  if (document.getElementById("customerPhone")) document.getElementById("customerPhone").value = customer.phone || "";
+  localStorage.setItem("customerId", customer.id);
 }
 
 function normalizeCart() {
@@ -234,7 +229,11 @@ function openRazorpay(rzpData, name, phone, address) {
   });
 }
 
-checkoutBtn.addEventListener("click", checkoutWithPayment);
+checkoutBtn.addEventListener("click", function () {
+  window.requireAuth(function (loggedIn) {
+    if (loggedIn) checkoutWithPayment();
+  });
+});
 clearCartBtn.addEventListener("click", clearCart);
 
 renderCart();
