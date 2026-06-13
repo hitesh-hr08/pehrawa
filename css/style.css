@@ -558,12 +558,8 @@ font-size:13px !important;
 }
 
 .header .container{
-    justify-content:flex-start;
-    gap:12px;
-}
-
-.menu-btn{
-    margin-left:auto;
+    justify-content:space-between;
+    gap:0;
 }
 
 .logo img{
@@ -573,38 +569,41 @@ font-size:13px !important;
 .search-wrapper .search-input{
     display:none;
 }
+
+.nav-icons{
+    gap:14px;
+}
 }
 
 @media(max-width:480px){
 
 .logo img{
-    width:100px;
+    width:95px;
 }
 
 .header .container{
     padding:10px 0;
-    gap:8px;
 }
 
 .nav-icons{
-    gap:8px;
+    gap:10px;
 }
 
 .nav-icons a{
-    font-size:15px;
+    font-size:14px;
 }
 
 .nav-icons span{
-    width:15px;
-    height:15px;
+    width:14px;
+    height:14px;
     font-size:8px;
     top:-5px;
     right:-6px;
 }
 
 .login-btn{
-    padding:6px 10px;
-    font-size:11px;
+    padding:5px 8px;
+    font-size:10px;
 }
 
 .login-text{
@@ -612,7 +611,8 @@ font-size:13px !important;
 }
 
 .menu-btn{
-    font-size:17px;
+    font-size:16px;
+    margin-left:6px;
 }
 
 .navbar.active{
@@ -623,28 +623,33 @@ font-size:13px !important;
 @media(max-width:380px){
 
 .logo img{
-    width:75px;
-}
-
-.header .container{
-    gap:5px;
+    width:70px;
 }
 
 .nav-icons{
-    gap:5px;
+    gap:6px;
 }
 
 .nav-icons a{
-    font-size:13px;
+    font-size:12px;
+}
+
+.nav-icons span{
+    width:12px;
+    height:12px;
+    font-size:7px;
+    top:-4px;
+    right:-5px;
 }
 
 .login-btn{
-    padding:4px 7px;
-    font-size:10px;
+    padding:4px 6px;
+    font-size:9px;
 }
 
 .menu-btn{
-    font-size:15px;
+    font-size:14px;
+    margin-left:4px;
 }
 }
 
