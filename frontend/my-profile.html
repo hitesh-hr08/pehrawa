@@ -50,6 +50,8 @@
 .profile-btn-primary:hover{transform:translateY(-1px);box-shadow:0 8px 24px rgba(249,115,22,0.3);}
 .profile-btn-secondary{background:transparent;color:#e74c3c;border:1px solid #e74c3c;}
 .profile-btn-secondary:hover{background:rgba(231,76,60,0.1);}
+.profile-btn-danger{background:transparent;color:#e74c3c;border:1px solid #e74c3c;font-size:12px;padding:8px 16px;border-radius:8px;cursor:pointer;transition:all 0.2s;display:inline-flex;align-items:center;gap:6px;font-family:inherit;width:auto;}
+.profile-btn-danger:hover{background:rgba(231,76,60,0.15);}
 .empty-profile{text-align:center;padding:60px 20px;}
 .empty-profile i{font-size:48px;color:#f97316;margin-bottom:16px;}
 .empty-profile h3{color:#fff;font-size:20px;margin:0 0 8px;}
@@ -171,6 +173,9 @@
       '<div class="profile-actions">' +
         '<a href="my-orders.html" class="profile-btn profile-btn-primary"><i class="fa-solid fa-box"></i> My Orders</a>' +
         '<button class="profile-btn profile-btn-secondary" id="profileLogoutBtn"><i class="fa-solid fa-sign-out-alt"></i> Logout</button>' +
+      '</div>' +
+      '<div style="margin-top:20px;text-align:center;">' +
+        '<button class="profile-btn profile-btn-danger" id="deleteAccountBtn"><i class="fa-solid fa-trash-can"></i> Delete Account</button>' +
       '</div>' +
     '</div>';
 
@@ -295,6 +300,35 @@
   document.getElementById("profileLogoutBtn").addEventListener("click", function () {
     window.logoutCustomer();
     window.location.href = "home.html";
+  });
+
+  document.getElementById("deleteAccountBtn").addEventListener("click", function () {
+    if (!confirm("Are you sure you want to permanently delete your account? This cannot be undone.")) return;
+    if (!confirm("All your data will be lost. Continue?")) return;
+    var btn = this;
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Deleting...';
+    var api = window.PEHRAWA_API_BASE || "http://localhost:5000";
+    fetch(api + "/api/customers/" + c.id, {
+      method: "DELETE",
+      headers: { "Authorization": "Bearer " + token }
+    })
+    .then(function (r) { return r.json(); })
+    .then(function (data) {
+      if (data.success) {
+        window.logoutCustomer();
+        window.location.href = "home.html";
+      } else {
+        alert(data.message || "Failed to delete account");
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fa-solid fa-trash-can"></i> Delete Account';
+      }
+    })
+    .catch(function () {
+      alert("Server error");
+      btn.disabled = false;
+      btn.innerHTML = '<i class="fa-solid fa-trash-can"></i> Delete Account';
+    });
   });
 })();
 </script>

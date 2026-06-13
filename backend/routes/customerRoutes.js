@@ -266,4 +266,16 @@ router.post("/set-password", async (req, res) => {
   }
 });
 
+router.delete("/:id", verifyCustomer, async (req, res) => {
+  try {
+    if (Number(req.params.id) !== req.customer.id) {
+      return res.status(403).json({ success: false, message: "Access denied" });
+    }
+    await pool.query("DELETE FROM customers WHERE id = $1", [req.params.id]);
+    res.json({ success: true, message: "Account deleted permanently" });
+  } catch (err) {
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+});
+
 module.exports = router;
