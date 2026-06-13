@@ -26,7 +26,11 @@ async function login(event) {
       localStorage.setItem("pehrawa_customer", JSON.stringify(data.customer));
       window.location.href = "home.html";
     } else {
-      messageBox.innerText = data.message || "Login failed";
+      if (data.message && data.message.includes("Google")) {
+        messageBox.innerHTML = data.message + ' <button class="google-btn-inline" onclick="window.location.href=\'' + apiBase + '/api/auth/google\'"><i class="fa-brands fa-google"></i> Sign in with Google</button>';
+      } else {
+        messageBox.innerText = data.message || "Login failed";
+      }
     }
   } catch (err) {
     messageBox.innerText = "Start backend server before logging in.";
