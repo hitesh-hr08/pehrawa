@@ -301,4 +301,63 @@ router.get("/:id/check", verifyCustomer, async (req, res) => {
   }
 });
 
+router.put("/:id", verifyCustomer, async (req, res) => {
+  try {
+    if (Number(req.params.id) !== req.customer.id) {
+      return res.status(403).json({ success: false, message: "Access denied" });
+    }
+    var name = String(req.body.name || "").trim();
+    var phone = String(req.body.phone || "").trim();
+    if (!name) {
+      return res.status(400).json({ success: false, message: "Name is required" });
+    }
+    var result = await pool.query(
+      "UPDATE customers SET name = $1, phone = $2, updated_at = NOW() WHERE id = $3 RETURNING id, name, email, phone, image_url",
+      [name, phone || null, req.params.id]
+    );
+    var c = result.rows[0];
+    res.json({
+      success: true,
+      message: "Profile updated",
+      customer: { id: c.id, name: c.name, email: c.email, phone: c.phone, image_url: c.image_url }
+    });
+  } catch (err) {
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+});
+
+router.patch("/:id/orders/:orderId/cancel", verifyCustomer, async (req, res) => {
+  try {
+    if (Number(req.params.id) !== req.customer.id) {
+      return res.status(403).json({ success: false, message: "Access denied" });
+    }
+    var orderResult = await pool.query("SELECT * FROM orders WHERE id = $1 AND customer_id = $2", [req.params.orderId, req.params.id]);
+    if (orderResult.rows.length === 0) {
+      return res.status(404).json({ success: false, message: "Order not found" });
+    }
+    var order = orderResult.rows[0];
+    if (["cancelled", "delivered", "shipped"].includes((order.status || "").toLowerCase())) {
+      return res.status(400).json({ success: false, message: "Order cannot be cancelled" });
+    }
+    var items = order.items || "";
+    var lines = items.split("\n").filter(Boolean);
+    for (var i = 0; i < lines.length; i++) {
+      var parts = lines[i].split("|");
+      var prodName = (parts[0] || "").trim();
+      var qtyMatch = lines[i].match(/Qty:\s*(\d+)/i);
+      var qty = parseInt(qtyMatch ? qtyMatch[1] : 1);
+      if (prodName) {
+        await pool.query(
+          "UPDATE products SET stock = stock + $1 WHERE LOWER(name) LIKE LOWER($2)",
+          [qty, "%" + prodName + "%"]
+        );
+      }
+    }
+    await pool.query("UPDATE orders SET status = 'Cancelled' WHERE id = $1", [req.params.orderId]);
+    res.json({ success: true, message: "Order cancelled successfully" });
+  } catch (err) {
+    res.status(500).json({ success: false, message: "Failed to cancel order" });
+  }
+});
+
 module.exports = router;

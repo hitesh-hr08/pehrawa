@@ -62,6 +62,10 @@
 </head>
 <body>
 
+<div class="announcement-bar">
+    <p>&#128666; FREE SHIPPING ON ORDERS ABOVE &#8377;999 | &#128293; BUY 2 TEES & GET 10% OFF</p>
+</div>
+
 <header class="header">
 <div class="container">
 <a href="home.html" class="logo"><img src="../images/logo.png" alt="Pehrawa Logo"></a>
@@ -149,30 +153,56 @@
       '<h2 class="profile-name">' + (c.name || "Customer") + '</h2>' +
       '<p class="profile-email">' + (c.email || "") + '</p>' +
       '<div class="profile-divider"></div>' +
-      '<div class="profile-detail">' +
-        '<div class="profile-detail-icon"><i class="fa-solid fa-user"></i></div>' +
-        '<div class="profile-detail-content">' +
-          '<div class="profile-detail-label">Full Name</div>' +
-          '<div class="profile-detail-value">' + (c.name || "-") + '</div>' +
+      '<div id="profileEditForm" style="display:none;">' +
+        '<div class="profile-detail">' +
+          '<div class="profile-detail-icon"><i class="fa-solid fa-user"></i></div>' +
+          '<div class="profile-detail-content">' +
+            '<div class="profile-detail-label">Full Name</div>' +
+            '<input type="text" id="editName" value="' + (c.name || "") + '" style="width:100%;padding:8px 10px;border-radius:8px;border:1px solid #333;background:#1a1a1a;color:#fff;font-size:14px;margin-top:4px;">' +
+          '</div>' +
         '</div>' +
-      '</div>' +
-      '<div class="profile-detail">' +
-        '<div class="profile-detail-icon"><i class="fa-solid fa-envelope"></i></div>' +
-        '<div class="profile-detail-content">' +
-          '<div class="profile-detail-label">Email Address</div>' +
-          '<div class="profile-detail-value">' + (c.email || "-") + '</div>' +
+        '<div class="profile-detail">' +
+          '<div class="profile-detail-icon"><i class="fa-solid fa-phone"></i></div>' +
+          '<div class="profile-detail-content">' +
+            '<div class="profile-detail-label">Phone Number</div>' +
+            '<input type="tel" id="editPhone" value="' + (c.phone || "") + '" style="width:100%;padding:8px 10px;border-radius:8px;border:1px solid #333;background:#1a1a1a;color:#fff;font-size:14px;margin-top:4px;">' +
+          '</div>' +
         '</div>' +
+        '<div style="display:flex;gap:10px;margin-top:12px;">' +
+          '<button class="profile-btn profile-btn-primary" id="saveProfileBtn" style="flex:1;"><i class="fa-solid fa-check"></i> Save</button>' +
+          '<button class="profile-btn profile-btn-secondary" id="cancelEditBtn" style="flex:1;"><i class="fa-solid fa-times"></i> Cancel</button>' +
+        '</div>' +
+        '<p id="editMsg" style="text-align:center;font-size:13px;margin:8px 0 0;"></p>' +
       '</div>' +
-      '<div class="profile-detail">' +
-        '<div class="profile-detail-icon"><i class="fa-solid fa-phone"></i></div>' +
-        '<div class="profile-detail-content">' +
-          '<div class="profile-detail-label">Phone Number</div>' +
-          '<div class="profile-detail-value">' + (c.phone || "Not provided") + '</div>' +
+      '<div id="profileDisplay">' +
+        '<div class="profile-detail">' +
+          '<div class="profile-detail-icon"><i class="fa-solid fa-user"></i></div>' +
+          '<div class="profile-detail-content">' +
+            '<div class="profile-detail-label">Full Name</div>' +
+            '<div class="profile-detail-value">' + (c.name || "-") + '</div>' +
+          '</div>' +
+        '</div>' +
+        '<div class="profile-detail">' +
+          '<div class="profile-detail-icon"><i class="fa-solid fa-envelope"></i></div>' +
+          '<div class="profile-detail-content">' +
+            '<div class="profile-detail-label">Email Address</div>' +
+            '<div class="profile-detail-value">' + (c.email || "-") + '</div>' +
+          '</div>' +
+        '</div>' +
+        '<div class="profile-detail">' +
+          '<div class="profile-detail-icon"><i class="fa-solid fa-phone"></i></div>' +
+          '<div class="profile-detail-content">' +
+            '<div class="profile-detail-label">Phone Number</div>' +
+            '<div class="profile-detail-value">' + (c.phone || "Not provided") + '</div>' +
+          '</div>' +
         '</div>' +
       '</div>' +
       '<div class="profile-actions">' +
-        '<a href="my-orders.html" class="profile-btn profile-btn-primary"><i class="fa-solid fa-box"></i> My Orders</a>' +
-        '<button class="profile-btn profile-btn-secondary" id="profileLogoutBtn"><i class="fa-solid fa-sign-out-alt"></i> Logout</button>' +
+        '<button class="profile-btn profile-btn-primary" id="editProfileBtn"><i class="fa-solid fa-pen"></i> Edit Profile</button>' +
+        '<a href="my-orders.html" class="profile-btn profile-btn-secondary" style="display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:10px 20px;border-radius:10px;font-size:13px;font-weight:600;text-decoration:none;background:#2a2a2a;color:#fff;"><i class="fa-solid fa-box"></i> My Orders</a>' +
+      '</div>' +
+      '<div class="profile-actions" style="margin-top:8px;">' +
+        '<button class="profile-btn profile-btn-secondary" id="profileLogoutBtn" style="background:#2a2a2a;color:#ccc;"><i class="fa-solid fa-sign-out-alt"></i> Logout</button>' +
       '</div>' +
       '<div style="margin-top:20px;text-align:center;">' +
         '<button class="profile-btn profile-btn-danger" id="deleteAccountBtn"><i class="fa-solid fa-trash-can"></i> Delete Account</button>' +
@@ -328,6 +358,68 @@
       alert("Server error");
       btn.disabled = false;
       btn.innerHTML = '<i class="fa-solid fa-trash-can"></i> Delete Account';
+    });
+  });
+
+  var editBtn = document.getElementById("editProfileBtn");
+  var cancelBtn = document.getElementById("cancelEditBtn");
+  var saveBtn = document.getElementById("saveProfileBtn");
+  var editForm = document.getElementById("profileEditForm");
+  var display = document.getElementById("profileDisplay");
+  var editMsg = document.getElementById("editMsg");
+
+  if (editBtn) editBtn.addEventListener("click", function () {
+    editForm.style.display = "block";
+    display.style.display = "none";
+    this.style.display = "none";
+    editMsg.innerText = "";
+    document.getElementById("editName").value = c.name || "";
+    document.getElementById("editPhone").value = c.phone || "";
+  });
+
+  if (cancelBtn) cancelBtn.addEventListener("click", function () {
+    editForm.style.display = "none";
+    display.style.display = "block";
+    editBtn.style.display = "";
+    editMsg.innerText = "";
+  });
+
+  if (saveBtn) saveBtn.addEventListener("click", function () {
+    var name = document.getElementById("editName").value.trim();
+    var phone = document.getElementById("editPhone").value.trim();
+    if (!name) { editMsg.innerText = "Name is required"; editMsg.style.color = "#e74c3c"; return; }
+    editMsg.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Saving...';
+    editMsg.style.color = "#888";
+    saveBtn.disabled = true;
+    fetch(api + "/api/customers/" + c.id, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json", "Authorization": "Bearer " + token },
+      body: JSON.stringify({ name: name, phone: phone })
+    })
+    .then(function (r) { return r.json(); })
+    .then(function (data) {
+      if (data.success) {
+        c.name = data.customer.name;
+        c.phone = data.customer.phone;
+        localStorage.setItem("pehrawa_customer", JSON.stringify(c));
+        document.querySelector(".profile-name").textContent = c.name;
+        document.querySelectorAll(".profile-detail-value")[0].textContent = c.name;
+        document.querySelectorAll(".profile-detail-value")[2].textContent = c.phone || "Not provided";
+        editForm.style.display = "none";
+        display.style.display = "block";
+        editBtn.style.display = "";
+        if (typeof window.updateProfileIcon === "function") window.updateProfileIcon();
+      } else {
+        editMsg.innerText = data.message || "Save failed";
+        editMsg.style.color = "#e74c3c";
+      }
+    })
+    .catch(function () {
+      editMsg.innerText = "Server error";
+      editMsg.style.color = "#e74c3c";
+    })
+    .finally(function () {
+      saveBtn.disabled = false;
     });
   });
 })();

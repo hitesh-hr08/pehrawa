@@ -21,6 +21,10 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
 
 <body>
 
+<div class="announcement-bar">
+    <p>&#128666; FREE SHIPPING ON ORDERS ABOVE &#8377;999 | &#128293; BUY 2 TEES & GET 10% OFF</p>
+</div>
+
 <!-- HEADER -->
 
 <header class="header">
@@ -385,54 +389,62 @@ Premium Fashion Essentials - T-Shirts, Shirts, Jeans, Footwear, Sunglasses, Watc
 
 <div class="footer-col">
 
-<img src="../images/logo.png" class="footer-logo">
+<img src="../images/logo.png" class="footer-logo" alt="Pehrawa">
 
 <p>
 Premium oversized and graphic printed
 t-shirts for modern men.
 </p>
 
+<div class="socials">
+<a href="#"><i class="fab fa-facebook-f"></i></a>
+<a href="#"><i class="fab fa-instagram"></i></a>
+<a href="#"><i class="fab fa-youtube"></i></a>
+</div>
+
 </div>
 
 <div class="footer-col">
 
-<h3>Quick Links</h3>
+<h3>QUICK LINKS</h3>
 
 <ul>
 <li><a href="home.html">Home</a></li>
 <li><a href="shop.html">Shop</a></li>
 <li><a href="about.html">About</a></li>
 <li><a href="contact.html">Contact</a></li>
+<li><a href="size-guide.html">Size Guide</a></li>
 </ul>
 
 </div>
 
 <div class="footer-col">
 
-<h3>Customer Care</h3>
+<h3>CUSTOMER CARE</h3>
 
 <ul>
-<li><a href="#">Shipping Policy</a></li>
-<li><a href="#">Privacy Policy</a></li>
-<li><a href="#">Terms</a></li>
+<li><a href="track-order.html">Track Order</a></li>
+<li><a href="shipping-policy.html">Shipping Policy</a></li>
+<li><a href="privacy-policy.html">Privacy Policy</a></li>
+<li><a href="terms.html">Terms &amp; Conditions</a></li>
 </ul>
 
 </div>
 
 <div class="footer-col">
 
-<h3>Contact</h3>
+<h3>CONTACT</h3>
 
-<p>pehrawamenswear@gmail.com</p>
-
-<p>+91 9855707708</p>
+<p><i class="fa-solid fa-phone"></i> +91 9855707708</p>
+<p><i class="fa-solid fa-envelope"></i> pehrawamenswear@gmail.com</p>
+<p><i class="fa-solid fa-location-dot"></i> India</p>
 
 </div>
 
 </div>
 
 <div class="copyright">
-Â© 2026 Pehrawa Menswear. All Rights Reserved.
+&copy; 2026 Pehrawa Menswear. All Rights Reserved.
 </div>
 
 </footer>
@@ -448,7 +460,9 @@ t-shirts for modern men.
       <input type="text" id="checkoutName" placeholder="Full Name" required>
       <input type="tel" id="checkoutPhone" placeholder="Phone Number" required>
       <textarea id="checkoutAddress" placeholder="Full Address" required></textarea>
-      <input type="text" id="checkoutPincode" placeholder="Pincode" required>
+      <input type="text" id="checkoutPincode" placeholder="Pincode" required oninput="window.fetchPincode && window.fetchPincode(this.value, 'checkout')">
+      <input type="text" id="checkoutCity" placeholder="City (auto-fetched)" readonly>
+      <input type="text" id="checkoutState" placeholder="State (auto-fetched)" readonly>
       <div class="checkout-row">
         <select id="checkoutSize">
           <option value="S">S</option>

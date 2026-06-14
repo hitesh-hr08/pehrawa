@@ -1,10 +1,21 @@
 <!DOCTYPE html>
-<html>
-<head><meta charset="UTF-8"><title>Signing in...</title></head>
-<body style="display:flex;align-items:center;justify-content:center;height:100vh;margin:0;font-family:sans-serif;background:#f5f5f5;">
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Signing in... | Pehrawa Menswear</title>
+<script src="../js/config.js"></script>
+<style>
+  body{display:flex;align-items:center;justify-content:center;height:100vh;margin:0;font-family:'Poppins',sans-serif;background:#0d0d0d;color:#fff;}
+  .spinner{width:36px;height:36px;border:3px solid #2a2a2a;border-top-color:#f97316;border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 16px;}
+  @keyframes spin{to{transform:rotate(360deg)}}
+</style>
+</head>
+<body>
   <div style="text-align:center;">
+    <div class="spinner"></div>
     <h2>Signing you in...</h2>
-    <p style="color:#666;">Please wait a moment.</p>
+    <p style="color:#888;">Please wait a moment.</p>
   </div>
   <script>
     (function () {
