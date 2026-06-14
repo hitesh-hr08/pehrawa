@@ -1414,7 +1414,41 @@ transform:translateX(-100%);
         font-size:18px;
     }
 }
-
+/* ==========================
+   Profile Icon (login state)
+========================= */
+.profile-container{
+  position:relative;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  cursor:pointer;
+  margin-left:4px;
+  align-self:center;
+}
+.profile-container>.profile-avatar{
+  width:26px!important;
+  height:26px!important;
+  border-radius:50%!important;
+  background:linear-gradient(135deg,#f97316,#ea580c)!important;
+  color:#fff!important;
+  display:flex!important;
+  align-items:center;
+  justify-content:center;
+  font-size:11px!important;
+  font-weight:700!important;
+  letter-spacing:0.5px;
+  flex-shrink:0;
+  position:static!important;
+  top:auto!important;
+  right:auto!important;
+  object-fit:cover;
+}
+.profile-container .dropdown-item{
+  font-size:14px!important;
+  position:static!important;
+  color:#ccc!important;
+}
 /* ==========================
    Admin Pannel
 ========================== */
