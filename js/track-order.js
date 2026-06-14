@@ -48,7 +48,7 @@
             '<p><strong>Customer:</strong> ' + (order.customer_name || "N/A") + '</p>' +
             '<p><strong>Phone:</strong> ' + (order.phone || "N/A") + '</p>' +
             '<p><strong>Address:</strong> ' + (order.address || "N/A") + '</p>' +
-            '<p><strong>Total:</strong> ₹' + Number(order.total_amount || 0).toFixed(2) + '</p>' +
+            '<p><strong>Total:</strong> &#8377;' + Number(order.total_amount || 0).toFixed(2) + '</p>' +
             '<p><strong>Ordered on:</strong> ' + new Date(order.created_at).toLocaleDateString("en-IN", { year: "numeric", month: "long", day: "numeric" }) + '</p>' +
             (itemsHtml ? '<div class="track-items"><strong>Items:</strong><ul>' + itemsHtml + '</ul></div>' : "") +
           '</div>' +

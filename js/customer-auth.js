@@ -278,7 +278,7 @@
     if (loggedIn && customer) {
       var avatarHtml = customer.image_url
         ? '<img class="profile-avatar" src="' + customer.image_url + '?t=' + Date.now() + '" alt="avatar">'
-        : '<span class="profile-avatar">' + getInitials(customer.name) + '</span>';
+        : '<div class="profile-avatar">' + getInitials(customer.name) + '</div>';
       container.innerHTML = avatarHtml +
         '<div class="profile-dropdown" id="profileDropdown">' +
             '<div class="dropdown-header">' +
@@ -377,8 +377,8 @@
     ".auth-submit{width:100%;padding:12px;margin-top:16px;background:#f97316;color:#fff;border:none;border-radius:8px;font-size:16px;font-weight:600;cursor:pointer;}" +
     ".auth-submit:disabled{opacity:0.6;cursor:not-allowed;}" +
     ".auth-error{color:#e74c3c;font-size:13px;margin:8px 0 0;text-align:center;}" +
-    ".profile-container{position:relative;display:flex;align-items:center;justify-content:center;width:34px;height:34px;cursor:pointer;margin-top:-3px;}" +
-    ".profile-container .profile-avatar{width:28px!important;height:28px!important;border-radius:50%!important;background:linear-gradient(135deg,#f97316,#ea580c)!important;color:#fff!important;display:flex!important;align-items:center;justify-content:center;font-size:12px!important;font-weight:700!important;letter-spacing:0.5px;flex-shrink:0;position:static!important;top:auto!important;right:auto!important;object-fit:cover;}" +
+    ".profile-container{position:relative;display:flex;align-items:center;justify-content:center;width:34px;height:34px;cursor:pointer;align-self:center;}" +
+    ".profile-container>.profile-avatar{width:28px!important;height:28px!important;border-radius:50%!important;background:linear-gradient(135deg,#f97316,#ea580c)!important;color:#fff!important;display:flex!important;align-items:center;justify-content:center;font-size:12px!important;font-weight:700!important;letter-spacing:0.5px;flex-shrink:0;position:static!important;top:auto!important;right:auto!important;object-fit:cover;}" +
     ".profile-dropdown{position:absolute;top:100%;right:-4px;margin-top:8px;background:#1a1a1a;border:1px solid #333;border-radius:12px;box-shadow:0 10px 40px rgba(0,0,0,0.5);min-width:230px;opacity:0;pointer-events:none;transform:translateY(-8px);transition:all 0.2s ease;z-index:9999;overflow:hidden;}" +
     ".profile-dropdown.open{opacity:1;pointer-events:all;transform:translateY(0);}" +
     ".dropdown-header{padding:14px 16px 10px;border-bottom:1px solid #2a2a2a;}" +

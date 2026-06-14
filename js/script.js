@@ -374,8 +374,8 @@ function openCheckout(productId, productName, price, image) {
   if (pprice) pprice.value = price;
   if (pname) {
     pname.innerHTML = image
-      ? '<img src="' + image + '" style="width:50px;height:50px;object-fit:cover;border-radius:6px;vertical-align:middle;margin-right:10px;"><span>' + productName + ' - ₹' + Number(price).toFixed(2) + '</span>'
-      : '<span>' + productName + ' - ₹' + Number(price).toFixed(2) + '</span>';
+      ? '<img src="' + image + '" style="width:50px;height:50px;object-fit:cover;border-radius:6px;vertical-align:middle;margin-right:10px;"><span>' + productName + ' - &#8377;' + Number(price).toFixed(2) + '</span>'
+      : '<span>' + productName + ' - &#8377;' + Number(price).toFixed(2) + '</span>';
   }
   overlay.classList.add("active");
 }

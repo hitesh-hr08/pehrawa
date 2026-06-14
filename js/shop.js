@@ -63,7 +63,7 @@
           <div class="product-content">
             <p class="sku">${sku}</p>
             <h3>${product.name}</h3>
-            <div class="price">â‚¹${Number(product.price).toFixed(2)}</div>
+            <div class="price">&#8377;${Number(product.price).toFixed(2)}</div>
 
             <div class="product-actions">
               <button onclick="addToWishlist(${product.id})">

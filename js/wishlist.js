@@ -20,7 +20,7 @@ function renderWishlist() {
       '<img src="' + img + '" alt="' + product.name + '" style="width:60px;height:60px;border-radius:8px;object-fit:cover;">' +
       '<div style="flex:1;min-width:0;">' +
         '<h3 style="color:#fff;font-size:15px;font-weight:600;margin:0 0 4px;">' + product.name + '</h3>' +
-        '<p style="color:#f97316;font-size:14px;font-weight:700;margin:0;">₹' + Number(product.price).toFixed(2) + '</p>' +
+        '<p style="color:#f97316;font-size:14px;font-weight:700;margin:0;">&#8377;' + Number(product.price).toFixed(2) + '</p>' +
       '</div>' +
       '<div style="display:flex;gap:8px;">' +
         '<button onclick="moveToCart(' + index + ')" style="padding:8px 16px;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;background:linear-gradient(135deg,#f97316,#ea580c);color:#fff;border:none;">Move to Cart</button>' +
