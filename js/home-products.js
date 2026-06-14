@@ -16,7 +16,7 @@
         var products = data.products.slice(0, 4);
         grid.innerHTML = products.map(function (p) {
           var img = p.image_url || "../images/product1.png";
-          return '<div class="product-card">' +
+          return '<div class="product-card revealed">' +
             '<div class="product-image">' +
               '<a href="product.html?id=' + p.id + '">' +
                 '<img src="' + img + '" alt="' + p.name + '">' +
