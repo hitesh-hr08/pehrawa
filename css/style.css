@@ -308,13 +308,13 @@ font-size:13px !important;
 =========================== */
 
 .products{
-    padding:60px 0;
+    padding:40px 0;
 }
 
 .product-grid{
     display:grid;
     grid-template-columns:repeat(4,1fr);
-    gap:20px;
+    gap:16px;
 }
 
 .product-card{
@@ -337,7 +337,7 @@ font-size:13px !important;
 
 .product-image img{
     width:100%;
-    aspect-ratio:1/1;
+    height:220px;
     object-fit:cover;
     transition:.3s;
     display:block;
@@ -361,7 +361,7 @@ font-size:13px !important;
 }
 
 .product-content{
-    padding:12px;
+    padding:10px 12px 12px;
 }
 
 .sku{
@@ -611,7 +611,11 @@ font-size:13px !important;
 
     .product-grid{
     grid-template-columns:repeat(3,1fr);
-    gap:16px;
+    gap:12px;
+}
+
+.product-image img{
+    height:180px;
 }
 
 .custom-grid{
@@ -795,7 +799,11 @@ font-size:13px !important;
 
 .product-grid{
     grid-template-columns:repeat(2,1fr);
-    gap:12px;
+    gap:10px;
+}
+
+.product-image img{
+    height:160px;
 }
 
 .footer-grid{
@@ -819,21 +827,31 @@ font-size:13px !important;
     padding:2px 6px;
 }
 
+.product-content{
+    padding:8px 10px 10px;
+}
+
 .product-content h3{
-    font-size:13px;
+    font-size:12px;
+    margin-bottom:4px;
 }
 
 .price{
-    font-size:16px;
+    font-size:15px;
+    margin-bottom:2px;
 }
 
 .price .orig{
-    font-size:12px;
+    font-size:11px;
+}
+
+.product-rating{
+    margin-bottom:6px;
 }
 
 .buy-now-btn{
     font-size:11px;
-    padding:8px;
+    padding:7px;
 }
 
 .product-rating .stars{
