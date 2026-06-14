@@ -12,12 +12,15 @@
 
 html{
     scroll-behavior:smooth;
+    overflow-x:hidden;
+    width:100%;
 }
 
 body{
     background:#000;
     color:#fff;
     overflow-x:hidden;
+    width:100%;
 }
 
 a{
@@ -57,6 +60,8 @@ img{
     align-items:center;
     justify-content:space-between;
     padding:18px 0;
+    flex-wrap:nowrap;
+    min-width:0;
 }
 
 .logo img{
@@ -83,12 +88,14 @@ img{
     display:flex;
     align-items:center;
     gap:22px;
+    flex-shrink:0;
 }
 
 .nav-icons a{
     color:#fff;
     font-size:18px;
     position:relative;
+    white-space:nowrap;
 }
 
 .nav-icons span{
@@ -586,6 +593,7 @@ font-size:13px !important;
 
 .logo{
     margin-right:auto;
+    flex-shrink:0;
 }
 
 .logo img{
@@ -593,7 +601,8 @@ font-size:13px !important;
 }
 
 .nav-icons{
-    gap:14px;
+    gap:10px;
+    flex-shrink:0;
 }
 
 .search-wrapper .search-input{
@@ -626,14 +635,6 @@ font-size:13px !important;
 .search-wrapper.search-open .search-icon{
     color:#ff7a00;
 }
-
-.menu-btn{
-    margin-left:14px;
-}
-
-.login-btn{
-    margin-left:14px;
-}
 }
 
 @media(max-width:480px){
@@ -647,7 +648,7 @@ font-size:13px !important;
 }
 
 .nav-icons{
-    gap:10px;
+    gap:6px;
 }
 
 .nav-icons a{
@@ -673,11 +674,6 @@ font-size:13px !important;
 
 .menu-btn{
     font-size:16px;
-    margin-left:10px;
-}
-
-.login-btn{
-    margin-left:10px;
 }
 
 .search-wrapper.search-open .search-input{
@@ -727,11 +723,6 @@ font-size:13px !important;
 
 .menu-btn{
     font-size:14px;
-    margin-left:6px;
-}
-
-.login-btn{
-    margin-left:6px;
 }
 
 .profile-container>.profile-avatar{
