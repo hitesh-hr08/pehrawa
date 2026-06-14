@@ -11,18 +11,29 @@
   function renderProducts(products) {
     return products.map(function (p) {
       var img = p.image_url || p.image;
+      var origPrice = Math.round(p.price * 1.5);
+      var discount = Math.round((1 - p.price / origPrice) * 100);
+      var rating = (3.5 + Math.random() * 1.5).toFixed(1);
+      var reviews = Math.floor(Math.random() * 500) + 20;
       return '<div class="product-card revealed">' +
         '<div class="product-image">' +
+          '<span class="product-badge">-' + discount + '%</span>' +
           '<a href="product.html?id=' + p.id + '">' +
             '<img src="' + img + '" alt="' + p.name + '">' +
           '</a>' +
         '</div>' +
         '<div class="product-content">' +
-          '<p class="sku">PM-' + String(p.id).padStart(3, "0") + '</p>' +
           '<h3><a href="product.html?id=' + p.id + '" class="product-link">' + p.name + '</a></h3>' +
-          '<div class="price">&#8377;' + Number(p.price).toFixed(2) + '</div>' +
+          '<div class="product-rating">' +
+            '<span class="stars">' + '★'.repeat(Math.round(rating)) + '</span>' +
+            '<span class="count">' + rating + ' (' + reviews + ')</span>' +
+          '</div>' +
+          '<div class="price">&#8377;' + Number(p.price).toFixed(0) +
+            '<span class="orig">&#8377;' + origPrice + '</span>' +
+            '<span class="discount">' + discount + '% off</span>' +
+          '</div>' +
           '<button class="buy-now-btn" data-id="' + p.id + '" data-name="' + p.name + '" data-price="' + p.price + '" data-image="' + img + '">' +
-            '<i class="fa-solid fa-bag-shopping"></i>BUY NOW' +
+            '<i class="fa-solid fa-bag-shopping"></i>ADD TO CART' +
           '</button>' +
         '</div>' +
       '</div>';
