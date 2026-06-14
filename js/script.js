@@ -394,34 +394,87 @@ if (checkoutOverlay) {
   });
 }
 
+function openRazorpay(rzpData, name, phone, address) {
+  return new Promise(function (resolve) {
+    var options = {
+      key: rzpData.key,
+      amount: rzpData.order.amount,
+      currency: rzpData.order.currency || "INR",
+      name: "Pehrawa Menswear",
+      description: "Premium Menswear Order",
+      image: "../images/logo.png",
+      order_id: rzpData.order.id,
+      prefill: {
+        name: name,
+        contact: phone,
+        email: localStorage.getItem("customerEmail") || ""
+      },
+      theme: { color: "#f97316" },
+      handler: function () {
+        resolve(true);
+      },
+      modal: {
+        ondismiss: function () {
+          resolve(false);
+        }
+      }
+    };
+    var rzp = new Razorpay(options);
+    rzp.open();
+  });
+}
+
 if (checkoutForm) {
   checkoutForm.addEventListener("submit", async (e) => {
     e.preventDefault();
     const btn = checkoutForm.querySelector(".checkout-submit");
     btn.disabled = true;
-    btn.textContent = "Placing Order...";
+    btn.textContent = "Processing...";
 
     const productId = document.getElementById("checkoutProductId").value;
     const productNameEl = document.querySelector("#checkoutProduct span");
     const price = document.getElementById("checkoutPrice").value;
 
     var cust = window.getCustomer ? window.getCustomer() : null;
-    var payload = {
-      customer_name: document.getElementById("checkoutName").value,
-      phone: document.getElementById("checkoutPhone").value,
-      address: document.getElementById("checkoutAddress").value + ", " + (document.getElementById("checkoutCity").value || "") + ", " + (document.getElementById("checkoutDistrict").value || "") + ", " + (document.getElementById("checkoutState").value || "") + ", Pincode: " + document.getElementById("checkoutPincode").value,
-      total_amount: Number(price),
-      customer_id: cust ? cust.id : (localStorage.getItem("customerId") || null),
-      items: [{
-        name: productNameEl ? productNameEl.textContent.split(" - ")[0] : "Product",
-        size: document.getElementById("checkoutSize").value,
-        quantity: Number(document.getElementById("checkoutQty").value),
-        price: Number(price)
-      }]
-    };
+    var name = document.getElementById("checkoutName").value;
+    var phone = document.getElementById("checkoutPhone").value;
+    var address = document.getElementById("checkoutAddress").value + ", " + (document.getElementById("checkoutCity").value || "") + ", " + (document.getElementById("checkoutDistrict").value || "") + ", " + (document.getElementById("checkoutState").value || "") + ", Pincode: " + document.getElementById("checkoutPincode").value;
+
+    var api = window.PEHRAWA_API_BASE || "http://localhost:5000";
 
     try {
-      const api = window.PEHRAWA_API_BASE || "http://localhost:5000";
+      var rzpRes = await fetch(api + "/api/public/razorpay-order", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ amount: Number(price), currency: "INR" })
+      });
+      var rzpData = await rzpRes.json();
+
+      if (rzpData.success && rzpData.order && rzpData.key !== "rzp_test_xxxxxxxxxxxx") {
+        var paymentDone = await openRazorpay(rzpData, name, phone, address);
+        if (!paymentDone) {
+          btn.disabled = false;
+          btn.textContent = "Place Order";
+          return;
+        }
+      }
+    } catch (e) {}
+
+    try {
+      var payload = {
+        customer_name: name,
+        phone: phone,
+        address: address,
+        total_amount: Number(price),
+        customer_id: cust ? cust.id : (localStorage.getItem("customerId") || null),
+        items: [{
+          name: productNameEl ? productNameEl.textContent.split(" - ")[0] : "Product",
+          size: document.getElementById("checkoutSize").value,
+          quantity: Number(document.getElementById("checkoutQty").value),
+          price: Number(price)
+        }]
+      };
+
       const res = await fetch(api + "/api/public/orders", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
