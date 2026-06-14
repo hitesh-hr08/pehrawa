@@ -462,7 +462,8 @@ t-shirts for modern men.
       <input type="tel" id="checkoutPhone" placeholder="Phone Number" required>
       <textarea id="checkoutAddress" placeholder="Full Address" required></textarea>
       <input type="text" id="checkoutPincode" placeholder="Pincode" required oninput="window.fetchPincode && window.fetchPincode(this.value, 'checkout')">
-      <input type="text" id="checkoutCity" placeholder="City (auto-fetched)" readonly>
+      <input type="text" id="checkoutDistrict" placeholder="District (auto-fetched)" readonly>
+      <input type="text" id="checkoutCity" placeholder="City" required>
       <input type="text" id="checkoutState" placeholder="State (auto-fetched)" readonly>
       <div class="checkout-row">
         <select id="checkoutSize">

@@ -7,11 +7,11 @@
 // PINCODE AUTO-FETCH (city+state)
 // ===============================
 window.fetchPincode = function (pincode, prefix) {
-  var cityEl = document.getElementById(prefix + "City");
+  var districtEl = document.getElementById(prefix + "District");
   var stateEl = document.getElementById(prefix + "State");
-  if (!cityEl || !stateEl) return;
+  if (!districtEl || !stateEl) return;
   if (pincode.length !== 6 || isNaN(pincode)) {
-    cityEl.value = ""; stateEl.value = "";
+    districtEl.value = ""; stateEl.value = "";
     return;
   }
   var url = "https://api.postalpincode.in/pincode/" + encodeURIComponent(pincode);
@@ -20,7 +20,7 @@ window.fetchPincode = function (pincode, prefix) {
     .then(function (data) {
       if (data && data[0] && data[0].Status === "Success" && data[0].PostOffice && data[0].PostOffice.length > 0) {
         var po = data[0].PostOffice[0];
-        cityEl.value = po.Division || po.District || po.Block || "";
+        districtEl.value = po.District || po.Division || po.Block || "";
         stateEl.value = po.State || "";
       }
     })
@@ -409,7 +409,7 @@ if (checkoutForm) {
     var payload = {
       customer_name: document.getElementById("checkoutName").value,
       phone: document.getElementById("checkoutPhone").value,
-      address: document.getElementById("checkoutAddress").value + ", " + (document.getElementById("checkoutCity").value || "") + ", " + (document.getElementById("checkoutState").value || "") + ", Pincode: " + document.getElementById("checkoutPincode").value,
+      address: document.getElementById("checkoutAddress").value + ", " + (document.getElementById("checkoutCity").value || "") + ", " + (document.getElementById("checkoutDistrict").value || "") + ", " + (document.getElementById("checkoutState").value || "") + ", Pincode: " + document.getElementById("checkoutPincode").value,
       total_amount: Number(price),
       customer_id: cust ? cust.id : (localStorage.getItem("customerId") || null),
       items: [{
