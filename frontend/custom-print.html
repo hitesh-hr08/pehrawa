@@ -108,38 +108,93 @@ custom printed t-shirts delivered to your door.
 
 <form id="customPrintForm">
 
-<input type="text" id="name" placeholder="Full Name" required>
+<div class="step-indicators">
+  <span class="step-dot active" id="stepDot1">1</span>
+  <span class="step-line"></span>
+  <span class="step-dot" id="stepDot2">2</span>
+  <span class="step-line"></span>
+  <span class="step-dot" id="stepDot3">3</span>
+</div>
 
-<input type="tel" id="phone" placeholder="Phone Number" required>
+<!-- Step 1: Design Details -->
+<div class="form-step" id="step1">
 
-<input type="email" id="email" placeholder="Email Address">
+  <h3 class="step-title">Design Details</h3>
 
-<select id="size" required>
-<option value="">Select Size</option>
-<option>S</option>
-<option>M</option>
-<option>L</option>
-<option>XL</option>
-<option>XXL</option>
-</select>
+  <input type="text" id="name" placeholder="Full Name" required>
 
-<input type="number" id="quantity" placeholder="Quantity" min="1" required>
+  <input type="tel" id="phone" placeholder="Phone Number" required>
 
-<label style="color:#aaa;font-size:14px;display:flex;align-items:center;gap:10px;cursor:pointer;padding:10px 14px;background:#000;border:1px solid #333;border-radius:6px;">
-  <i class="fa-solid fa-image" style="color:#ff7a00;font-size:18px;"></i>
-  <span>Upload Design Image (optional)</span>
-  <input type="file" id="designImage" accept="image/*" style="display:none;">
-</label>
-<span id="fileName" style="color:#888;font-size:13px;display:none;"></span>
+  <input type="email" id="email" placeholder="Email Address">
 
-<textarea
-id="requirements"
-rows="5"
-placeholder="Describe your design requirements">
-</textarea>
-<button type="submit" class="custom-submit-btn">
-Submit Request
-</button>
+  <select id="size" required>
+    <option value="">Select Size</option>
+    <option>S</option>
+    <option>M</option>
+    <option>L</option>
+    <option>XL</option>
+    <option>XXL</option>
+  </select>
+
+  <input type="number" id="quantity" placeholder="Quantity" min="1" required>
+
+  <label class="custom-upload-label">
+    <i class="fa-solid fa-image" style="color:#ff7a00;font-size:18px;"></i>
+    <span>Upload Design Image (optional)</span>
+    <input type="file" id="designImage" accept="image/*" style="display:none;">
+  </label>
+  <span id="fileName" style="color:#888;font-size:13px;display:none;"></span>
+
+  <textarea id="requirements" rows="5" placeholder="Describe your design requirements"></textarea>
+
+  <button type="button" class="step-next-btn" onclick="nextStep(2)">Next →</button>
+
+</div>
+
+<!-- Step 2: Delivery Address -->
+<div class="form-step" id="step2" style="display:none;">
+
+  <h3 class="step-title">Delivery Address</h3>
+
+  <textarea id="custAddress" rows="3" placeholder="Full Address (House, Street, Landmark)" required></textarea>
+
+  <input type="text" id="custPincode" placeholder="Pincode" required oninput="fetchCustPincode(this.value)">
+
+  <input type="text" id="custCity" placeholder="City" required>
+
+  <input type="text" id="custDistrict" placeholder="District (auto-fetched)" readonly>
+
+  <input type="text" id="custState" placeholder="State (auto-fetched)" readonly>
+
+  <div class="step-btns">
+    <button type="button" class="step-back-btn" onclick="prevStep(1)">← Back</button>
+    <button type="button" class="step-next-btn" onclick="nextStep(3)">Next →</button>
+  </div>
+
+</div>
+
+<!-- Step 3: Payment & Submit -->
+<div class="form-step" id="step3" style="display:none;">
+
+  <h3 class="step-title">Order Summary & Payment</h3>
+
+  <div class="cust-summary">
+    <p><strong>Design:</strong> <span id="summaryDesign"></span></p>
+    <p><strong>Size:</strong> <span id="summarySize"></span></p>
+    <p><strong>Qty:</strong> <span id="summaryQty"></span></p>
+    <p><strong>Address:</strong> <span id="summaryAddress"></span></p>
+    <p class="cust-total"><strong>Total:</strong> &#8377;499</p>
+  </div>
+
+  <button type="submit" class="custom-submit-btn" id="payBtn">
+    <i class="fa-solid fa-paper-plane"></i> Submit Order
+  </button>
+
+  <div class="step-btns" style="margin-top:10px;">
+    <button type="button" class="step-back-btn" onclick="prevStep(2)">← Back</button>
+  </div>
+
+</div>
 
 </form>
 
@@ -148,6 +203,26 @@ Submit Request
 </div>
 
 </section>
+
+<style>
+.step-indicators{display:flex;align-items:center;justify-content:center;gap:0;margin-bottom:24px;}
+.step-dot{width:32px;height:32px;border-radius:50%;background:#222;color:#666;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;transition:.3s;}
+.step-dot.active{background:#ff7a00;color:#fff;}
+.step-line{width:60px;height:2px;background:#333;margin:0 8px;}
+.step-title{text-align:center;margin-bottom:20px;color:#ff7a00;font-size:18px;}
+.form-step{display:flex;flex-direction:column;gap:14px;width:100%;}
+.form-step input,.form-step select,.form-step textarea{width:100%;box-sizing:border-box;}
+.step-btns{display:flex;gap:12px;justify-content:center;margin-top:16px;}
+.step-next-btn,.step-back-btn,.custom-submit-btn{padding:12px 28px;border:none;border-radius:6px;font-weight:600;font-size:15px;cursor:pointer;transition:.3s;}
+.step-next-btn{background:#ff7a00;color:#fff;}
+.step-back-btn{background:#222;color:#ccc;}
+.step-next-btn:hover{background:#e66900;}
+.step-back-btn:hover{background:#333;}
+.custom-upload-label{color:#aaa;font-size:14px;display:flex;align-items:center;gap:10px;cursor:pointer;padding:10px 14px;background:#000;border:1px solid #333;border-radius:6px;}
+.cust-summary{background:#111;border:1px solid #2a2a2a;border-radius:8px;padding:16px;margin-bottom:16px;}
+.cust-summary p{margin:6px 0;color:#ccc;font-size:14px;}
+.cust-summary .cust-total{font-size:18px;color:#ff7a00;margin-top:10px;border-top:1px solid #2a2a2a;padding-top:10px;}
+</style>
 
 <!-- PROCESS -->
 
@@ -230,53 +305,117 @@ uploadBtn.addEventListener("change", function() {
   }
 });
 
+var currentStep = 1;
+
+window.nextStep = function (step) {
+  if (step === 2) {
+    var name = document.getElementById("name").value.trim();
+    var phone = document.getElementById("phone").value.trim();
+    var size = document.getElementById("size").value;
+    var qty = document.getElementById("quantity").value;
+    var missing = [];
+    if (!name) missing.push("Full Name");
+    if (!phone) missing.push("Phone Number");
+    if (!size) missing.push("Size");
+    if (!qty) missing.push("Quantity");
+    if (missing.length) { alert("Please fill: " + missing.join(", ")); return; }
+  }
+  if (step === 3) {
+    var addr = document.getElementById("custAddress").value.trim();
+    var pincode = document.getElementById("custPincode").value.trim();
+    var city = document.getElementById("custCity").value.trim();
+    var missing = [];
+    if (!addr) missing.push("Address");
+    if (!pincode) missing.push("Pincode");
+    if (!city) missing.push("City");
+    if (missing.length) { alert("Please fill: " + missing.join(", ")); return; }
+
+    document.getElementById("summaryDesign").textContent = document.getElementById("requirements").value.trim() || "Custom T-Shirt";
+    document.getElementById("summarySize").textContent = document.getElementById("size").value;
+    document.getElementById("summaryQty").textContent = document.getElementById("quantity").value;
+    document.getElementById("summaryAddress").textContent = addr + ", " + city + ", " + (document.getElementById("custDistrict").value || "") + ", " + (document.getElementById("custState").value || "") + " - " + pincode;
+  }
+  showStep(step);
+};
+
+window.prevStep = function (step) {
+  showStep(step);
+};
+
+function showStep(step) {
+  currentStep = step;
+  document.getElementById("step1").style.display = step === 1 ? "" : "none";
+  document.getElementById("step2").style.display = step === 2 ? "" : "none";
+  document.getElementById("step3").style.display = step === 3 ? "" : "none";
+  for (var i = 1; i <= 3; i++) {
+    var dot = document.getElementById("stepDot" + i);
+    if (dot) dot.className = "step-dot" + (i <= step ? " active" : "");
+  }
+}
+
+window.fetchCustPincode = function (code) {
+  if (code.length !== 6) return;
+  fetch("https://api.postalpincode.in/pincode/" + code)
+    .then(function (r) { return r.json(); })
+    .then(function (d) {
+      if (d && d[0] && d[0].Status === "Success" && d[0].PostOffice && d[0].PostOffice[0]) {
+        var po = d[0].PostOffice[0];
+        document.getElementById("custDistrict").value = po.District || "";
+        document.getElementById("custState").value = po.State || "";
+      }
+    })
+    .catch(function () {});
+};
+
 document.getElementById("customPrintForm").addEventListener("submit", async function(e) {
   e.preventDefault();
+
   window.requireAuth(async function (loggedIn) {
     if (!loggedIn) return;
-    var btn = document.querySelector(".custom-submit-btn");
+
+    var btn = document.getElementById("payBtn");
     btn.disabled = true;
-    btn.textContent = "Submitting...";
+    btn.textContent = "Processing...";
+
+    var name = document.getElementById("name").value.trim();
+    var phone = document.getElementById("phone").value.trim();
+    var size = document.getElementById("size").value;
+    var qty = document.getElementById("quantity").value;
+    var reqs = document.getElementById("requirements").value.trim();
+    var addr = document.getElementById("custAddress").value.trim();
+    var pincode = document.getElementById("custPincode").value.trim();
+    var city = document.getElementById("custCity").value.trim();
+    var district = document.getElementById("custDistrict").value;
+    var state = document.getElementById("custState").value;
 
     var imageUrl = "";
     var fileInput = document.getElementById("designImage");
-
     if (fileInput.files && fileInput.files[0]) {
       var formData = new FormData();
       formData.append("image", fileInput.files[0]);
       try {
-        var uploadRes = await fetch((window.PEHRAWA_API_BASE || "http://localhost:5000") + "/api/upload", {
-          method: "POST",
-          body: formData
-        });
+        var uploadRes = await fetch((window.PEHRAWA_API_BASE || "http://localhost:5000") + "/api/upload", { method: "POST", body: formData });
         var uploadData = await uploadRes.json();
-        if (uploadData.success) {
-          imageUrl = uploadData.url;
-        }
-      } catch (err) {
-        // Image upload failed, continue without image
-      }
+        if (uploadData.success) imageUrl = uploadData.url;
+      } catch (err) {}
     }
 
-    var customer = window.getCustomer();
+    var note = "Size: " + size + ", Qty: " + (qty || "1") + (reqs ? ", Requirements: " + reqs : "");
+
     var data = {
-      customer_name: customer ? customer.name : document.getElementById("name").value,
-      phone: customer ? customer.phone : document.getElementById("phone").value,
-      image_url: imageUrl,
-      note: "Size: " + document.getElementById("size").value + ", Qty: " + document.getElementById("quantity").value + ", Requirements: " + document.getElementById("requirements").value
+      customer_name: name, phone: phone,
+      address: addr, city: city, district: district, state: state, pincode: pincode,
+      note: note, image_url: imageUrl
     };
 
     try {
-      var res = await fetch(API, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data)
-      });
+      var res = await fetch(API, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(data) });
       var result = await res.json();
       if (result.success) {
         alert("Request submitted successfully! We will contact you soon.");
         document.getElementById("customPrintForm").reset();
         fileNameSpan.style.display = "none";
+        showStep(1);
       } else {
         alert(result.message || "Request failed");
       }
@@ -284,7 +423,7 @@ document.getElementById("customPrintForm").addEventListener("submit", async func
       alert("Server Connection Error");
     }
     btn.disabled = false;
-    btn.textContent = "Submit Request";
+    btn.textContent = "Pay \u20B9499 & Submit";
   });
 });
 </script>

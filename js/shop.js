@@ -50,34 +50,34 @@
 
     productGrid.innerHTML = filteredProducts.map((product) => {
       const imageUrl = product.image_url || "../images/product1.png";
-      const sku = `PM-${String(product.id).padStart(3, "0")}`;
+      const price = parseFloat(product.price) || 0;
+      const origPrice = Math.round(price * 1.5);
+      const discount = Math.round((1 - price / origPrice) * 100);
+      const rating = (3.5 + Math.random() * 1.5).toFixed(1);
+      const reviews = Math.floor(Math.random() * 500) + 20;
 
       return `
         <div class="product-card revealed">
           <div class="product-image">
+            <span class="product-badge">-${discount}%</span>
             <a href="product.html?id=${product.id}">
               <img src="${imageUrl}" alt="${product.name}">
             </a>
           </div>
 
           <div class="product-content">
-            <p class="sku">${sku}</p>
             <h3>${product.name}</h3>
-            <div class="price">&#8377;${Number(product.price).toFixed(2)}</div>
-
-            <div class="product-actions">
-              <button onclick="addToWishlist(${product.id})">
-                <i class="fa-regular fa-heart"></i>
-              </button>
-
-              <button onclick="addToCart(${product.id})">
-                <i class="fa-solid fa-cart-plus"></i>
-              </button>
+            <div class="product-rating">
+              <span class="stars">${'★'.repeat(Math.round(rating))}</span>
+              <span class="count">${rating} (${reviews})</span>
+            </div>
+            <div class="price">&#8377;${price.toFixed(0)}
+              <span class="orig">&#8377;${origPrice}</span>
+              <span class="discount">${discount}% off</span>
             </div>
 
-            <button class="buy-now-btn">
-              <i class="fa-solid fa-bag-shopping"></i>
-              BUY NOW
+            <button class="buy-now-btn" data-id="${product.id}" data-name="${product.name}" data-price="${price}" data-image="${imageUrl}">
+              <i class="fa-solid fa-bag-shopping"></i>ADD TO CART
             </button>
           </div>
         </div>

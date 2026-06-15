@@ -141,23 +141,6 @@ async function checkoutWithPayment() {
   var apiBase = window.PEHRAWA_API_BASE || "http://localhost:5000";
 
   try {
-    var rzpRes = await fetch(apiBase + "/api/public/razorpay-order", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ amount: total, currency: "INR" })
-    });
-
-    var rzpData = await rzpRes.json();
-
-    if (rzpData.success && rzpData.order && rzpData.key !== "rzp_test_xxxxxxxxxxxx") {
-      var paymentDone = await openRazorpay(rzpData, customerName, customerPhone, customerAddress);
-      if (!paymentDone) {
-        checkoutBtn.disabled = false;
-        checkoutBtn.innerHTML = '<i class="fa-solid fa-bag-shopping"></i> BUY NOW';
-        return;
-      }
-    }
-
     var res = await fetch(apiBase + "/api/public/orders", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -198,37 +181,6 @@ async function checkoutWithPayment() {
 
   checkoutBtn.disabled = false;
   checkoutBtn.innerHTML = '<i class="fa-solid fa-bag-shopping"></i> BUY NOW';
-}
-
-function openRazorpay(rzpData, name, phone, address) {
-  return new Promise(function (resolve) {
-    var options = {
-      key: rzpData.key,
-      amount: rzpData.order.amount,
-      currency: rzpData.order.currency || "INR",
-      name: "Pehrawa Menswear",
-      description: "Premium Menswear Order",
-      image: "../images/logo.png",
-      order_id: rzpData.order.id,
-      prefill: {
-        name: name,
-        contact: phone,
-        email: localStorage.getItem("customerEmail") || ""
-      },
-      theme: { color: "#f97316" },
-      handler: function () {
-        resolve(true);
-      },
-      modal: {
-        ondismiss: function () {
-          resolve(false);
-        }
-      }
-    };
-
-    var rzp = new Razorpay(options);
-    rzp.open();
-  });
 }
 
 checkoutBtn.addEventListener("click", function () {

@@ -314,52 +314,32 @@ app.get("/api/public/orders/:id", async (req, res) => {
 
 app.post("/api/public/requests", async (req, res) => {
   try {
-    const { customer_name, phone, note, image_url } = req.body;
+    const { customer_name, phone, address, city, district, state, pincode, note, image_url, payment_id, amount } = req.body;
 
-    if (!customer_name || !phone || !note) {
+    if (!customer_name || !phone) {
       return res.status(400).json({
         success: false,
-        message: "Name, phone, and request note are required"
+        message: "Name and phone are required"
+      });
+    }
+
+    if (!address) {
+      return res.status(400).json({
+        success: false,
+        message: "Delivery address is required"
       });
     }
 
     const result = await pool.query(
-      `INSERT INTO custom_requests (customer_name, phone, note, image_url, status)
-       VALUES ($1, $2, $3, $4, $5)
+      `INSERT INTO custom_requests (customer_name, phone, address, city, district, state, pincode, note, image_url, payment_id, amount, status)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
        RETURNING *`,
-      [customer_name, phone, note, image_url || null, "Pending"]
+      [customer_name, phone, address, city || null, district || null, state || null, pincode || null, note || null, image_url || null, payment_id || null, amount || null, payment_id ? "Paid" : "Pending"]
     );
 
     res.status(201).json({ success: true, request: result.rows[0] });
   } catch (err) {
     res.status(500).json({ success: false, message: "Failed to submit request" });
-  }
-});
-
-app.post("/api/public/razorpay-order", async (req, res) => {
-  try {
-    const Razorpay = require("razorpay");
-    const { amount, currency } = req.body;
-
-    if (!process.env.RAZORPAY_KEY_ID || !process.env.RAZORPAY_KEY_SECRET) {
-      return res.status(400).json({ success: false, message: "Razorpay not configured" });
-    }
-
-    const razorpay = new Razorpay({
-      key_id: process.env.RAZORPAY_KEY_ID,
-      key_secret: process.env.RAZORPAY_KEY_SECRET
-    });
-
-    const options = {
-      amount: Math.round(amount * 100),
-      currency: currency || "INR",
-      receipt: "rcpt_" + Date.now()
-    };
-
-    const order = await razorpay.orders.create(options);
-    res.json({ success: true, order: order, key: process.env.RAZORPAY_KEY_ID });
-  } catch (err) {
-    res.status(500).json({ success: false, message: "Payment initialization failed" });
   }
 });
 
@@ -383,6 +363,24 @@ app.use((err, req, res, next) => {
 
 var PORT = process.env.PORT || 5000;
 var HOST = process.env.HOST || "0.0.0.0";
+
+(async function () {
+  try {
+    await pool.query(`
+      ALTER TABLE custom_requests
+        ADD COLUMN IF NOT EXISTS address TEXT,
+        ADD COLUMN IF NOT EXISTS city VARCHAR(100),
+        ADD COLUMN IF NOT EXISTS district VARCHAR(100),
+        ADD COLUMN IF NOT EXISTS state VARCHAR(100),
+        ADD COLUMN IF NOT EXISTS pincode VARCHAR(10),
+        ADD COLUMN IF NOT EXISTS payment_id VARCHAR(255),
+        ADD COLUMN IF NOT EXISTS amount NUMERIC(10,2)
+    `);
+    console.log("Database migration: custom_requests columns added/verified");
+  } catch (err) {
+    console.error("Migration error (non-fatal):", err.message);
+  }
+})();
 
 app.listen(PORT, HOST, function () {
   console.log("Pehrawa server running on " + HOST + ":" + PORT);
