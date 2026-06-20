@@ -178,9 +178,12 @@ router.get("/:id/orders", verifyCustomer, async (req, res) => {
     if (Number(req.params.id) !== req.customer.id) {
       return res.status(403).json({ success: false, message: "Access denied" });
     }
+    // Get orders by customer_id AND also by phone (for orders placed before customer_id fix)
     const result = await pool.query(
-      "SELECT id, customer_name, total_amount, status, items, created_at FROM orders WHERE customer_id = $1 ORDER BY created_at DESC",
-      [req.params.id]
+      `SELECT id, customer_name, total_amount, status, items, created_at FROM orders
+       WHERE customer_id = $1 OR (customer_id IS NULL AND phone = $2)
+       ORDER BY created_at DESC`,
+      [req.params.id, req.customer.phone]
     );
     var orders = result.rows.map(function (o) {
       o.tracking_id = "PHR-" + String(o.id).padStart(6, "0");

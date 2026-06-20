@@ -353,7 +353,7 @@ app.post("/api/public/requests", async (req, res) => {
     var trackingId = "PCR-" + String(request.id).padStart(6, "0");
 
     // Also create an order entry so it shows in My Orders
-    var orderItems = "Custom Printed T-Shirt | " + (note || "") + " | Rs. " + (Number(amount) || 499).toFixed(2);
+    var orderItems = "Custom Printed T-Shirt (Request #" + request.id + ") | Size: " + (note.match(/Size:\s*(\S+)/i) || ["", "M"])[1] + " | Qty: " + (note.match(/Qty:\s*(\d+)/i) || ["", "1"])[1] + " | Rs. " + (Number(amount) || 499).toFixed(2);
     var orderResult = null;
     try {
       orderResult = await pool.query(
@@ -521,6 +521,19 @@ var HOST = process.env.HOST || "0.0.0.0";
     console.log("Database migration: reviews table created/verified");
   } catch (err) {
     console.error("Reviews migration error (non-fatal):", err.message);
+  }
+
+  // Back-fill customer_id on old orders where customer_id is NULL
+  try {
+    await pool.query(`
+      UPDATE orders o
+      SET customer_id = c.id
+      FROM customers c
+      WHERE o.customer_id IS NULL AND o.phone = c.phone
+    `);
+    console.log("Database migration: back-filled customer_id on old orders");
+  } catch (err) {
+    console.error("Back-fill migration error (non-fatal):", err.message);
   }
 })();
 

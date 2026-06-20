@@ -51,6 +51,19 @@ router.patch("/:id/status", async (req, res) => {
       return res.status(404).json({ success: false, message: "Request not found" });
     }
 
+    // Sync status to linked order in My Orders
+    const reqData = result.rows[0];
+    try {
+      await pool.query(
+        `UPDATE orders SET status = $1
+         WHERE phone = $2 AND items ILIKE $3
+         AND customer_name = $4`,
+        [status, reqData.phone, '%Custom Printed T-Shirt%', reqData.customer_name]
+      );
+    } catch (syncErr) {
+      console.error("Failed to sync order status:", syncErr.message);
+    }
+
     res.json({ success: true, request: result.rows[0] });
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });
