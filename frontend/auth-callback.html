@@ -31,6 +31,7 @@
           var customer = JSON.parse(decodeURIComponent(customerStr));
           localStorage.setItem("pehrawa_customer_token", token);
           localStorage.setItem("pehrawa_customer", JSON.stringify(customer));
+          localStorage.setItem("customerId", customer.id);
         } catch (e) {}
       }
 

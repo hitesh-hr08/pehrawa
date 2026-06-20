@@ -133,7 +133,14 @@ async function checkoutWithPayment() {
     return sum + (Number(item.price) * Number(item.quantity || 1));
   }, 0);
 
-  var savedCustomerId = (window.getCustomer ? window.getCustomer() : null)?.id || localStorage.getItem("customerId");
+  var savedCustomerId = null;
+  var cust = window.getCustomer ? window.getCustomer() : null;
+  if (cust && cust.id) {
+    savedCustomerId = cust.id;
+    localStorage.setItem("customerId", cust.id);
+  } else {
+    savedCustomerId = localStorage.getItem("customerId");
+  }
 
   checkoutBtn.disabled = true;
   checkoutBtn.textContent = "Processing...";
@@ -143,7 +150,10 @@ async function checkoutWithPayment() {
   try {
     var res = await fetch(apiBase + "/api/public/orders", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer " + (window.getCustomerToken ? window.getCustomerToken() : "")
+      },
       body: JSON.stringify({
         customer_name: customerName,
         customer_id: savedCustomerId,

@@ -203,13 +203,25 @@ app.get("/api/public/settings", async (req, res) => {
 
 app.post("/api/public/orders", async (req, res) => {
   try {
-    const { customer_id, customer_name, phone, address, total_amount, items } = req.body;
+    let { customer_id, customer_name, phone, address, total_amount, items } = req.body;
 
     if (!customer_name || !phone || !address || !items || items.length === 0) {
       return res.status(400).json({
         success: false,
         message: "Name, phone, address, and cart items are required"
       });
+    }
+
+    // If token provided, extract customer_id from it
+    var authHeader = req.headers.authorization;
+    if (authHeader && authHeader.startsWith("Bearer ")) {
+      try {
+        var token = authHeader.slice(7);
+        var payload = JSON.parse(Buffer.from(token.split(".")[1], "base64url").toString());
+        if (payload && payload.id) {
+          customer_id = payload.id;
+        }
+      } catch (e) {}
     }
 
     for (const item of items) {
@@ -314,7 +326,7 @@ app.get("/api/public/orders/:id", async (req, res) => {
 
 app.post("/api/public/requests", async (req, res) => {
   try {
-    const { customer_name, phone, address, city, district, state, pincode, note, image_url, payment_id, amount } = req.body;
+    const { customer_name, phone, address, city, district, state, pincode, note, image_url, payment_id, amount, customer_id } = req.body;
 
     if (!customer_name || !phone) {
       return res.status(400).json({
@@ -337,8 +349,31 @@ app.post("/api/public/requests", async (req, res) => {
       [customer_name, phone, address, city || null, district || null, state || null, pincode || null, note || null, image_url || null, payment_id || null, amount || null, payment_id ? "Paid" : "Pending"]
     );
 
-    res.status(201).json({ success: true, request: result.rows[0] });
+    var request = result.rows[0];
+    var trackingId = "PCR-" + String(request.id).padStart(6, "0");
+
+    // Also create an order entry so it shows in My Orders
+    var orderItems = "Custom Printed T-Shirt | " + (note || "") + " | Rs. " + (Number(amount) || 499).toFixed(2);
+    var orderResult = null;
+    try {
+      orderResult = await pool.query(
+        `INSERT INTO orders (customer_id, customer_name, phone, address, total_amount, status, items)
+         VALUES ($1, $2, $3, $4, $5, $6, $7)
+         RETURNING id`,
+        [customer_id || null, customer_name, phone, address, amount || 499, "Pending", orderItems]
+      );
+    } catch (orderErr) {
+      console.error("Failed to create order for custom request:", orderErr.message);
+    }
+
+    res.status(201).json({
+      success: true,
+      request: request,
+      tracking_id: trackingId,
+      order_id: orderResult ? orderResult.rows[0].id : null
+    });
   } catch (err) {
+    console.error("Custom request error:", err.message);
     res.status(500).json({ success: false, message: "Failed to submit request" });
   }
 });
