@@ -173,7 +173,7 @@ font-size:13px !important;
 }
 
 .hero-content{
-    flex:1;
+    flex:1.4;
 }
 
 .hero-content h4{
@@ -231,7 +231,7 @@ font-size:13px !important;
 }
 
 .hero-image{
-    flex:1;
+    flex:0.8;
     text-align:right;
     display:flex;
     align-items:center;
@@ -239,10 +239,9 @@ font-size:13px !important;
 }
 
 .hero-image img{
-    max-width:520px;
+    max-width:480px;
     width:100%;
     height:auto;
-    object-fit:contain;
 }
 
 /* ===========================
