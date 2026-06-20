@@ -39,7 +39,8 @@ function renderProduct(product) {
   document.getElementById("productImage").src = product.image_url || "../images/product1.png";
   document.getElementById("productImage").alt = product.name;
   document.getElementById("productName").innerText = product.name;
-  document.getElementById("productPrice").innerText = '&#8377;' + Number(product.price).toFixed(2);
+  var p = Number(product.price);
+  document.getElementById("productPrice").innerHTML = '&#8377;' + (isNaN(p) ? "0.00" : p.toFixed(2));
   document.getElementById("productDescription").innerText =
     product.description || "Premium Pehrawa menswear product crafted for comfort and style.";
 }

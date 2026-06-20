@@ -29,11 +29,18 @@
   }
 
   function renderProducts() {
+    var tshirtCats = ["ANIME","GRAPHIC","MINIMAL","OVERSIZED","PRINTED T-SHIRTS"];
+    var filterMap = {
+      "T-SHIRTS": function(cat){ return tshirtCats.some(function(k){ return cat.includes(k); }); },
+      "SHIRTS": function(cat){ return cat.includes("SHIRTS") && !cat.includes("T-SHIRTS"); },
+      "JEANS": function(){ return false; }
+    };
     const filteredProducts = shopProducts.filter((product) => {
       const category = (product.category || "").toUpperCase();
       const name = (product.name || "").toLowerCase();
       const description = (product.description || "").toLowerCase();
-      const matchesFilter = activeFilter === "ALL" || category.includes(activeFilter);
+      var matchFn = filterMap[activeFilter];
+      const matchesFilter = activeFilter === "ALL" || (matchFn ? matchFn(category) : category.includes(activeFilter));
       const matchesSearch =
         !searchTerm ||
         name.includes(searchTerm) ||
