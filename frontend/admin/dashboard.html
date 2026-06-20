@@ -850,7 +850,7 @@
           </td>
           <td>
             <select class="status-select" onchange="updateRequestStatus(${request.id}, this.value)">
-              ${["Pending", "Reviewing", "Quoted", "Approved", "Completed", "Rejected"].map((status) => `
+              ${["Reviewing", "Approved", "Canceled"].map((status) => `
                 <option value="${status}" ${request.status === status ? "selected" : ""}>${status}</option>
               `).join("")}
             </select>

@@ -19,7 +19,10 @@
  .order-status-badge.delivered{background:rgba(34,197,94,0.15);color:#22c55e;}
  .order-status-badge.shipped{background:rgba(59,130,246,0.15);color:#3b82f6;}
  .order-status-badge.cancelled{background:rgba(231,76,60,0.15);color:#e74c3c;}
+ .order-status-badge.canceled{background:rgba(231,76,60,0.15);color:#e74c3c;}
  .order-status-badge.processing{background:rgba(249,115,22,0.15);color:#f97316;}
+ .order-status-badge.reviewing{background:rgba(249,115,22,0.15);color:#f97316;}
+ .order-status-badge.approved{background:rgba(34,197,94,0.15);color:#22c55e;}
  .order-body{padding:16px 20px;}
  .order-item{display:flex;align-items:center;gap:14px;padding:10px 0;border-bottom:1px solid #1f1f1f;}
  .order-item:last-child{border-bottom:none;}
@@ -198,7 +201,11 @@
       });
     }
 
-    function statusClass(s) { return (s || "pending").toLowerCase().replace(/\s+/g, "-"); }
+    function statusClass(s) {
+      var lower = (s || "pending").toLowerCase().replace(/\s+/g, "-");
+      if (lower === "cancelled") return "canceled";
+      return lower;
+    }
 
     var reviewProductIds = {};
 
@@ -220,12 +227,19 @@
       }
       if (orderProductIds.length === 0) orderProductIds = [0]; // fallback
 
-      var steps = [
-        { label: "Placed", done: true },
-        { label: "Processing", done: ["processing","shipped","delivered"].includes(sc) },
-        { label: "Shipped", done: ["shipped","delivered"].includes(sc) },
-        { label: "Delivered", done: isDelivered }
-      ];
+      var isCustom = (order.items || "").toLowerCase().includes("custom printed");
+      var steps = isCustom
+        ? [
+            { label: "Placed", done: true },
+            { label: "Reviewing", done: sc === "reviewing" || sc === "approved" },
+            { label: "Approved", done: sc === "approved" }
+          ]
+        : [
+            { label: "Placed", done: true },
+            { label: "Processing", done: ["processing","shipped","delivered"].includes(sc) },
+            { label: "Shipped", done: ["shipped","delivered"].includes(sc) },
+            { label: "Delivered", done: sc === "delivered" }
+          ];
 
       var itemsHtml = items.length
         ? items.map(function (item) {
@@ -244,7 +258,8 @@
         return '<div class="tl-step' + (s.done ? " completed" : "") + '"><span>' + s.label + '</span></div>';
       }).join("");
 
-      var reviewBtn = isDelivered
+      var canReview = isDelivered || (isCustom && sc === "approved");
+      var reviewBtn = canReview
         ? '<button class="order-review-btn" onclick="openReview(' + order.id + ',' + orderProductIds[0] + ')"><i class="fa-regular fa-star"></i> Write Review</button>'
         : '';
 

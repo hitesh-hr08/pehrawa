@@ -346,7 +346,7 @@ app.post("/api/public/requests", async (req, res) => {
       `INSERT INTO custom_requests (customer_name, phone, address, city, district, state, pincode, note, image_url, payment_id, amount, status)
        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
        RETURNING *`,
-      [customer_name, phone, address, city || null, district || null, state || null, pincode || null, note || null, image_url || null, payment_id || null, amount || null, payment_id ? "Paid" : "Pending"]
+      [customer_name, phone, address, city || null, district || null, state || null, pincode || null, note || null, image_url || null, payment_id || null, amount || null, payment_id ? "Paid" : "Reviewing"]
     );
 
     var request = result.rows[0];
@@ -360,7 +360,7 @@ app.post("/api/public/requests", async (req, res) => {
         `INSERT INTO orders (customer_id, customer_name, phone, address, total_amount, status, items)
          VALUES ($1, $2, $3, $4, $5, $6, $7)
          RETURNING id`,
-        [customer_id || null, customer_name, phone, address, amount || 499, "Pending", orderItems]
+        [customer_id || null, customer_name, phone, address, amount || 499, "Reviewing", orderItems]
       );
     } catch (orderErr) {
       console.error("Failed to create order for custom request:", orderErr.message);
