@@ -704,7 +704,6 @@ font-size:13px !important;
 .hero-content h1{
     font-size:36px;
 }
-}
 
 .hero-content h3{
     font-size:14px;
@@ -719,7 +718,7 @@ font-size:13px !important;
 }
 
 .nav-icons{
-    gap:6px;
+    gap:14px;
 }
 
 .nav-icons a{
@@ -775,7 +774,6 @@ font-size:13px !important;
 .hero-content h1{
     font-size:28px;
 }
-}
 
 .hero-content h3{
     font-size:12px;
@@ -786,7 +784,7 @@ font-size:13px !important;
 }
 
 .nav-icons{
-    gap:6px;
+    gap:12px;
 }
 
 .nav-icons a{
@@ -814,7 +812,6 @@ font-size:13px !important;
     width:26px!important;
     height:26px!important;
     font-size:11px!important;
-}
 }
 
 .search-wrapper.search-open .search-input{
