@@ -243,7 +243,7 @@ app.post("/api/public/orders", async (req, res) => {
     const itemSummary = items.map((item) => {
       const qty = Number(item.quantity) || 1;
       const price = Number(item.price) || 0;
-      return item.name + " | ID: " + (item.id || 0) + " | Size: " + (item.size || "M") + " | Qty: " + qty + " | Rs. " + (price * qty).toFixed(2);
+      return item.name + " | ID: " + (item.id || 0) + " | Size: " + (item.size || "M") + " | Qty: " + qty + " | Rs. " + price.toFixed(2) + " | Total: Rs. " + (price * qty).toFixed(2);
     }).join("\n");
 
     let customerId = customer_id || null;
