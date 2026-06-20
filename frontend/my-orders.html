@@ -44,13 +44,31 @@
  .order-track-btn:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(249,115,22,0.3);}
  .order-help-btn{flex:1;padding:10px;border-radius:10px;font-size:13px;font-weight:600;cursor:pointer;text-align:center;text-decoration:none;transition:all 0.2s;display:flex;align-items:center;justify-content:center;gap:6px;background:transparent;color:#25d366;border:1px solid #25d366;}
  .order-help-btn:hover{background:rgba(37,211,102,0.1);}
+ .order-review-btn{flex:1;padding:10px;border-radius:10px;font-size:13px;font-weight:600;cursor:pointer;text-align:center;text-decoration:none;transition:all 0.2s;display:flex;align-items:center;justify-content:center;gap:6px;background:rgba(249,115,22,0.1);color:#f97316;border:1px solid #f97316;}
+ .order-review-btn:hover{background:rgba(249,115,22,0.2);}
  .empty-orders{text-align:center;padding:60px 20px;}
  .empty-orders i{font-size:48px;color:#f97316;margin-bottom:16px;}
  .empty-orders h3{color:#fff;font-size:20px;margin:0 0 8px;}
  .empty-orders p{color:#888;margin:0 0 20px;}
  .empty-orders .shop-now-btn{display:inline-flex;align-items:center;gap:8px;padding:12px 28px;background:linear-gradient(135deg,#f97316,#ea580c);color:#fff;border-radius:12px;font-size:14px;font-weight:600;text-decoration:none;transition:all 0.2s;}
  .empty-orders .shop-now-btn:hover{transform:translateY(-1px);box-shadow:0 8px 24px rgba(249,115,22,0.3);}
- @media(max-width:480px){.order-card-header,.order-body,.order-total-row,.order-timeline,.order-footer-actions{padding-left:14px;padding-right:14px;}}
+ /* Review Modal */
+ .review-modal{position:fixed;inset:0;background:rgba(0,0,0,.8);display:none;align-items:center;justify-content:center;z-index:99999;padding:20px;}
+ .review-modal.active{display:flex;}
+ .review-modal-box{background:#1a1a1a;border:1px solid #333;border-radius:16px;padding:30px;max-width:420px;width:100%;}
+ .review-modal-box h3{color:#fff;font-size:18px;margin-bottom:6px;}
+ .review-modal-box p.sub{color:#888;font-size:13px;margin-bottom:20px;}
+ .stars-input{display:flex;gap:6px;justify-content:center;margin-bottom:20px;font-size:32px;}
+ .stars-input i{cursor:pointer;color:#444;transition:color .2s;}
+ .stars-input i.active{color:#f97316;}
+ .stars-input i:hover{color:#f97316;}
+ .review-modal-box textarea{width:100%;padding:12px;border-radius:8px;border:1px solid #333;background:#111;color:#fff;font-size:14px;resize:vertical;margin-bottom:16px;box-sizing:border-box;font-family:'Poppins',sans-serif;}
+ .review-modal-box textarea:focus{outline:none;border-color:#f97316;}
+ .review-submit-btn{width:100%;padding:12px;border:none;border-radius:8px;background:linear-gradient(135deg,#f97316,#ea580c);color:#fff;font-size:15px;font-weight:600;cursor:pointer;transition:.2s;}
+ .review-submit-btn:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(249,115,22,.3);}
+ .review-submit-btn:disabled{opacity:.5;cursor:not-allowed;}
+ .review-close-btn{float:right;background:none;border:none;color:#888;font-size:22px;cursor:pointer;}
+  @media(max-width:480px){.order-card-header,.order-body,.order-total-row,.order-timeline,.order-footer-actions{padding-left:14px;padding-right:14px;}}
 </style>
 </head>
 <body>
@@ -102,6 +120,24 @@
 </div>
 </div>
 </section>
+
+<!-- Review Modal -->
+<div class="review-modal" id="reviewModal">
+  <div class="review-modal-box">
+    <button class="review-close-btn" id="reviewCloseBtn">&times;</button>
+    <h3>Write a Review</h3>
+    <p class="sub">Rate the product you received</p>
+    <div class="stars-input" id="starsInput">
+      <i class="fa-regular fa-star" data-star="1"></i>
+      <i class="fa-regular fa-star" data-star="2"></i>
+      <i class="fa-regular fa-star" data-star="3"></i>
+      <i class="fa-regular fa-star" data-star="4"></i>
+      <i class="fa-regular fa-star" data-star="5"></i>
+    </div>
+    <textarea id="reviewText" rows="3" placeholder="Share your experience with this product (optional)"></textarea>
+    <button class="review-submit-btn" id="reviewSubmitBtn">Submit Review</button>
+  </div>
+</div>
 
 <footer class="footer">
 <div class="copyright">&copy; 2026 Pehrawa Menswear. All Rights Reserved.</div>
@@ -164,18 +200,31 @@
 
     function statusClass(s) { return (s || "pending").toLowerCase().replace(/\s+/g, "-"); }
 
+    var reviewProductIds = {};
+
     var html = '';
     data.orders.forEach(function (order) {
       var status = order.status || "Pending";
       var sc = statusClass(status);
       var trackingId = order.tracking_id || "PHR-" + String(order.id).padStart(6, "0");
       var items = parseItems(order.items);
+      var isDelivered = sc === "delivered";
+
+      // Extract product IDs from items text if possible
+      var orderProductIds = [];
+      if (order.items) {
+        order.items.split("\n").forEach(function (line) {
+          var match = line.match(/ID:\s*(\d+)/i);
+          if (match) orderProductIds.push(parseInt(match[1]));
+        });
+      }
+      if (orderProductIds.length === 0) orderProductIds = [0]; // fallback
 
       var steps = [
         { label: "Placed", done: true },
         { label: "Processing", done: ["processing","shipped","delivered"].includes(sc) },
         { label: "Shipped", done: ["shipped","delivered"].includes(sc) },
-        { label: "Delivered", done: sc === "delivered" }
+        { label: "Delivered", done: isDelivered }
       ];
 
       var itemsHtml = items.length
@@ -195,6 +244,10 @@
         return '<div class="tl-step' + (s.done ? " completed" : "") + '"><span>' + s.label + '</span></div>';
       }).join("");
 
+      var reviewBtn = isDelivered
+        ? '<button class="order-review-btn" onclick="openReview(' + order.id + ',' + orderProductIds[0] + ')"><i class="fa-regular fa-star"></i> Write Review</button>'
+        : '';
+
       html +=
         '<div class="order-card">' +
           '<div class="order-card-header">' +
@@ -209,6 +262,7 @@
           '</div>' +
           '<div class="order-timeline">' + timelineHtml + '</div>' +
           '<div class="order-footer-actions">' +
+            reviewBtn +
             '<a href="track-order.html?id=' + order.id + '" class="order-track-btn"><i class="fa-solid fa-location-dot"></i> Track Order</a>' +
             '<a href="https://wa.me/919855707708?text=Help%20with%20order%20' + encodeURIComponent(trackingId) + '" target="_blank" class="order-help-btn"><i class="fa-brands fa-whatsapp"></i> Help</a>' +
           '</div>' +
@@ -223,6 +277,68 @@
         '<h3>Could not load orders</h3>' +
         '<p>Please try again later.</p>' +
       '</div>';
+  });
+
+  // Review system
+  var reviewOrderId = null;
+  var reviewProductId = null;
+  var reviewRating = 0;
+
+  window.openReview = function (orderId, productId) {
+    reviewOrderId = orderId;
+    reviewProductId = productId;
+    reviewRating = 0;
+    document.getElementById("reviewText").value = "";
+    document.querySelectorAll("#starsInput i").forEach(function (s) { s.className = "fa-regular fa-star"; });
+    document.getElementById("reviewModal").classList.add("active");
+  };
+
+  document.getElementById("reviewCloseBtn").addEventListener("click", function () {
+    document.getElementById("reviewModal").classList.remove("active");
+  });
+  document.getElementById("reviewModal").addEventListener("click", function (e) {
+    if (e.target === this) this.classList.remove("active");
+  });
+
+  document.querySelectorAll("#starsInput i").forEach(function (star) {
+    star.addEventListener("click", function () {
+      reviewRating = parseInt(this.getAttribute("data-star"));
+      document.querySelectorAll("#starsInput i").forEach(function (s) {
+        s.className = parseInt(s.getAttribute("data-star")) <= reviewRating ? "fa-solid fa-star active" : "fa-regular fa-star";
+      });
+    });
+  });
+
+  document.getElementById("reviewSubmitBtn").addEventListener("click", function () {
+    if (reviewRating === 0) { alert("Please select a rating"); return; }
+    var btn = this;
+    btn.disabled = true;
+    btn.textContent = "Submitting...";
+    var api = window.PEHRAWA_API_BASE || "http://localhost:5000";
+    fetch(api + "/api/reviews", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer " + (window.getCustomerToken ? window.getCustomerToken() : "")
+      },
+      body: JSON.stringify({
+        product_id: reviewProductId,
+        order_id: reviewOrderId,
+        rating: reviewRating,
+        review_text: document.getElementById("reviewText").value.trim()
+      })
+    })
+    .then(function (r) { return r.json(); })
+    .then(function (data) {
+      if (data.success) {
+        alert("Review submitted successfully! Thank you.");
+        document.getElementById("reviewModal").classList.remove("active");
+      } else {
+        alert(data.message || "Failed to submit review");
+      }
+    })
+    .catch(function () { alert("Server error. Please try again."); })
+    .finally(function () { btn.disabled = false; btn.textContent = "Submit Review"; });
   });
 })();
 </script>

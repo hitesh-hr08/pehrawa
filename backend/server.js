@@ -243,7 +243,7 @@ app.post("/api/public/orders", async (req, res) => {
     const itemSummary = items.map((item) => {
       const qty = Number(item.quantity) || 1;
       const price = Number(item.price) || 0;
-      return item.name + " | Size: " + (item.size || "M") + " | Qty: " + qty + " | Rs. " + (price * qty).toFixed(2);
+      return item.name + " | ID: " + (item.id || 0) + " | Size: " + (item.size || "M") + " | Qty: " + qty + " | Rs. " + (price * qty).toFixed(2);
     }).join("\n");
 
     let customerId = customer_id || null;
@@ -396,6 +396,95 @@ app.use((err, req, res, next) => {
   res.status(500).json({ success: false, message: "Internal server error" });
 });
 
+// ===========================
+// REVIEWS API
+// ===========================
+
+// Submit a review (requires auth + delivered order)
+app.post("/api/reviews", async (req, res) => {
+  try {
+    var authHeader = req.headers.authorization;
+    if (!authHeader || !authHeader.startsWith("Bearer ")) {
+      return res.status(401).json({ success: false, message: "Authentication required" });
+    }
+    var token = authHeader.slice(7);
+    var payload;
+    try {
+      payload = JSON.parse(Buffer.from(token.split(".")[1], "base64url").toString());
+    } catch (e) {
+      return res.status(401).json({ success: false, message: "Invalid token" });
+    }
+    if (!payload || !payload.id) {
+      return res.status(401).json({ success: false, message: "Invalid token" });
+    }
+    var customerId = payload.id;
+
+    var { product_id, order_id, rating, review_text } = req.body;
+
+    if (!product_id || !rating || rating < 1 || rating > 5) {
+      return res.status(400).json({ success: false, message: "Product ID and rating (1-5) are required" });
+    }
+
+    // Verify order belongs to this customer and is delivered
+    if (order_id) {
+      var orderCheck = await pool.query(
+        "SELECT id, status, customer_id FROM orders WHERE id = $1 AND customer_id = $2",
+        [order_id, customerId]
+      );
+      if (orderCheck.rows.length === 0) {
+        return res.status(403).json({ success: false, message: "Order not found or not yours" });
+      }
+      if (orderCheck.rows[0].status.toLowerCase() !== "delivered") {
+        return res.status(400).json({ success: false, message: "Can only review delivered orders" });
+      }
+    }
+
+    // Insert review
+    var result = await pool.query(
+      `INSERT INTO reviews (product_id, customer_id, order_id, rating, review_text)
+       VALUES ($1, $2, $3, $4, $5)
+       ON CONFLICT (order_id, product_id)
+       DO UPDATE SET rating = EXCLUDED.rating, review_text = EXCLUDED.review_text, created_at = CURRENT_TIMESTAMP
+       RETURNING *`,
+      [product_id, customerId, order_id || null, rating, review_text || null]
+    );
+
+    res.status(201).json({ success: true, review: result.rows[0] });
+  } catch (err) {
+    console.error("Review submission error:", err.message);
+    res.status(500).json({ success: false, message: "Failed to submit review" });
+  }
+});
+
+// Get reviews for a product
+app.get("/api/products/:id/reviews", async (req, res) => {
+  try {
+    var result = await pool.query(
+      `SELECT r.id, r.rating, r.review_text, r.created_at,
+              COALESCE(c.name, 'Anonymous') AS customer_name
+       FROM reviews r
+       LEFT JOIN customers c ON r.customer_id = c.id
+       WHERE r.product_id = $1
+       ORDER BY r.created_at DESC`,
+      [req.params.id]
+    );
+
+    var stats = await pool.query(
+      "SELECT COUNT(*)::int AS count, COALESCE(ROUND(AVG(rating), 1), 0)::float AS avg_rating FROM reviews WHERE product_id = $1",
+      [req.params.id]
+    );
+
+    res.json({
+      success: true,
+      reviews: result.rows,
+      stats: stats.rows[0]
+    });
+  } catch (err) {
+    console.error("Fetch reviews error:", err.message);
+    res.status(500).json({ success: false, message: "Failed to fetch reviews" });
+  }
+});
+
 var PORT = process.env.PORT || 5000;
 var HOST = process.env.HOST || "0.0.0.0";
 
@@ -414,6 +503,24 @@ var HOST = process.env.HOST || "0.0.0.0";
     console.log("Database migration: custom_requests columns added/verified");
   } catch (err) {
     console.error("Migration error (non-fatal):", err.message);
+  }
+
+  try {
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS reviews (
+        id SERIAL PRIMARY KEY,
+        product_id INTEGER REFERENCES products(id) ON DELETE CASCADE,
+        customer_id INTEGER REFERENCES customers(id) ON DELETE SET NULL,
+        order_id INTEGER REFERENCES orders(id) ON DELETE SET NULL,
+        rating INTEGER NOT NULL CHECK (rating >= 1 AND rating <= 5),
+        review_text TEXT,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        UNIQUE(order_id, product_id)
+      )
+    `);
+    console.log("Database migration: reviews table created/verified");
+  } catch (err) {
+    console.error("Reviews migration error (non-fatal):", err.message);
   }
 })();
 

@@ -179,6 +179,41 @@ id="buyWhatsapp">
 
 </section>
 
+<!-- Reviews Section -->
+<section class="reviews-section">
+<div class="container">
+  <div class="reviews-header">
+    <h2>Customer Reviews</h2>
+    <div class="reviews-summary" id="reviewsSummary">
+      <span class="reviews-avg">--</span>
+      <div class="reviews-stars" id="reviewsAvgStars"></div>
+      <span class="reviews-count" id="reviewsCount">(0 reviews)</span>
+    </div>
+  </div>
+  <div class="reviews-list" id="reviewsList">
+    <p class="reviews-loading">Loading reviews...</p>
+  </div>
+</div>
+</section>
+
+<style>
+.reviews-section{padding:60px 0;background:var(--bg2);}
+.reviews-header{text-align:center;margin-bottom:40px;}
+.reviews-header h2{font-size:28px;margin-bottom:12px;color:var(--text);}
+.reviews-summary{display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;}
+.reviews-avg{font-size:36px;font-weight:800;color:#f97316;}
+.reviews-stars{font-size:18px;color:#f97316;letter-spacing:2px;}
+.reviews-count{font-size:14px;color:var(--text3);}
+.reviews-list{max-width:600px;margin:0 auto;display:flex;flex-direction:column;gap:16px;}
+.review-card{background:var(--bg-card);border:1px solid var(--border);border-radius:12px;padding:18px 20px;}
+.review-card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;}
+.review-card-name{font-weight:600;font-size:14px;color:var(--text);}
+.review-card-stars{color:#f97316;font-size:14px;letter-spacing:1px;}
+.review-card-date{font-size:11px;color:var(--text3);}
+.review-card-text{font-size:14px;color:var(--text2);line-height:1.5;}
+.reviews-loading,.reviews-empty{text-align:center;color:var(--text3);padding:30px 0;}
+</style>
+
 <div class="checkout-overlay" id="checkoutOverlay">
   <div class="checkout-modal">
     <span class="checkout-close" id="checkoutClose">&times;</span>

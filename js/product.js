@@ -85,3 +85,55 @@ document.getElementById("buyWhatsapp").addEventListener("click", () => {
 });
 
 loadProductDetails();
+
+// Load reviews
+(function () {
+  if (!productId) return;
+  var api = window.PEHRAWA_API_BASE || "http://localhost:5000";
+
+  fetch(api + "/api/products/" + productId + "/reviews")
+    .then(function (r) { return r.json(); })
+    .then(function (data) {
+      if (!data.success) {
+        document.getElementById("reviewsList").innerHTML = '<p class="reviews-empty">Could not load reviews.</p>';
+        return;
+      }
+
+      var reviews = data.reviews || [];
+      var stats = data.stats || { count: 0, avg_rating: 0 };
+
+      // Summary
+      document.getElementById("reviewsSummary").querySelector(".reviews-avg").textContent = stats.avg_rating || "--";
+      document.getElementById("reviewsCount").textContent = "(" + stats.count + " review" + (stats.count !== 1 ? "s" : "") + ")";
+      var avgStars = "";
+      var avg = Math.round(stats.avg_rating || 0);
+      for (var i = 1; i <= 5; i++) { avgStars += i <= avg ? "★" : "☆"; }
+      document.getElementById("reviewsAvgStars").textContent = avgStars;
+
+      // List
+      if (reviews.length === 0) {
+        document.getElementById("reviewsList").innerHTML = '<p class="reviews-empty">No reviews yet. Be the first to review!</p>';
+        return;
+      }
+
+      var html = reviews.map(function (r) {
+        var stars = "";
+        for (var i = 1; i <= 5; i++) { stars += i <= r.rating ? "★" : "☆"; }
+        var date = new Date(r.created_at).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" });
+        var text = r.review_text ? '<p class="review-card-text">' + r.review_text + '</p>' : "";
+        return '<div class="review-card">' +
+          '<div class="review-card-header">' +
+            '<span class="review-card-name">' + (r.customer_name || "Anonymous") + '</span>' +
+            '<span class="review-card-stars">' + stars + '</span>' +
+          '</div>' +
+          '<div class="review-card-date">' + date + '</div>' +
+          text +
+        '</div>';
+      }).join("");
+
+      document.getElementById("reviewsList").innerHTML = html;
+    })
+    .catch(function () {
+      document.getElementById("reviewsList").innerHTML = '<p class="reviews-empty">Failed to load reviews.</p>';
+    });
+})();
