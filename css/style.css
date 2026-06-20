@@ -1901,6 +1901,85 @@ transform:translateX(-100%);
 }
 
 /* ===========================
+   CUSTOM CURSOR
+   =========================== */
+.custom-cursor{
+    position:fixed;
+    width:8px;
+    height:8px;
+    background:var(--accent);
+    border-radius:50%;
+    pointer-events:none;
+    z-index:99999;
+    transform:translate(-50%,-50%);
+    transition:width .3s,height .3s,background .3s;
+    mix-blend-mode:difference;
+}
+
+.cursor-ring{
+    position:fixed;
+    width:40px;
+    height:40px;
+    border:1px solid var(--accent);
+    border-radius:50%;
+    pointer-events:none;
+    z-index:99998;
+    transform:translate(-50%,-50%);
+    transition:width .3s,height .3s,border-color .3s;
+}
+
+.cursor-hover{
+    width:0 !important;
+    height:0 !important;
+}
+
+.cursor-hover + .cursor-ring{
+    width:48px;
+    height:48px;
+    border-color:var(--accent);
+    background:rgba(255,122,0,.08);
+}
+
+@media(max-width:768px){
+    .custom-cursor,.cursor-ring{display:none!important}
+}
+
+/* ===========================
+   IMAGE REVEAL
+   =========================== */
+.hero-image img,.product-card img,.about-content img,.contact-content img{
+    opacity:0;
+    transform:scale(.95);
+    transition:opacity .6s ease,transform .6s ease;
+}
+
+.img-revealed{
+    opacity:1!important;
+    transform:scale(1)!important;
+}
+
+/* ===========================
+   SCROLL PROGRESS
+   =========================== */
+.scroll-progress{
+    position:fixed;
+    top:0;left:0;
+    height:3px;
+    background:linear-gradient(90deg,var(--accent),#ffb347);
+    z-index:99999;
+    width:0;
+    transition:width .1s linear;
+}
+
+/* ===========================
+   PAGE TRANSITION
+   =========================== */
+.page-exit{
+    opacity:0;
+    transition:opacity .35s ease;
+}
+
+/* ===========================
    BUTTONS (magnetic + glow + shine)
    =========================== */
 .btn-orange,

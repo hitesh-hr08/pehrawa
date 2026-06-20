@@ -212,4 +212,133 @@
   counters.forEach(function (c) { obs.observe(c); });
 })();
 
+// === 10. SMOOTH SCROLL FOR ANCHOR LINKS ===
+(function(){
+    document.querySelectorAll('a[href^="#"]').forEach(function(a){
+        a.addEventListener("click",function(e){
+            var id = this.getAttribute("href");
+            if(id==="#") return;
+            var target = document.querySelector(id);
+            if(!target) return;
+            e.preventDefault();
+            var top = target.getBoundingClientRect().top + window.scrollY - 100;
+            window.scrollTo({top:top,behavior:"smooth"});
+        });
+    });
+})();
+
+// === 11. CUSTOM CURSOR ===
+(function(){
+    var c = document.createElement("div");
+    c.className = "custom-cursor";
+    document.body.appendChild(c);
+    var ring = document.createElement("div");
+    ring.className = "cursor-ring";
+    document.body.appendChild(ring);
+    var mx = 0, my = 0, rx = 0, ry = 0;
+    document.addEventListener("mousemove",function(e){
+        mx = e.clientX;
+        my = e.clientY;
+        c.style.left = mx + "px";
+        c.style.top = my + "px";
+        var hovered = document.querySelectorAll("a,button,.btn-orange,.btn-dark,.product-card,.nav-icons a,.theme-toggle");
+        var isHover = false;
+        hovered.forEach(function(el){
+            var r = el.getBoundingClientRect();
+            if(mx >= r.left && mx <= r.right && my >= r.top && my <= r.bottom) isHover = true;
+        });
+        c.classList.toggle("cursor-hover",isHover);
+    });
+    function ringAnim(){
+        rx += (mx - rx) * .12;
+        ry += (my - ry) * .12;
+        ring.style.left = rx + "px";
+        ring.style.top = ry + "px";
+        requestAnimationFrame(ringAnim);
+    }
+    ringAnim();
+    document.addEventListener("mouseleave",function(){
+        c.style.display = "none";
+        ring.style.display = "none";
+    });
+    document.addEventListener("mouseenter",function(){
+        c.style.display = "block";
+        ring.style.display = "block";
+    });
+})();
+
+// === 12. MARQUEE ANNOUNCEMENT (if exists) ===
+(function(){
+    var bar = document.querySelector(".announcement-bar p");
+    if(!bar) return;
+    var clone = bar.cloneNode(true);
+    bar.parentElement.appendChild(clone);
+    clone.style.animation = "scrollText 18s linear infinite";
+    clone.style.animationDelay = "-9s";
+    bar.style.animation = "scrollText 18s linear infinite";
+})();
+
+// === 13. IMAGE REVEAL ON SCROLL ===
+(function(){
+    var imgs = document.querySelectorAll(".hero-image img,.product-card img,.about-content img,.contact-content img");
+    if(!("IntersectionObserver" in window)) return;
+    var obs = new IntersectionObserver(function(entries){
+        entries.forEach(function(entry){
+            if(entry.isIntersecting){
+                entry.target.classList.add("img-revealed");
+                obs.unobserve(entry.target);
+            }
+        });
+    },{threshold:.15});
+    imgs.forEach(function(img){ obs.observe(img); });
+})();
+
+// === 14. SCROLL PROGRESS BAR ===
+(function(){
+    var bar = document.createElement("div");
+    bar.className = "scroll-progress";
+    document.body.prepend(bar);
+    window.addEventListener("scroll",function(){
+        var h = document.documentElement.scrollHeight - window.innerHeight;
+        var p = (window.scrollY / h) * 100;
+        bar.style.width = p + "%";
+    });
+})();
+
+// === 15. PARALLAX MOUSE DEPTH ON HERO ===
+(function(){
+    var hero = document.querySelector(".hero-wrapper");
+    if(!hero) return;
+    hero.addEventListener("mousemove",function(e){
+        var r = hero.getBoundingClientRect();
+        var x = (e.clientX - r.left) / r.width - .5;
+        var y = (e.clientY - r.top) / r.height - .5;
+        var depth = document.querySelectorAll(".hero-content h1,.hero-content h4,.hero-content h3,.hero-buttons");
+        depth.forEach(function(el,i){
+            var d = (i + 1) * 3;
+            el.style.transform = "translate(" + (x * d) + "px," + (y * d) + "px)";
+        });
+    });
+    hero.addEventListener("mouseleave",function(){
+        document.querySelectorAll(".hero-content h1,.hero-content h4,.hero-content h3,.hero-buttons").forEach(function(el){
+            el.style.transform = "";
+        });
+    });
+})();
+
+// === 16. PAGE TRANSITION FADE ===
+(function(){
+    document.querySelectorAll("a").forEach(function(a){
+        var href = a.getAttribute("href");
+        if(!href || href.startsWith("#") || href.startsWith("javascript") || href.startsWith("http")) return;
+        a.addEventListener("click",function(e){
+            if(e.ctrlKey || e.metaKey) return;
+            e.preventDefault();
+            var target = href;
+            document.body.classList.add("page-exit");
+            setTimeout(function(){ window.location.href = target; },400);
+        });
+    });
+})();
+
 console.log("Pehrawa premium animations loaded");
