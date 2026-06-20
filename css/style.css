@@ -2124,15 +2124,15 @@ transform:translateX(-100%);
   text-decoration: none;
   box-shadow: 0 6px 24px rgba(37, 211, 102, 0.35);
   transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
-  overflow: hidden;
+  overflow: visible;
 }
 
 .whatsapp-float::before {
   content: "";
   position: absolute;
-  inset: -6px;
-  border-radius: 20px;
-  border: 2px solid rgba(37, 211, 102, 0.2);
+  inset: -8px;
+  border-radius: 22px;
+  border: 2px solid rgba(37, 211, 102, 0.15);
   animation: waRipple 2.5s ease-out infinite;
 }
 
@@ -2141,19 +2141,21 @@ transform:translateX(-100%);
   position: absolute;
   inset: 0;
   border-radius: 16px;
-  background: linear-gradient(135deg, rgba(255,255,255,0.15) 0%, transparent 60%);
+  background: linear-gradient(135deg, rgba(255,255,255,0.18) 0%, transparent 60%);
   pointer-events: none;
 }
 
 .whatsapp-float i {
   position: relative;
   z-index: 1;
-  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+  filter: drop-shadow(0 2px 6px rgba(0,0,0,0.25));
+  animation: waIconPulse 2s ease-in-out infinite;
+  font-size: 30px;
 }
 
 .whatsapp-float .wa-tooltip {
   position: absolute;
-  right: 64px;
+  right: 68px;
   background: #1a1a1a;
   color: #fff;
   padding: 8px 16px;
@@ -2180,11 +2182,40 @@ transform:translateX(-100%);
   border-bottom: 6px solid transparent;
 }
 
+.whatsapp-float .wa-badge {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  width: 18px;
+  height: 18px;
+  background: #25d366;
+  border-radius: 50%;
+  border: 2px solid #000;
+  z-index: 2;
+  animation: waBadgePulse 1.5s ease-in-out infinite;
+}
+
+.whatsapp-float .wa-badge::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 6px;
+  height: 6px;
+  background: #fff;
+  border-radius: 50%;
+}
+
 .whatsapp-float:hover {
   transform: scale(1.08) rotate(-3deg);
   box-shadow: 0 10px 40px rgba(37, 211, 102, 0.45);
   color: #fff;
-  border-radius: 14px;
+}
+
+.whatsapp-float:hover i {
+  animation: none;
+  transform: scale(1.1);
 }
 
 .whatsapp-float:hover .wa-tooltip {
@@ -2194,7 +2225,17 @@ transform:translateX(-100%);
 
 @keyframes waRipple {
   0%   { transform: scale(1); opacity: 0.6; }
-  100% { transform: scale(1.35); opacity: 0; }
+  100% { transform: scale(1.4); opacity: 0; }
+}
+
+@keyframes waIconPulse {
+  0%, 100% { transform: scale(1); opacity: 0.9; }
+  50%      { transform: scale(1.08); opacity: 1; }
+}
+
+@keyframes waBadgePulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(37, 211, 102, 0.5); }
+  50%      { box-shadow: 0 0 0 8px rgba(37, 211, 102, 0); }
 }
 
 @media (max-width: 480px) {
@@ -2212,7 +2253,20 @@ transform:translateX(-100%);
   .whatsapp-float::after {
     border-radius: 14px;
   }
+  .whatsapp-float i {
+    font-size: 24px;
+  }
   .whatsapp-float .wa-tooltip {
     display: none;
+  }
+  .whatsapp-float .wa-badge {
+    width: 14px;
+    height: 14px;
+    top: -3px;
+    right: -3px;
+  }
+  .whatsapp-float .wa-badge::after {
+    width: 4px;
+    height: 4px;
   }
 }
