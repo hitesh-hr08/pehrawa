@@ -350,8 +350,9 @@ font-size:13px !important;
     flex:0.9;
     text-align:right;
     display:flex;
-    align-items:center;
+    align-items:flex-end;
     justify-content:flex-end;
+    align-self:stretch;
 }
 
 .hero-image img{
