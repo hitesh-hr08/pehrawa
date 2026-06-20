@@ -300,10 +300,27 @@ font-size:13px !important;
     border-radius:0;
     font-size:12px;
     font-weight:600;
-    transition:.3s;
     display:inline-block;
     letter-spacing:2px;
     text-transform:uppercase;
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.35s ease, background 0.35s ease, border-color 0.35s ease;
+}
+
+.btn::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.12), transparent);
+    transition: left 0.6s ease;
+}
+
+.btn:hover::after {
+    left: 100%;
 }
 
 .btn-orange{
@@ -313,6 +330,8 @@ font-size:13px !important;
 
 .btn-orange:hover{
     background:#e06e00;
+    transform: translateY(-3px) scale(1.03);
+    box-shadow: 0 12px 35px rgba(255, 122, 0, 0.35);
 }
 
 .btn-dark{
@@ -323,6 +342,8 @@ font-size:13px !important;
 .btn-dark:hover{
     border-color:#ff7a00;
     color:#ff7a00;
+    transform: translateY(-3px);
+    box-shadow: inset 0 0 30px rgba(255, 122, 0, 0.06), 0 8px 25px rgba(255, 122, 0, 0.12);
 }
 
 .hero-image{
@@ -1852,10 +1873,43 @@ transform:translateX(-100%);
     radial-gradient(ellipse at 25% 40%, rgba(255, 122, 0, 0.06) 0%, transparent 50%),
     radial-gradient(ellipse at 75% 60%, rgba(255, 160, 0, 0.04) 0%, transparent 50%),
     radial-gradient(ellipse at 50% 80%, rgba(255, 122, 0, 0.03) 0%, transparent 50%);
-  animation: gradientBg 15s ease infinite;
+  animation: gradientBg 10s ease infinite;
   pointer-events: none;
   z-index: 0;
 }
+
+.hero::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 0;
+  background:
+    radial-gradient(circle at 15% 30%, rgba(255, 122, 0, 0.08) 0%, transparent 35%),
+    radial-gradient(circle at 85% 70%, rgba(255, 160, 0, 0.05) 0%, transparent 35%),
+    radial-gradient(circle at 50% 20%, rgba(255, 122, 0, 0.04) 0%, transparent 40%);
+}
+
+.hero-particle {
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  background: #ff7a00;
+  border-radius: 50%;
+  filter: blur(1px);
+  opacity: 0.3;
+  animation: heroFloat 8s ease-in-out infinite;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.hero-particle:nth-child(1) { top: 20%; left: 10%; width: 8px; height: 8px; animation-delay: 0s; }
+.hero-particle:nth-child(2) { top: 60%; left: 85%; width: 5px; height: 5px; animation-delay: 1.5s; opacity: 0.2; }
+.hero-particle:nth-child(3) { top: 30%; left: 70%; width: 10px; height: 10px; animation-delay: 3s; opacity: 0.15; filter: blur(2px); }
+.hero-particle:nth-child(4) { top: 75%; left: 20%; width: 4px; height: 4px; animation-delay: 0.8s; opacity: 0.25; }
+.hero-particle:nth-child(5) { top: 15%; left: 55%; width: 7px; height: 7px; animation-delay: 2.2s; opacity: 0.18; }
+.hero-particle:nth-child(6) { top: 50%; left: 40%; width: 12px; height: 12px; animation-delay: 4s; opacity: 0.08; filter: blur(3px); }
 
 .hero-wrapper {
   position: relative;
@@ -1932,7 +1986,9 @@ transform:translateX(-100%);
    =========================== */
 .page-exit{
     opacity:0;
-    transition:opacity .35s ease;
+    transform: scale(0.98);
+    filter: blur(2px);
+    transition: opacity 0.4s ease, transform 0.4s ease, filter 0.4s ease;
 }
 
 /* ===========================
@@ -1985,16 +2041,17 @@ transform:translateX(-100%);
   position: relative;
   perspective: 1000px;
   transform: perspective(1000px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)) scale(var(--s, 1));
-  transition: transform 0.1s ease, box-shadow 0.4s;
+  transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
   box-shadow: var(--shadow-x, 0) var(--shadow-y, 0) 30px rgba(255, 122, 0, 0.08);
   animation: fadeInUp 0.6s ease both;
   animation-delay: var(--delay, 0s);
 }
 
 .product-card:hover {
+  transform: perspective(1000px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)) scale(1.03);
   box-shadow:
-    var(--shadow-x, 0) var(--shadow-y, 0) 40px rgba(255, 122, 0, 0.15),
-    0 0 0 1px rgba(255, 122, 0, 0.25);
+    0 20px 60px rgba(255, 122, 0, 0.15),
+    0 0 0 1px rgba(255, 122, 0, 0.3);
 }
 
 .product-card::before {
@@ -2002,14 +2059,30 @@ transform:translateX(-100%);
   position: absolute;
   inset: 0;
   border-radius: 8px;
-  background: linear-gradient(135deg, rgba(255, 122, 0, 0.06), transparent);
+  background: linear-gradient(135deg, rgba(255, 122, 0, 0.08), transparent 60%);
   opacity: 0;
-  transition: opacity 0.4s;
+  transition: opacity 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
   pointer-events: none;
   z-index: 1;
 }
 
 .product-card:hover::before {
+  opacity: 1;
+}
+
+.product-card::after {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border-radius: 9px;
+  background: linear-gradient(135deg, rgba(255,122,0,.3), transparent 50%, transparent);
+  opacity: 0;
+  transition: opacity 0.6s ease;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.product-card:hover::after {
   opacity: 1;
 }
 
@@ -2019,7 +2092,11 @@ transform:translateX(-100%);
 }
 
 .product-image img {
-  transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.product-card:hover .product-image img {
+  transform: scale(1.08);
 }
 
 .product-badge {
@@ -2067,8 +2144,8 @@ transform:translateX(-100%);
 .contact-content {
   opacity: 0;
   transform: translateY(40px);
-  transition: opacity 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94),
-              transform 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  transition: opacity 0.8s cubic-bezier(0.22, 1, 0.36, 1),
+              transform 0.8s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .revealed {
@@ -2444,5 +2521,30 @@ transform:translateX(-100%);
 [data-theme="light"] .hero::before{background:var(--hero-overlay)}
 [data-theme="light"] .section-title h2{color:var(--text)}
 [data-theme="light"] input,[data-theme="light"] textarea,[data-theme="light"] select{background:var(--input-bg);border-color:var(--input-border);color:var(--text)}
+
+/* ===========================
+   LUXURY TEXTURE OVERLAY
+   =========================== */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 99999;
+  opacity: 0.015;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+  background-repeat: repeat;
+  background-size: 256px 256px;
+}
+
+/* ===========================
+   KEYFRAMES: HERO FLOAT
+   =========================== */
+@keyframes heroFloat {
+  0%, 100% { transform: translateY(0) scale(1); opacity: 0.3; }
+  25%      { transform: translateY(-30px) scale(1.1); opacity: 0.4; }
+  50%      { transform: translateY(-15px) scale(0.95); opacity: 0.25; }
+  75%      { transform: translateY(-40px) scale(1.05); opacity: 0.35; }
+}
 
 

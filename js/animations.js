@@ -35,7 +35,7 @@
 (function () {
   document.querySelectorAll(".product-grid, .features-grid, .process-grid").forEach(function (grid) {
     grid.querySelectorAll(".product-card, .feature-box, .process-card").forEach(function (card, i) {
-      card.style.setProperty("--delay", i * 0.08 + "s");
+      card.style.setProperty("--delay", i * 0.06 + "s");
     });
   });
 })();
@@ -43,6 +43,7 @@
 // === 4. 3D TILT ON PRODUCT CARDS ===
 (function () {
   var cards = document.querySelectorAll(".product-card");
+
   if (cards.length === 0) return;
 
   cards.forEach(function (card) {
@@ -52,13 +53,13 @@
       var y = e.clientY - rect.top;
       var centerX = rect.width / 2;
       var centerY = rect.height / 2;
-      var rotateX = ((y - centerY) / centerY) * -8;
-      var rotateY = ((x - centerX) / centerX) * 8;
+      var rotateX = ((y - centerY) / centerY) * -10;
+      var rotateY = ((x - centerX) / centerX) * 10;
       card.style.setProperty("--rx", rotateX + "deg");
       card.style.setProperty("--ry", rotateY + "deg");
-      card.style.setProperty("--s", "1.03");
-      card.style.setProperty("--shadow-x", ((x - centerX) / centerX) * 10 + "px");
-      card.style.setProperty("--shadow-y", ((y - centerY) / centerY) * 10 + "px");
+      card.style.setProperty("--s", "1.04");
+      card.style.setProperty("--shadow-x", ((x - centerX) / centerX) * 15 + "px");
+      card.style.setProperty("--shadow-y", ((y - centerY) / centerY) * 15 + "px");
     });
     card.addEventListener("mouseleave", function () {
       card.style.setProperty("--rx", "0deg");
