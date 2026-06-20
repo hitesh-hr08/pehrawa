@@ -227,46 +227,6 @@
     });
 })();
 
-// === 11. CUSTOM CURSOR ===
-(function(){
-    var c = document.createElement("div");
-    c.className = "custom-cursor";
-    document.body.appendChild(c);
-    var ring = document.createElement("div");
-    ring.className = "cursor-ring";
-    document.body.appendChild(ring);
-    var mx = 0, my = 0, rx = 0, ry = 0;
-    document.addEventListener("mousemove",function(e){
-        mx = e.clientX;
-        my = e.clientY;
-        c.style.left = mx + "px";
-        c.style.top = my + "px";
-        var hovered = document.querySelectorAll("a,button,.btn-orange,.btn-dark,.product-card,.nav-icons a,.theme-toggle");
-        var isHover = false;
-        hovered.forEach(function(el){
-            var r = el.getBoundingClientRect();
-            if(mx >= r.left && mx <= r.right && my >= r.top && my <= r.bottom) isHover = true;
-        });
-        c.classList.toggle("cursor-hover",isHover);
-    });
-    function ringAnim(){
-        rx += (mx - rx) * .12;
-        ry += (my - ry) * .12;
-        ring.style.left = rx + "px";
-        ring.style.top = ry + "px";
-        requestAnimationFrame(ringAnim);
-    }
-    ringAnim();
-    document.addEventListener("mouseleave",function(){
-        c.style.display = "none";
-        ring.style.display = "none";
-    });
-    document.addEventListener("mouseenter",function(){
-        c.style.display = "block";
-        ring.style.display = "block";
-    });
-})();
-
 // === 12. MARQUEE ANNOUNCEMENT (if exists) ===
 (function(){
     var bar = document.querySelector(".announcement-bar p");
