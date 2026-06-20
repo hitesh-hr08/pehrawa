@@ -1577,3 +1577,431 @@ transform:translateX(-100%);
 /* ==========================
    Admin Pannel
 ========================== */
+
+/* ===========================
+   LUXURY ANIMATIONS & VIBE
+   =========================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400;1,500&display=swap');
+
+.luxury-title,
+.hero-content h1,
+.section-title h2,
+.section-heading,
+.shop-banner h1,
+.custom-hero h1 {
+  font-family: 'Playfair Display', 'Poppins', serif !important;
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(50px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeInDown {
+  from { opacity: 0; transform: translateY(-30px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeInScale {
+  from { opacity: 0; transform: scale(0.92); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+@keyframes glowPulse {
+  0%, 100% { box-shadow: 0 0 12px rgba(255, 122, 0, 0.3); }
+  50%      { box-shadow: 0 0 30px rgba(255, 122, 0, 0.6); }
+}
+
+@keyframes shimmer {
+  0%   { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50%      { transform: translateY(-12px); }
+}
+
+@keyframes shine {
+  0%   { left: -100%; }
+  100% { left: 200%; }
+}
+
+@keyframes borderGlow {
+  0%, 100% { border-color: rgba(255, 122, 0, 0.2); }
+  50%      { border-color: rgba(255, 122, 0, 0.7); }
+}
+
+@keyframes gradientBg {
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.gradient-text {
+  background: linear-gradient(135deg, #ff7a00, #ffb347, #ff7a00);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: shimmer 4s linear infinite;
+}
+
+.header-glass {
+  background: rgba(0, 0, 0, 0.85) !important;
+  backdrop-filter: blur(20px) !important;
+  -webkit-backdrop-filter: blur(20px) !important;
+  border-bottom-color: rgba(255, 122, 0, 0.15) !important;
+  transition: background 0.4s, backdrop-filter 0.4s;
+}
+
+.nav-links a {
+  position: relative;
+}
+
+.nav-links a::after {
+  content: "";
+  position: absolute;
+  bottom: -4px;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background: #ff7a00;
+  transition: width 0.35s ease;
+  border-radius: 2px;
+}
+
+.nav-links a:hover::after {
+  width: 100%;
+}
+
+.hero {
+  position: relative;
+  overflow: hidden;
+}
+
+.hero::before {
+  content: "";
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(ellipse at 30% 50%, rgba(255, 122, 0, 0.04) 0%, transparent 60%),
+              radial-gradient(ellipse at 70% 50%, rgba(255, 122, 0, 0.03) 0%, transparent 60%);
+  animation: gradientBg 12s ease infinite;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.hero-wrapper {
+  position: relative;
+  z-index: 1;
+}
+
+.hero-content h1 {
+  animation: fadeInUp 0.8s ease forwards;
+}
+
+.hero-content h4 {
+  animation: fadeInDown 0.6s ease forwards;
+}
+
+.hero-content h3 {
+  animation: fadeInUp 0.8s ease 0.2s both;
+}
+
+.hero-buttons {
+  animation: fadeInUp 0.8s ease 0.4s both;
+}
+
+.hero-image {
+  animation: float 5s ease-in-out infinite;
+}
+
+.hero-image img {
+  filter: drop-shadow(0 20px 40px rgba(255, 122, 0, 0.15));
+}
+
+.btn-orange {
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-orange:hover {
+  animation: glowPulse 1.5s infinite;
+  transform: translateY(-3px);
+}
+
+.btn-orange::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent);
+  transition: left 0.6s;
+}
+
+.btn-orange:hover::after {
+  left: 200%;
+}
+
+.product-card {
+  position: relative;
+  transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.4s, border-color 0.4s;
+  animation: fadeInUp 0.6s ease both;
+  animation-delay: var(--delay, 0s);
+}
+
+.product-card:hover {
+  transform: translateY(-8px) scale(1.02);
+  box-shadow: 0 20px 50px rgba(255, 122, 0, 0.15), 0 0 0 1px rgba(255, 122, 0, 0.2);
+}
+
+.product-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 8px;
+  background: linear-gradient(135deg, rgba(255, 122, 0, 0.05), transparent);
+  opacity: 0;
+  transition: opacity 0.4s;
+  pointer-events: none;
+}
+
+.product-card:hover::before {
+  opacity: 1;
+}
+
+.product-image {
+  position: relative;
+  overflow: hidden;
+}
+
+.product-image::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 60%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.06), transparent);
+  transform: skewX(-25deg);
+  transition: left 0.6s;
+}
+
+.product-card:hover .product-image::after {
+  left: 200%;
+}
+
+.product-badge {
+  animation: glowPulse 2s infinite;
+  font-family: 'Poppins', sans-serif;
+}
+
+.buy-now-btn {
+  position: relative;
+  overflow: hidden;
+}
+
+.buy-now-btn::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.12), transparent);
+  transition: left 0.5s;
+}
+
+.buy-now-btn:hover::after {
+  left: 200%;
+}
+
+.section-title h2 {
+  font-size: 38px;
+  position: relative;
+  display: inline-block;
+}
+
+.section-title h2::after {
+  background: linear-gradient(90deg, #ff7a00, #ffb347);
+  border-radius: 4px;
+}
+
+.section-title {
+  animation: fadeInUp 0.7s ease both;
+}
+
+.product-card,
+.feature-box,
+.step,
+.process-card,
+.custom-left,
+.custom-right,
+.shop-banner,
+.category-head,
+.footer-col,
+.why-card,
+.custom-hero,
+.custom-form-box {
+  opacity: 0;
+  transform: translateY(40px);
+  transition: opacity 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+              transform 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.revealed {
+  opacity: 1 !important;
+  transform: translateY(0) !important;
+}
+
+.feature-box {
+  padding: 25px 15px;
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  border-radius: 12px;
+  transition: transform 0.4s, border-color 0.4s, background 0.4s;
+}
+
+.feature-box:hover {
+  transform: translateY(-6px);
+  border-color: rgba(255, 122, 0, 0.2);
+  background: rgba(255, 122, 0, 0.03);
+}
+
+.feature-box i {
+  font-size: 32px;
+  transition: transform 0.4s;
+}
+
+.feature-box:hover i {
+  transform: scale(1.2);
+}
+
+.step span {
+  transition: transform 0.4s, box-shadow 0.4s;
+}
+
+.step:hover span {
+  transform: scale(1.1);
+  box-shadow: 0 0 25px rgba(255, 122, 0, 0.4);
+}
+
+.footer-col h3 {
+  position: relative;
+  display: inline-block;
+  padding-bottom: 8px;
+}
+
+.footer-col h3::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 30px;
+  height: 2px;
+  background: #ff7a00;
+  border-radius: 2px;
+}
+
+.socials a {
+  transition: transform 0.4s, background 0.3s;
+}
+
+.socials a:hover {
+  transform: translateY(-4px) scale(1.1);
+  background: #ff7a00;
+}
+
+.announcement-bar {
+  position: relative;
+  overflow: hidden;
+}
+
+.announcement-bar p {
+  font-family: 'Playfair Display', serif;
+  letter-spacing: 1px;
+}
+
+.announcement-bar::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.08), transparent);
+  animation: shimmer 3s linear infinite;
+  background-size: 200% 100%;
+  pointer-events: none;
+}
+
+.filter-btn {
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.3s, border-color 0.3s;
+}
+
+.filter-btn:hover {
+  transform: translateY(-6px) scale(1.03);
+}
+
+.custom-form-box {
+  border: 1px solid rgba(255, 122, 0, 0.1);
+  animation: borderGlow 3s ease-in-out infinite;
+}
+
+.custom-submit-btn {
+  position: relative;
+  overflow: hidden;
+}
+
+.custom-submit-btn::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.12), transparent);
+  transition: left 0.5s;
+}
+
+.custom-submit-btn:hover::after {
+  left: 200%;
+}
+
+.login-box, .register-box {
+  animation: fadeInScale 0.5s ease;
+}
+
+.checkout-modal {
+  animation: fadeInUp 0.35s ease;
+}
+
+.toast.show {
+  animation: fadeInUp 0.3s ease;
+}
+
+@media (max-width: 768px) {
+  .hero-content h1 {
+    font-size: 42px !important;
+  }
+  .section-title h2 {
+    font-size: 28px;
+  }
+  .hero-image {
+    animation: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .hero-content h1 {
+    font-size: 32px !important;
+  }
+  .section-title h2 {
+    font-size: 24px;
+  }
+}

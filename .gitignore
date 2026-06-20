@@ -4,3 +4,16 @@ backend/.env
 pehrawa.db
 *.log
 backend/uploads/
+backend/build-theme-zip.js
+backend/check-scopes.js
+backend/check-update.js
+backend/create-zip.js
+backend/create-zip2.js
+backend/get-themes.js
+backend/routes/shopifyRoutes.js
+backend/services/shopify.js
+backend/setup-shopify.js
+backend/upload-theme.js
+backend/upload-theme2.js
+pehrawa-check-final/
+pehrawa-theme/

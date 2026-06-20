@@ -28,6 +28,7 @@ const orderRoutes = require("./routes/orderRoutes");
 const requestRoutes = require("./routes/requestRoutes");
 const verifyAdmin = require("./middleware/auth");
 const authRoutes = require("./routes/authRoutes");
+const shopifyRoutes = require("./routes/shopifyRoutes");
 
 const app = express();
 
@@ -73,6 +74,7 @@ app.use("/api/admin", adminRoutes);
 app.use("/api/products", verifyAdmin, productRoutes);
 app.use("/api/orders", verifyAdmin, orderRoutes);
 app.use("/api/requests", verifyAdmin, requestRoutes);
+app.use("/api/shopify", verifyAdmin, shopifyRoutes);
 app.use("/api/customers", customerRoutes);
 app.use("/api/user", customerRoutes);
 

@@ -280,41 +280,6 @@ function showToast(message) {
 }
 
 // ===============================
-// REVEAL ANIMATION
-// ===============================
-
-const revealElements =
-  document.querySelectorAll(
-    ".product-card, .feature-box, .step"
-  );
-
-function revealOnScroll() {
-
-  revealElements.forEach((element) => {
-
-    const windowHeight =
-      window.innerHeight;
-
-    const revealTop =
-      element.getBoundingClientRect().top;
-
-    if (revealTop < windowHeight - 100) {
-
-      element.classList.add("revealed");
-    }
-
-  });
-
-}
-
-window.addEventListener(
-  "scroll",
-  revealOnScroll
-);
-
-revealOnScroll();
-
-// ===============================
 // LOADER
 // ===============================
 
