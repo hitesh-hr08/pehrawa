@@ -177,15 +177,17 @@ font-size:13px !important;
 }
 
 .hero-content h4{
+    font-family: 'Playfair Display', serif;
     font-size:38px;
     font-weight:700;
     margin-bottom:10px;
+    letter-spacing:5px;
+    color:#fff;
 }
 
 .hero-content h1{
     font-size:90px;
     line-height:1;
-    color:#ff7a00;
     font-weight:800;
     margin-bottom:15px;
 }
@@ -694,12 +696,14 @@ font-size:13px !important;
 
 @media(max-width:480px){
 
+.hero-content h4{
+    font-size:18px;
+    letter-spacing:2px;
+}
+
 .hero-content h1{
     font-size:36px;
 }
-
-.hero-content h4{
-    font-size:18px;
 }
 
 .hero-content h3{
@@ -763,12 +767,14 @@ font-size:13px !important;
 
 @media(max-width:380px){
 
+.hero-content h4{
+    font-size:15px;
+    letter-spacing:1px;
+}
+
 .hero-content h1{
     font-size:28px;
 }
-
-.hero-content h4{
-    font-size:15px;
 }
 
 .hero-content h3{
