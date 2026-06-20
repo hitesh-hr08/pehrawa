@@ -241,17 +241,36 @@
 
 // === 13. IMAGE REVEAL ON SCROLL ===
 (function(){
-    var imgs = document.querySelectorAll(".hero-image img,.product-card img,.about-content img,.contact-content img");
-    if(!("IntersectionObserver" in window)) return;
-    var obs = new IntersectionObserver(function(entries){
-        entries.forEach(function(entry){
-            if(entry.isIntersecting){
-                entry.target.classList.add("img-revealed");
-                obs.unobserve(entry.target);
-            }
+    function initImageReveal() {
+        var imgs = document.querySelectorAll(".hero-image img,.product-card img,.about-content img,.contact-content img");
+        if(!("IntersectionObserver" in window)) {
+            imgs.forEach(function(img){ img.classList.add("img-revealed"); });
+            return null;
+        }
+        var obs = new IntersectionObserver(function(entries){
+            entries.forEach(function(entry){
+                if(entry.isIntersecting){
+                    entry.target.classList.add("img-revealed");
+                    obs.unobserve(entry.target);
+                }
+            });
+        },{threshold:.15});
+        imgs.forEach(function(img){ obs.observe(img); });
+        return obs;
+    }
+
+    var obs = initImageReveal();
+
+    // Re-run for dynamically loaded product images (home-products.js)
+    var grid = document.getElementById("bestSellerGrid");
+    if (grid) {
+        var mo = new MutationObserver(function(){
+            document.querySelectorAll(".product-card img:not(.img-revealed)").forEach(function(img){
+                img.classList.add("img-revealed");
+            });
         });
-    },{threshold:.15});
-    imgs.forEach(function(img){ obs.observe(img); });
+        mo.observe(grid, { childList: true, subtree: true });
+    }
 })();
 
 // === 14. SCROLL PROGRESS BAR ===
