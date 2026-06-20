@@ -189,7 +189,11 @@
         var name = line.split("|")[0]?.trim() || "Item";
         var size = (line.match(/Size:\s*(\S+)/i) || [])[1] || "M";
         var qty = parseInt((line.match(/Qty:\s*(\d+)/i) || [])[1]) || 1;
+        // Support both old format (Rs. total) and new format (Rs. unitPrice | Total: Rs. total)
+        var hasTotal = /Total:\s*Rs\.?\s*[\d.]+/i.test(line);
         var price = parseFloat((line.match(/Rs\.?\s*([\d.]+)/i) || [])[1]) || 0;
+        // Old format stored price*qty in Rs. — divide by qty to get unit price
+        if (!hasTotal && qty > 1) price = price / qty;
         var img = "../images/product1.png";
         var cat = (name || "").toLowerCase();
         if (cat.includes("premium")||cat.includes("printed")) img = "../images/product2.png";
@@ -231,6 +235,7 @@
       var steps = isCustom
         ? [
             { label: "Placed", done: true },
+            { label: "Pending", done: sc === "pending" || sc === "reviewing" || sc === "approved" },
             { label: "Reviewing", done: sc === "reviewing" || sc === "approved" },
             { label: "Approved", done: sc === "approved" }
           ]
