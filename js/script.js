@@ -509,3 +509,28 @@ whatsappURL,
 
 } */
 
+// Theme toggle
+(function(){
+    const toggle = document.querySelector('.theme-toggle');
+    if(!toggle) return;
+    const icon = toggle.querySelector('i');
+    const saved = localStorage.getItem('theme');
+    if(saved === 'light'){
+        document.documentElement.setAttribute('data-theme','light');
+        icon.className = 'fa-regular fa-sun';
+    }
+    toggle.addEventListener('click',()=>{
+        const html = document.documentElement;
+        const isLight = html.getAttribute('data-theme') === 'light';
+        if(isLight){
+            html.removeAttribute('data-theme');
+            localStorage.setItem('theme','dark');
+            icon.className = 'fa-regular fa-moon';
+        } else {
+            html.setAttribute('data-theme','light');
+            localStorage.setItem('theme','light');
+            icon.className = 'fa-regular fa-sun';
+        }
+    });
+})();
+
