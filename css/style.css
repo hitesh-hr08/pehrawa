@@ -280,28 +280,7 @@ font-size:13px !important;
     height:auto;
 }
 
-.avatar-3d{
-    position:relative;
-    width:100%;
-    max-width:400px;
-    margin:0 auto;
-}
 
-.avatar-svg{
-    width:100%;
-    height:auto;
-    display:block;
-    animation:avatarFloat 4s ease-in-out infinite;
-    filter:drop-shadow(0 0 60px rgba(255,122,0,.08));
-}
-
-.avatar-glow{
-    position:absolute;
-    inset:0;
-    background:radial-gradient(ellipse at 50% 40%,rgba(255,122,0,.06),transparent 70%);
-    animation:avatarPulse 3s ease-in-out infinite;
-    pointer-events:none;
-}
 
 /* ===========================
    FEATURES
@@ -2365,20 +2344,4 @@ transform:translateX(-100%);
   }
 }
 
-@keyframes avatarFloat{
-  0%,100%{transform:translateY(0) rotate(-1deg)}
-  50%{transform:translateY(-12px) rotate(1deg)}
-}
 
-@keyframes avatarPulse{
-  0%,100%{opacity:.6}
-  50%{opacity:1}
-}
-
-@media(max-width:991px){
-  .avatar-3d{max-width:320px}
-}
-
-@media(max-width:768px){
-  .avatar-3d{max-width:260px}
-}
