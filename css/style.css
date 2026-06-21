@@ -185,23 +185,6 @@ img{
     opacity:.7;
 }
 
-.theme-toggle{
-    background:none;
-    border:none;
-    color:var(--text2);
-    font-size:17px;
-    cursor:pointer;
-    padding:4px;
-    line-height:1;
-    transition:color .3s,transform .3s;
-    display:flex;
-    align-items:center;
-}
-
-.theme-toggle:hover{
-    color:var(--accent);
-    transform:rotate(15deg);
-}
 .login-btn{
 display:flex;
 align-items:center;
