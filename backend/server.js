@@ -550,20 +550,28 @@ var HOST = process.env.HOST || "0.0.0.0";
         WHEN 9 THEN '/images/Shirt2.webp'
         WHEN 16 THEN '/images/Shirt3.webp'
         ELSE image_url END
-       WHERE id IN (8, 9, 10, 11, 12, 13, 14, 15, 16, 17)
-
-      -- Insert jeans products if they don't exist
-      INSERT INTO products (name, description, price, image_url, stock, category)
-      SELECT 'Classic Blue Jeans', 'Regular fit blue denim jeans for everyday wear.', 1299, '/images/Jean1.webp', 15, 'JEANS'
-      WHERE NOT EXISTS (SELECT 1 FROM products WHERE name = 'Classic Blue Jeans');
-
-      INSERT INTO products (name, description, price, image_url, stock, category)
-      SELECT 'Slim Black Jeans', 'Slim fit black denim jeans for modern streetwear looks.', 1399, '/images/Jean2.webp', 12, 'JEANS'
-      WHERE NOT EXISTS (SELECT 1 FROM products WHERE name = 'Slim Black Jeans');`
+       WHERE id IN (8, 9, 10, 11, 12, 13, 14, 15, 16, 17)`
     );
     console.log("Database migration: updated product images (watch, sunglass, footwear, shirts)");
   } catch (err) {
     console.error("Product image migration error (non-fatal):", err.message);
+  }
+
+  // Insert jeans products if they don't exist
+  try {
+    await pool.query(
+      `INSERT INTO products (name, description, price, image_url, stock, category)
+       SELECT 'Classic Blue Jeans', 'Regular fit blue denim jeans for everyday wear.', 1299, '/images/Jean1.webp', 15, 'JEANS'
+       WHERE NOT EXISTS (SELECT 1 FROM products WHERE name = 'Classic Blue Jeans')`
+    );
+    await pool.query(
+      `INSERT INTO products (name, description, price, image_url, stock, category)
+       SELECT 'Slim Black Jeans', 'Slim fit black denim jeans for modern streetwear looks.', 1399, '/images/Jean2.webp', 12, 'JEANS'
+       WHERE NOT EXISTS (SELECT 1 FROM products WHERE name = 'Slim Black Jeans')`
+    );
+    console.log("Database migration: inserted jeans products");
+  } catch (err) {
+    console.error("Jeans product insert error (non-fatal):", err.message);
   }
 })();
 
