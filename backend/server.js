@@ -543,10 +543,13 @@ var HOST = process.env.HOST || "0.0.0.0";
         WHEN 15 THEN '/images/Watch2.jpg'
         WHEN 12 THEN '/images/Sunglasses1.webp'
         WHEN 13 THEN '/images/Sunglasses2.webp'
+        WHEN 10 THEN '/images/Footwear1.webp'
+        WHEN 11 THEN '/images/Footwear2.jpg'
+        WHEN 17 THEN '/images/Footwear3.jpg'
         ELSE image_url END
-       WHERE id IN (12, 13, 14, 15)`
+       WHERE id IN (10, 11, 12, 13, 14, 15, 17)`
     );
-    console.log("Database migration: updated watch & sunglass product images");
+    console.log("Database migration: updated product images (watch, sunglass, footwear)");
   } catch (err) {
     console.error("Product image migration error (non-fatal):", err.message);
   }
