@@ -7,24 +7,32 @@
   let activeFilter = "ALL";
   let searchTerm = "";
 
+  const staticFallback = [
+    { id: 1, name: "Fearless Oversized Tee", price: 799, image_url: "../images/product1.png" },
+    { id: 2, name: "Shadow Anime Tee", price: 749, image_url: "../images/product2.png" },
+    { id: 3, name: "Abstract Vision Tee", price: 749, image_url: "../images/product3.png" },
+    { id: 4, name: "Minimal Logo Tee", price: 699, image_url: "../images/product4.png" },
+    { id: 5, name: "Street Graphic Tee", price: 849, image_url: "../images/product5.png" },
+    { id: 6, name: "Urban Anime Tee", price: 799, image_url: "../images/product6.png" }
+  ];
+
   if (!productGrid) return;
+
+  const staticProductsHTML = productGrid.innerHTML;
 
   async function loadShopProducts() {
     try {
-      productGrid.innerHTML = `<div class="shop-state">Loading Pehrawa products...</div>`;
-
       const res = await fetch(API_URL);
       const data = await res.json();
 
       if (!data.success) {
-        productGrid.innerHTML = `<div class="shop-state">Unable to load products.</div>`;
         return;
       }
 
       shopProducts = data.products;
       renderProducts();
     } catch (err) {
-      productGrid.innerHTML = `<div class="shop-state">Start backend server to load live products.</div>`;
+      // Leave static HTML products visible
     }
   }
 
@@ -93,7 +101,7 @@
   }
 
   function findProduct(productId) {
-    return shopProducts.find((item) => item.id === productId);
+    return shopProducts.find((item) => item.id === productId) || staticFallback.find((item) => item.id === productId);
   }
 
   function saveItem(key, productId) {

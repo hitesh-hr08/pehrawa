@@ -23,6 +23,8 @@ async function loadProductDetails() {
     if (!data.success) {
       document.getElementById("productName").innerText = "Product Not Found";
       document.getElementById("productDescription").innerText = data.message || "This product is unavailable.";
+      document.getElementById("productPrice").innerHTML = "&#8377;0.00";
+      document.getElementById("productImage").src = "../images/product1.png";
       return;
     }
 

@@ -4,7 +4,9 @@
   "description": "Pehrawa Menswear - E-commerce",
   "main": "backend/server.js",
   "scripts": {
-    "start": "node backend/server.js"
+    "start": "node backend/server.js",
+    "serve:external": "node backend/server.js & npx ngrok http 5000",
+    "tunnel": "npx ngrok http 5000"
   },
   "keywords": [],
   "author": "",
