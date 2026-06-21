@@ -515,6 +515,9 @@ whatsappURL,
     if(!bar) return;
     var text = bar.textContent || bar.innerText;
     if(!text) return;
-    bar.innerHTML = '<div class="marquee-wrap"><span>' + text + '</span><span>' + text + '</span></div>';
+    var wrap = document.createElement('div');
+    wrap.className = 'marquee-wrap';
+    wrap.innerHTML = '<span>' + text + '</span><span>' + text + '</span>';
+    bar.parentNode.replaceChild(wrap, bar);
 })();
 
