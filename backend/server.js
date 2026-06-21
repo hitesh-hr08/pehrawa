@@ -535,24 +535,47 @@ var HOST = process.env.HOST || "0.0.0.0";
     console.error("Back-fill migration error (non-fatal):", err.message);
   }
 
-  // Update product images to use dedicated images
+  // Update product images to use dedicated images (by category order, works on any DB)
   try {
+    // WATCHES
     await pool.query(
-      `UPDATE products SET image_url = CASE id
-        WHEN 14 THEN '/images/Watch1.jpg'
-        WHEN 15 THEN '/images/Watch2.jpg'
-        WHEN 12 THEN '/images/Sunglasses1.webp'
-        WHEN 13 THEN '/images/Sunglasses2.webp'
-        WHEN 10 THEN '/images/Footwear1.webp'
-        WHEN 11 THEN '/images/Footwear2.jpg'
-        WHEN 17 THEN '/images/Footwear3.jpg'
-        WHEN 8 THEN '/images/Shirt1.avif'
-        WHEN 9 THEN '/images/Shirt2.webp'
-        WHEN 16 THEN '/images/Shirt3.webp'
-        ELSE image_url END
-       WHERE id IN (8, 9, 10, 11, 12, 13, 14, 15, 16, 17)`
+      `WITH ranked AS (SELECT id, ROW_NUMBER() OVER (ORDER BY id) as rn FROM products WHERE category = 'WATCHES')
+       UPDATE products SET image_url = CASE ranked.rn
+         WHEN 1 THEN '/images/Watch1.jpg'
+         WHEN 2 THEN '/images/Watch2.jpg'
+         ELSE image_url END
+       FROM ranked WHERE products.id = ranked.id`
     );
-    console.log("Database migration: updated product images (watch, sunglass, footwear, shirts)");
+    // SUNGLASSES
+    await pool.query(
+      `WITH ranked AS (SELECT id, ROW_NUMBER() OVER (ORDER BY id) as rn FROM products WHERE category = 'SUNGLASSES')
+       UPDATE products SET image_url = CASE ranked.rn
+         WHEN 1 THEN '/images/Sunglasses1.webp'
+         WHEN 2 THEN '/images/Sunglasses2.webp'
+         ELSE image_url END
+       FROM ranked WHERE products.id = ranked.id`
+    );
+    // FOOTWEAR
+    await pool.query(
+      `WITH ranked AS (SELECT id, ROW_NUMBER() OVER (ORDER BY id) as rn FROM products WHERE category = 'FOOTWEAR')
+       UPDATE products SET image_url = CASE ranked.rn
+         WHEN 1 THEN '/images/Footwear1.webp'
+         WHEN 2 THEN '/images/Footwear2.jpg'
+         WHEN 3 THEN '/images/Footwear3.jpg'
+         ELSE image_url END
+       FROM ranked WHERE products.id = ranked.id`
+    );
+    // SHIRTS
+    await pool.query(
+      `WITH ranked AS (SELECT id, ROW_NUMBER() OVER (ORDER BY id) as rn FROM products WHERE category = 'SHIRTS')
+       UPDATE products SET image_url = CASE ranked.rn
+         WHEN 1 THEN '/images/Shirt1.avif'
+         WHEN 2 THEN '/images/Shirt2.webp'
+         WHEN 3 THEN '/images/Shirt3.webp'
+         ELSE image_url END
+       FROM ranked WHERE products.id = ranked.id`
+    );
+    console.log("Database migration: updated product images by category (watch, sunglass, footwear, shirts)");
   } catch (err) {
     console.error("Product image migration error (non-fatal):", err.message);
   }
@@ -562,7 +585,7 @@ var HOST = process.env.HOST || "0.0.0.0";
     await pool.query(
       `INSERT INTO products (name, description, price, image_url, stock, category)
        SELECT 'Classic Blue Jeans', 'Regular fit blue denim jeans for everyday wear.', 1299, '/images/Jean1.webp', 15, 'JEANS'
-       WHERE NOT EXISTS (SELECT 1 FROM products WHERE name = 'Classic Blue Jeans')`
+       WHERE NOT EXISTS (SELECT 1 FROM products WHERE category = 'JEANS')`
     );
     await pool.query(
       `INSERT INTO products (name, description, price, image_url, stock, category)
