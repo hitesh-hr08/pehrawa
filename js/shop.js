@@ -41,7 +41,7 @@
     var filterMap = {
       "T-SHIRTS": function(cat){ return tshirtCats.some(function(k){ return cat.includes(k); }); },
       "SHIRTS": function(cat){ return cat.includes("SHIRTS") && !cat.includes("T-SHIRTS"); },
-      "JEANS": function(){ return false; }
+      "JEANS": function(cat){ return cat.includes("JEANS"); }
     };
     const filteredProducts = shopProducts.filter((product) => {
       const category = (product.category || "").toUpperCase();
