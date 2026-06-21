@@ -534,3 +534,12 @@ whatsappURL,
     });
 })();
 
+// Announcement bar seamless marquee
+(function(){
+    var bar = document.querySelector('.announcement-bar p');
+    if(!bar) return;
+    var text = bar.textContent || bar.innerText;
+    if(!text) return;
+    bar.innerHTML = '<div class="marquee-wrap"><span>' + text + '</span><span>' + text + '</span></div>';
+})();
+

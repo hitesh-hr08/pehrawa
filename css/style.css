@@ -1558,23 +1558,26 @@ top:0;
 z-index:1001;
 }
 
-.announcement-bar p{
+.announcement-bar .marquee-wrap{
+display:flex;
+white-space:nowrap;
+animation:scrollText 30s linear infinite;
+}
+
+.announcement-bar .marquee-wrap span{
 color:var(--text);
 font-size:13px;
 font-weight:500;
-white-space:nowrap;
-display:inline-block;
-animation:scrollText 20s linear infinite;
+padding:0 50px;
+flex-shrink:0;
 }
 
 @keyframes scrollText{
-
 0%{
-transform:translateX(100%);
+transform:translateX(0);
 }
-
 100%{
-transform:translateX(-100%);
+transform:translateX(-50%);
 }
 
 }
