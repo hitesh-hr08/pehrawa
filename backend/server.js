@@ -535,18 +535,20 @@ var HOST = process.env.HOST || "0.0.0.0";
     console.error("Back-fill migration error (non-fatal):", err.message);
   }
 
-  // Update watch product images to use dedicated watch images
+  // Update product images to use dedicated images
   try {
     await pool.query(
       `UPDATE products SET image_url = CASE id
         WHEN 14 THEN '/images/Watch1.jpg'
         WHEN 15 THEN '/images/Watch2.jpg'
+        WHEN 12 THEN '/images/Sunglasses1.webp'
+        WHEN 13 THEN '/images/Sunglasses2.webp'
         ELSE image_url END
-       WHERE id IN (14, 15)`
+       WHERE id IN (12, 13, 14, 15)`
     );
-    console.log("Database migration: updated watch product images");
+    console.log("Database migration: updated watch & sunglass product images");
   } catch (err) {
-    console.error("Watch image migration error (non-fatal):", err.message);
+    console.error("Product image migration error (non-fatal):", err.message);
   }
 })();
 
