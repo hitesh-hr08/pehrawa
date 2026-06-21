@@ -534,6 +534,20 @@ var HOST = process.env.HOST || "0.0.0.0";
   } catch (err) {
     console.error("Back-fill migration error (non-fatal):", err.message);
   }
+
+  // Update watch product images to use dedicated watch images
+  try {
+    await pool.query(
+      `UPDATE products SET image_url = CASE id
+        WHEN 14 THEN '/images/Watch1.jpg'
+        WHEN 15 THEN '/images/Watch2.jpg'
+        ELSE image_url END
+       WHERE id IN (14, 15)`
+    );
+    console.log("Database migration: updated watch product images");
+  } catch (err) {
+    console.error("Watch image migration error (non-fatal):", err.message);
+  }
 })();
 
 app.listen(PORT, HOST, function () {
