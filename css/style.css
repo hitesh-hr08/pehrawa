@@ -1550,17 +1550,21 @@ color:#ff7a00;
 
 .announcement-bar{
 background:#e88d38;
-padding:10px 20px;
+padding:6px 0;
 text-align:center;
 overflow:hidden;
+position:sticky;
+top:0;
+z-index:1001;
 }
 
 .announcement-bar p{
 color:var(--text);
-font-size:14px;
-font-weight:600;
+font-size:13px;
+font-weight:500;
 white-space:nowrap;
-animation:scrollText 18s linear infinite;
+display:inline-block;
+animation:scrollText 20s linear infinite;
 }
 
 @keyframes scrollText{
@@ -2217,13 +2221,6 @@ transform:translateX(-100%);
   transform: translateY(-4px) scale(1.12);
   background: #ff7a00;
   box-shadow: 0 6px 20px rgba(255, 122, 0, 0.3);
-}
-
-/* ===========================
-   ANNOUNCEMENT BAR
-   =========================== */
-.announcement-bar {
-  position: relative;
 }
 
 /* ===========================
