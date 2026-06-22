@@ -1791,20 +1791,13 @@ RESPONSIVE
   .hero-left{padding:50px 16px 0;}
   .mini{font-size:11px;letter-spacing:4px;margin-bottom:14px;}
   .sub{font-size:15px;line-height:1.6;}
-  .hero-btns{margin-top:24px;}
-  .hero-btns a{height:44px;padding:0 18px;font-size:12px;}
+  .hero-btns{margin-top:20px;flex-direction:column;}
+  .hero-btns a{height:44px;padding:0 18px;font-size:12px;width:100%;}
   .hm{margin-top:28px;gap:12px;}
-  .hm-img{height:26px;}
-  .hm-by{font-size:10px;letter-spacing:2px;}
-  .hm-logo{height:18px;}
-  .hero-btns{margin-top:24px;}
-  .hero-btns a{height:48px;padding:0 20px;font-size:13px;}
-
-  .hm{margin-top:36px;gap:14px;}
   .hm::before{width:30px;}
-  .hm-img{height:30px;}
-  .hm-by{font-size:11px;letter-spacing:2px;}
-  .hm-logo{height:22px;}
+  .hm-img{height:22px;}
+  .hm-by{font-size:10px;letter-spacing:2px;}
+  .hm-logo{height:16px;}
 
   .category{padding:30px 0;}
   .category h2{font-size:15px;letter-spacing:5px;margin-bottom:24px;}
