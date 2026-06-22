@@ -1140,8 +1140,23 @@ ABOUT PAGE
 height:900px;
 display:flex;
 align-items:center;
+position:relative;
 background:url("../images/about-image.png") no-repeat center/contain, linear-gradient(180deg,#050505,#080808);
 border-bottom:1px solid #121212;
+}
+.about-caption{
+position:absolute;
+bottom:60px;
+left:0;
+right:0;
+text-align:center;
+font-size:16px;
+color:#999;
+max-width:700px;
+margin:auto;
+padding:0 20px;
+letter-spacing:1px;
+line-height:1.6;
 }
 
 .about-wrap{
@@ -1631,6 +1646,7 @@ nav{display:none;}
 .product-grid,.benefits .container,.foot{grid-template-columns:1fr;}
 .about-wrap{grid-template-columns:1fr;}
 .about-hero{background-size:cover;background-position:center;}
+.about-caption{position:static;padding:30px 20px 0;}
 .about-left h1{font-size:56px;}
 .story-box{grid-template-columns:1fr;gap:40px;}
 .story h2{font-size:42px;}
