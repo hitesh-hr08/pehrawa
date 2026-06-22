@@ -521,3 +521,27 @@ whatsappURL,
     bar.parentNode.replaceChild(wrap, bar);
 })();
 
+// ===============================
+// MOBILE MENU TOGGLE
+// ===============================
+(function(){
+  var menuBtn = document.querySelector('.menu-btn');
+  var menu = document.getElementById('mobileMenu');
+  var overlay = document.getElementById('mobileOverlay');
+  var closeBtn = document.getElementById('mobileClose');
+  if(!menuBtn || !menu || !overlay || !closeBtn) return;
+  function openMenu(){
+    menu.classList.add('open');
+    overlay.classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeMenu(){
+    menu.classList.remove('open');
+    overlay.classList.remove('open');
+    document.body.style.overflow = '';
+  }
+  menuBtn.addEventListener('click', openMenu);
+  closeBtn.addEventListener('click', closeMenu);
+  overlay.addEventListener('click', closeMenu);
+})();
+
