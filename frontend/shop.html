@@ -2,456 +2,143 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>Shop | Pehrawa Menswear</title>
-
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Pehrawa | Shop</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-
-<link rel="stylesheet"
-href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-
-    <link rel="stylesheet" href="../css/style.css">
-
-    <script src="../js/config.js"></script>
+<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+<script src="../js/config.js"></script>
 </head>
-
 <body>
 
-<div class="announcement-bar">
-    <p>&#128666; FREE SHIPPING ON ORDERS ABOVE &#8377;999 | &#128293; BUY 2 TEES & GET 10% OFF</p>
-</div>
+<div class="top-bar">FREE SHIPPING ABOVE ₹999 | BUY 2 TEES GET 10% OFF</div>
 
-<!-- HEADER -->
-
-<header class="header">
-
-<div class="container">
-
-<a href="home.html" class="logo">
-<img src="../images/logo.png" alt="Pehrawa Logo">
-</a>
-
-<nav class="navbar">
-
-<ul class="nav-links">
+<header>
+<div class="container nav">
+<a href="home.html" class="logo"><img src="../images/logo.png" alt="Pehrawa Logo"></a>
+<nav>
+<ul>
 <li><a href="home.html">HOME</a></li>
-<li><a href="shop.html">SHOP</a></li>
+<li><a class="active" href="shop.html">SHOP</a></li>
+<li><a href="collections.html">COLLECTIONS</a></li>
 <li><a href="custom-print.html">CUSTOM PRINT</a></li>
-<li><a href="track-order.html">TRACK ORDER</a></li>
-<li><a href="about.html">ABOUT US</a></li>
-<li><a href="contact.html">CONTACT US</a></li>
+<li><a href="about.html">ABOUT</a></li>
+<li><a href="contact.html">CONTACT</a></li>
 </ul>
-
 </nav>
-
-<div class="nav-icons">
-
+<div class="nav-right">
 <div class="search-wrapper">
-
-    <i class="fa-solid fa-magnifying-glass search-icon"></i>
-
-    <input
-    type="text"
-    class="search-input"
-    placeholder="Search products...">
-
+<i class="fa-solid fa-magnifying-glass search-icon"></i>
+<input type="text" class="search-input" placeholder="Search products...">
 </div>
-
-<a href="wishlist.html">
-<i class="fa-regular fa-heart"></i>
-<span>0</span>
-</a>
-
-<a href="cart.html">
-<i class="fa-solid fa-cart-shopping"></i>
-<span>0</span>
-</a>
-
-
-<div class="menu-btn">
-<i class="fa-solid fa-bars"></i>
+<a href="wishlist.html"><i class="fa-regular fa-heart"></i><span>0</span></a>
+<a href="cart.html"><i class="fa-solid fa-cart-shopping"></i><span>0</span></a>
+<a href="login.html" class="login-btn"><i class="fa-regular fa-user"></i><span class="login-text">LOGIN</span></a>
+<div class="menu-btn"><i class="fa-solid fa-bars"></i></div>
 </div>
-
 </div>
-
-</div>
-
 </header>
 
-<!-- PAGE BANNER -->
-
-<section class="shop-banner">
-
+<!-- SHOP HERO -->
+<section class="shop-hero">
 <div class="container">
-
-<h1>SHOP COLLECTION</h1>
-
-<p>
-Premium Fashion Essentials - T-Shirts, Shirts, Jeans, Footwear, Sunglasses, Watches & More
-</p>
-
+<div class="shop-text">
+<p>HOME / SHOP</p>
+<h1>SHOP ALL</h1>
+<span>Discover premium printed wear crafted for comfort and built to stand out.</span>
 </div>
-
+</div>
 </section>
 
-<!-- FILTERS -->
+<!-- SHOP MAIN -->
+<section class="shop-main">
+<div class="container shop-layout">
 
-<section class="shop-filters">
-
-<div class="container">
-
-<div class="category-head">
-<span>Shop by Category</span>
-<h2>Find Your Fit</h2>
+<!-- FILTER -->
+<aside class="filters">
+<h3>FILTER</h3>
+<div>
+<h4>CATEGORY</h4>
+<label><input type="checkbox"> T-Shirts</label>
+<label><input type="checkbox"> Shirts</label>
+<label><input type="checkbox"> Footwear</label>
+<label><input type="checkbox"> Sunglasses</label>
+<label><input type="checkbox"> Watches</label>
+<label><input type="checkbox"> Jeans</label>
 </div>
-
-<div class="filter-wrapper">
-
-<button class="filter-btn active" data-filter="ALL">
-<i class="fa-solid fa-border-all"></i>
-<span>All</span>
-</button>
-
-<button class="filter-btn" data-filter="T-SHIRTS">
-<i class="fa-solid fa-shirt"></i>
-<span>T-Shirts</span>
-</button>
-
-<button class="filter-btn" data-filter="SHIRTS">
-<i class="fa-solid fa-user-tie"></i>
-<span>Shirts</span>
-</button>
-
-<button class="filter-btn" data-filter="FOOTWEAR">
-<i class="fa-solid fa-shoe-prints"></i>
-<span>Footwear</span>
-</button>
-
-<button class="filter-btn" data-filter="SUNGLASSES">
-<i class="fa-solid fa-glasses"></i>
-<span>Sunglasses</span>
-</button>
-
-<button class="filter-btn" data-filter="WATCHES">
-<i class="fa-regular fa-clock"></i>
-<span>Watches</span>
-</button>
-
-<button class="filter-btn" data-filter="JEANS">
-<svg class="filter-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-  <path d="M6 2L4 11l2 10 3-1 1-8 2 8 3 1 2-10-2-9H6z"/>
-  <path d="M9 2v8"/>
-  <path d="M15 2v8"/>
-</svg>
-<span>Jeans</span>
-</button>
-
+<div>
+<h4>SIZE</h4>
+<label>S</label>
+<label>M</label>
+<label>L</label>
+<label>XL</label>
+<label>XXL</label>
 </div>
-
+<div>
+<h4>PRICE</h4>
+<label>₹499 – ₹999</label>
+<label>₹1000+</label>
 </div>
-
-</section>
+</aside>
 
 <!-- PRODUCTS -->
-
-<section class="products">
-
-<div class="container">
-
-<div class="product-grid">
-
-<!-- PRODUCT 1 -->
-
-<div class="product-card">
-
-<div class="product-image">
-<a href="product.html">
-<img src="../images/product1.png" alt="">
-</a>
+<div class="shop-products">
+<div class="shop-head">
+<p>Showing Products</p>
+<select>
+<option>Latest</option>
+<option>Popular</option>
+<option>Low Price</option>
+</select>
 </div>
-
-<div class="product-content">
-
-<p class="sku">PM-GR-001</p>
-
-<h3>Fearless Oversized Tee</h3>
-
-<div class="price">&#8377;799</div>
-
-<div class="product-actions">
-
-<button onclick="addToWishlist(1)">
-<i class="fa-regular fa-heart"></i>
-</button>
-
-<button onclick="addToCart(1)">
-<i class="fa-solid fa-cart-plus"></i>
-</button>
-
+<div class="product-grid" id="shopProductGrid">
+<div class="shop-state">Loading products...</div>
 </div>
-
-<button class="buy-now-btn"><i class="fa-solid fa-bag-shopping"></i>BUY NOW</button>
-
+<div class="pagination">
+<button>1</button>
+<button>2</button>
+<button>3</button>
+<button>→</button>
+</div>
 </div>
 
 </div>
-
-<!-- PRODUCT 2 -->
-
-<div class="product-card">
-
-<div class="product-image">
-<a href="product.html">
-<img src="../images/product2.png" alt="">
-</a>
-</div>
-
-<div class="product-content">
-
-<p class="sku">PM-GR-002</p>
-
-<h3>Shadow Anime Tee</h3>
-
-<div class="price">&#8377;749</div>
-
-<div class="product-actions">
-
-<button onclick="addToWishlist(2)">
-<i class="fa-regular fa-heart"></i>
-</button>
-
-<button onclick="addToCart(2)">
-<i class="fa-solid fa-cart-plus"></i>
-</button>
-
-</div>
-
-<button class="buy-now-btn"><i class="fa-solid fa-bag-shopping"></i>BUY NOW</button>
-
-</div>
-
-</div>
-
-<!-- PRODUCT 3 -->
-
-<div class="product-card">
-
-<div class="product-image">
-<a href="product.html">
-<img src="../images/product3.png" alt="">
-</a>
-</div>
-
-<div class="product-content">
-
-<p class="sku">PM-GR-003</p>
-
-<h3>Abstract Vision Tee</h3>
-
-<div class="price">&#8377;749</div>
-
-<div class="product-actions">
-
-<button onclick="addToWishlist(3)">
-<i class="fa-regular fa-heart"></i>
-</button>
-
-<button onclick="addToCart(3)">
-<i class="fa-solid fa-cart-plus"></i>
-</button>
-
-</div>
-
-<button class="buy-now-btn"><i class="fa-solid fa-bag-shopping"></i>BUY NOW</button>
-
-</div>
-
-</div>
-
-<!-- PRODUCT 4 -->
-
-<div class="product-card">
-
-<div class="product-image">
-<a href="product.html">
-<img src="../images/product4.png" alt="">
-</a>
-</div>
-
-<div class="product-content">
-
-<p class="sku">PM-OV-001</p>
-
-<h3>Minimal Logo Tee</h3>
-
-<div class="price">&#8377;699</div>
-
-<div class="product-actions">
-
-<button onclick="addToWishlist(4)">
-<i class="fa-regular fa-heart"></i>
-</button>
-
-<button onclick="addToCart(4)">
-<i class="fa-solid fa-cart-plus"></i>
-</button>
-
-</div>
-
-<button class="buy-now-btn"><i class="fa-solid fa-bag-shopping"></i>BUY NOW</button>
-
-</div>
-
-</div>
-
-<!-- PRODUCT 5 -->
-
-<div class="product-card">
-
-<div class="product-image">
-<a href="product.html">
-<img src="../images/product5.png" alt="">
-</a>
-</div>
-
-<div class="product-content">
-
-<p class="sku">PM-GR-005</p>
-
-<h3>Street Graphic Tee</h3>
-
-<div class="price">&#8377;849</div>
-
-<div class="product-actions">
-
-<button onclick="addToWishlist(5)">
-<i class="fa-regular fa-heart"></i>
-</button>
-
-<button onclick="addToCart(5)">
-<i class="fa-solid fa-cart-plus"></i>
-</button>
-
-</div>
-
-<button class="buy-now-btn"><i class="fa-solid fa-bag-shopping"></i>BUY NOW</button>
-
-</div>
-
-</div>
-
-<!-- PRODUCT 6 -->
-
-<div class="product-card">
-
-<div class="product-image">
-<a href="product.html">
-<img src="../images/product6.png" alt="">
-</a>
-</div>
-
-<div class="product-content">
-
-<p class="sku">PM-GR-006</p>
-
-<h3>Urban Anime Tee</h3>
-
-<div class="price">&#8377;799</div>
-
-<div class="product-actions">
-
-<button onclick="addToWishlist(6)">
-<i class="fa-regular fa-heart"></i>
-</button>
-
-<button onclick="addToCart(6)">
-<i class="fa-solid fa-cart-plus"></i>
-</button>
-
-</div>
-
-<button class="buy-now-btn"><i class="fa-solid fa-bag-shopping"></i>BUY NOW</button>
-
-</div>
-
-</div>
-
-</div>
-
-</div>
-
 </section>
 
 <!-- FOOTER -->
-
-<footer class="footer">
-
-<div class="container footer-grid">
-
-<div class="footer-col">
-
-<img src="../images/logo.png" class="footer-logo" alt="Pehrawa">
-
-<p>
-Premium oversized and graphic printed
-t-shirts for modern men.
-</p>
-
+<footer>
+<div class="container foot">
+<div>
+<img src="../images/logo.png" alt="Pehrawa Logo">
+<p>HOME OF HM — Premium printed and custom printed t-shirts for men who love to stand out.</p>
 <div class="socials">
 <a href="#"><i class="fab fa-facebook-f"></i></a>
 <a href="#"><i class="fab fa-instagram"></i></a>
 <a href="#"><i class="fab fa-youtube"></i></a>
 </div>
-
 </div>
-
-<div class="footer-col">
-
-<h3>QUICK LINKS</h3>
-
-<ul>
-<li><a href="home.html">Home</a></li>
-<li><a href="shop.html">Shop</a></li>
-<li><a href="about.html">About</a></li>
-<li><a href="contact.html">Contact</a></li>
-<li><a href="size-guide.html">Size Guide</a></li>
-</ul>
-
+<div>
+<h4>SHOP</h4>
+<a href="shop.html">All Products</a>
+<a href="shop.html">T-Shirts</a>
+<a href="collections.html">Collections</a>
 </div>
-
-<div class="footer-col">
-
-<h3>CUSTOMER CARE</h3>
-
-<ul>
-<li><a href="track-order.html">Track Order</a></li>
-<li><a href="shipping-policy.html">Shipping Policy</a></li>
-<li><a href="privacy-policy.html">Privacy Policy</a></li>
-<li><a href="terms.html">Terms &amp; Conditions</a></li>
-</ul>
-
+<div>
+<h4>HELP</h4>
+<a href="size-guide.html">Size Guide</a>
+<a href="shipping-policy.html">Shipping Policy</a>
+<a href="track-order.html">Track Order</a>
+<a href="terms.html">Terms & Conditions</a>
 </div>
-
-<div class="footer-col">
-
-<h3>CONTACT</h3>
-
+<div>
+<h4>CONTACT</h4>
 <p><i class="fa-solid fa-phone"></i> +91 9855707708</p>
 <p><i class="fa-solid fa-envelope"></i> pehrawamenswear@gmail.com</p>
-<p><i class="fa-solid fa-location-dot"></i> India</p>
-
+<p><i class="fa-solid fa-location-dot"></i> Punjab, India</p>
 </div>
-
 </div>
-
-<div class="copyright">
-&copy; 2026 Pehrawa Menswear. All Rights Reserved.
-</div>
-
+<div class="copyright">© 2026 Pehrawa Menswear. All Rights Reserved.</div>
 </footer>
 
 <div class="checkout-overlay" id="checkoutOverlay">
@@ -496,9 +183,3 @@ t-shirts for modern men.
 </a>
 </body>
 </html>
-
-
-
-
-
-

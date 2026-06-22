@@ -1,68 +1,31 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Signing in... | Pehrawa Menswear</title>
-<script src="../js/config.js"></script>
-<script src="../js/animations.js"></script>
-<style>
-  body{display:flex;align-items:center;justify-content:center;height:100vh;margin:0;font-family:'Poppins',sans-serif;background:#0d0d0d;color:#fff;}
-  .spinner{width:36px;height:36px;border:3px solid #2a2a2a;border-top-color:#f97316;border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 16px;}
-  @keyframes spin{to{transform:rotate(360deg)}}
-</style>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Authenticating | Pehrawa</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../css/style.css">
+<style>body{background:#050505;display:flex;align-items:center;justify-content:center;min-height:100vh;}.auth-box{text-align:center;color:#fff;}</style>
 </head>
 <body>
-  <div style="text-align:center;">
-    <div class="spinner"></div>
-    <h2>Signing you in...</h2>
-    <p style="color:#888;">Please wait a moment.</p>
-  </div>
-  <script>
-    (function () {
-      var params = new URLSearchParams(window.location.search);
-      var token = params.get("token");
-      var customerStr = params.get("customer");
-      var redirect = params.get("redirect") || "home.html";
-      var hasPassword = params.get("hasPassword");
-
-      if (token && customerStr) {
-        try {
-          var customer = JSON.parse(decodeURIComponent(customerStr));
-          localStorage.setItem("pehrawa_customer_token", token);
-          localStorage.setItem("pehrawa_customer", JSON.stringify(customer));
-          localStorage.setItem("customerId", customer.id);
-        } catch (e) {}
-      }
-
-      if (hasPassword === "false" && customerStr) {
-        try {
-          var c = JSON.parse(decodeURIComponent(customerStr));
-          window.location.replace("login.html?setpw=1&email=" + encodeURIComponent(c.email));
-        } catch (e) {
-          window.location.replace(redirect);
-        }
-      } else {
-        if (window.opener) {
-          window.opener.location.reload();
-          window.close();
-        } else {
-          window.location.replace(redirect);
-        }
-      }
-    })();
-  </script>
-<a href="https://wa.me/919855707708" target="_blank" class="whatsapp-float" aria-label="Chat on WhatsApp">
-  <i class="fa-brands fa-whatsapp"></i>
-  <span class="wa-tooltip">Chat with us</span>
-  <span class="wa-badge"></span>
-</a>
+<div class="auth-box"><h2 style="color:#ff6b00;">Authenticating...</h2><p style="color:#aaa;margin-top:12px;">Please wait while we sign you in.</p></div>
+<script src="../js/config.js"></script>
+<script>
+(async function(){
+  const params = new URLSearchParams(window.location.search);
+  const token = params.get("token");
+  if(token){
+    try {
+      const res = await fetch((window.PEHRAWA_API_BASE||"http://localhost:5000")+"/api/auth/verify?token="+token);
+      const data = await res.json();
+      if(data.success){
+        localStorage.setItem("pehrawaToken",data.token||token);
+        localStorage.setItem("pehrawaUser",JSON.stringify(data.user));
+        window.location.href = "home.html";
+      } else { window.location.href = "login.html?error=verify_failed"; }
+    } catch(e) { window.location.href = "login.html?error=server_error"; }
+  } else { window.location.href = "login.html?error=no_token"; }
+})();
+</script>
 </body>
 </html>
-
-
-
-
-
-
-

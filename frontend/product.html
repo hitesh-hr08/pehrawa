@@ -3,303 +3,116 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>Product Details | Pehrawa Menswear</title>
-
+<title>Product | Pehrawa</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-
 <link rel="stylesheet" href="../css/style.css">
-<link rel="stylesheet" href="../css/product.css">
-
-<link rel="stylesheet"
-href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 <script src="../js/config.js"></script>
 </head>
-
 <body>
+<div class="top-bar">FREE SHIPPING ABOVE ₹999</div>
 
-<div class="announcement-bar">
-    <p>&#128666; FREE SHIPPING ON ORDERS ABOVE &#8377;999 | &#128293; BUY 2 TEES & GET 10% OFF</p>
-</div>
-
-<header class="header">
-<div class="container">
-
-<a href="home.html" class="logo">
-<img src="../images/logo.png" alt="Pehrawa">
-</a>
-
-<nav class="navbar">
-<ul class="nav-links">
+<header>
+<div class="container nav">
+<a href="home.html" class="logo"><img src="../images/logo.png" alt="Pehrawa Logo"></a>
+<nav>
+<ul>
 <li><a href="home.html">HOME</a></li>
 <li><a href="shop.html">SHOP</a></li>
+<li><a href="collections.html">COLLECTIONS</a></li>
 <li><a href="custom-print.html">CUSTOM PRINT</a></li>
-<li><a href="track-order.html">TRACK ORDER</a></li>
-<li><a href="about.html">ABOUT US</a></li>
-<li><a href="contact.html">CONTACT US</a></li>
+<li><a href="about.html">ABOUT</a></li>
+<li><a href="contact.html">CONTACT</a></li>
 </ul>
 </nav>
-<div class="nav-icons">
-
-<div class="search-wrapper">
-
-    <i class="fa-solid fa-magnifying-glass search-icon"></i>
-
-    <input
-    type="text"
-    class="search-input"
-    placeholder="Search products...">
-
+<div class="nav-right">
+<div class="search-wrapper"><i class="fa-solid fa-magnifying-glass search-icon"></i><input type="text" class="search-input" placeholder="Search products..."></div>
+<a href="wishlist.html"><i class="fa-regular fa-heart"></i><span>0</span></a>
+<a href="cart.html"><i class="fa-solid fa-cart-shopping"></i><span>0</span></a>
+<a href="login.html" class="login-btn"><i class="fa-regular fa-user"></i><span class="login-text">LOGIN</span></a>
+<div class="menu-btn"><i class="fa-solid fa-bars"></i></div>
 </div>
-
-<a href="wishlist.html">
-<i class="fa-regular fa-heart"></i>
-<span>0</span>
-</a>
-
-<a href="cart.html">
-<i class="fa-solid fa-cart-shopping"></i>
-<span>0</span>
-</a>
-
-
-<div class="menu-btn">
-<i class="fa-solid fa-bars"></i>
-</div>
-
-</div>
-
 </div>
 </header>
 
-<section class="product-section">
-
+<section class="product-page" style="padding:80px 0;">
 <div class="container">
-
-<div class="product-grid">
-
-<div class="product-image">
-
-<img
-id="productImage"
-src="../images/product1.png"
-alt="Product">
-
+<div class="product-wrapper" style="display:grid;grid-template-columns:1fr 1fr;gap:50px;align-items:start;">
+<div>
+<img id="mainProductImage" src="../images/product1.png" alt="Product" style="width:100%;border:1px solid #222;">
+<div class="thumbs" style="display:flex;gap:10px;margin-top:15px;">
+<img src="../images/product1.png" style="width:90px;cursor:pointer;border:1px solid #333;" onclick="document.getElementById('mainProductImage').src=this.src">
+<img src="../images/product2.png" style="width:90px;cursor:pointer;border:1px solid #333;" onclick="document.getElementById('mainProductImage').src=this.src">
 </div>
-
+</div>
 <div class="product-details">
-
-<span class="badge">BEST SELLER</span>
-
-<h1 id="productName">
-Fearless Oversized Tee
-</h1>
-
-<h2 id="productPrice">
-₹799
-</h2>
-
-<p class="product-description" id="productDescription">
-
-Premium oversized t-shirt crafted from
-high-quality cotton for maximum comfort
-and style.
-
-</p>
-
-<div class="size-box">
-
-<h3>Select Size</h3>
-
-<div class="sizes">
-
-<button class="size-btn">S</button>
-<button class="size-btn">M</button>
-<button class="size-btn">L</button>
-<button class="size-btn">XL</button>
-<button class="size-btn">XXL</button>
-
+<p class="product-sku" style="color:#999;font-size:14px;" id="productSku">PM-GR-001</p>
+<h1 style="font-size:42px;margin:15px 0;" id="productName">Fearless Oversized Tee</h1>
+<div class="product-price" style="font-size:35px;font-weight:700;color:#ff6b00;margin-bottom:20px;" id="productPrice">₹799</div>
+<p class="product-description" style="color:#bbb;line-height:1.8;margin-bottom:25px;" id="productDesc">Premium cotton oversized t-shirt with high quality print.</p>
+<div><h4 style="margin-bottom:12px;">Size</h4><div class="size-options" style="display:flex;gap:10px;margin:15px 0 25px;">
+<button style="padding:12px 20px;background:#0d0d0d;border:1px solid #333;color:#fff;cursor:pointer;" onclick="selectSize(this)">S</button>
+<button style="padding:12px 20px;background:#0d0d0d;border:1px solid #333;color:#fff;cursor:pointer;" onclick="selectSize(this)">M</button>
+<button style="padding:12px 20px;background:#0d0d0d;border:1px solid #333;color:#fff;cursor:pointer;" onclick="selectSize(this)">L</button>
+<button style="padding:12px 20px;background:#0d0d0d;border:1px solid #333;color:#fff;cursor:pointer;" onclick="selectSize(this)">XL</button>
+<button style="padding:12px 20px;background:#0d0d0d;border:1px solid #333;color:#fff;cursor:pointer;" onclick="selectSize(this)">XXL</button>
+</div></div>
+<label style="display:block;margin-bottom:6px;">Quantity</label>
+<input type="number" id="qty" value="1" min="1" style="width:100px;padding:12px;margin:15px 0 25px;background:#0d0d0d;border:1px solid #333;color:#fff;">
+<div class="product-buttons" style="display:flex;gap:15px;">
+<button class="add-cart-btn" style="padding:15px 25px;background:#ff6b00;border:none;color:#000;font-weight:600;cursor:pointer;" onclick="addToCartFromProduct()">ADD TO CART</button>
+<button style="padding:15px 25px;border:1px solid #444;background:transparent;color:#fff;cursor:pointer;" onclick="addToWishlistFromProduct()"><i class="fa-regular fa-heart"></i> WISHLIST</button>
 </div>
-
-<a href="size-guide.html"
-class="size-guide-link">
-
-📏 View Size Guide
-
-</a>
-
 </div>
-
-<div class="quantity-box">
-
-<h3>Quantity</h3>
-
-<input
-type="number"
-id="quantity"
-value="1"
-min="1">
-
 </div>
-
-<div class="product-actions">
-
-<button
-class="add-cart-btn"
-id="addCartBtn">
-
-Add To Cart
-
-</button>
-
-<button
-class="buy-now-btn"
-id="buyWhatsapp">
-
-<i class="fa-solid fa-bag-shopping"></i> BUY NOW
-
-</button>
-
 </div>
-
-<div class="product-features">
-
-<p>✅ 100% Premium Cotton</p>
-<p>✅ Oversized Fit</p>
-<p>✅ Soft & Breathable Fabric</p>
-<p>✅ Pan India Delivery</p>
-
-</div>
-
-</div>
-
-</div>
-
-</div>
-
 </section>
 
-<!-- Reviews Section -->
-<section class="reviews-section">
+<section class="related-products" style="padding:70px 0;border-top:1px solid #111;">
 <div class="container">
-  <div class="reviews-header">
-    <h2>Customer Reviews</h2>
-    <div class="reviews-summary" id="reviewsSummary">
-      <span class="reviews-avg">--</span>
-      <div class="reviews-stars" id="reviewsAvgStars"></div>
-      <span class="reviews-count" id="reviewsCount">(0 reviews)</span>
-    </div>
-  </div>
-  <div class="reviews-list" id="reviewsList">
-    <p class="reviews-loading">Loading reviews...</p>
-  </div>
+<h2 style="text-align:center;margin-bottom:40px;font-size:28px;">You May Also Like</h2>
+<div class="product-grid">
+<div class="product-card"><div class="product-image"><a href="product.html"><img src="../images/product2.png" alt=""></a></div><div class="product-content"><h3>Shadow Anime Tee</h3><div class="price">₹749</div></div></div>
+<div class="product-card"><div class="product-image"><a href="product.html"><img src="../images/product3.png" alt=""></a></div><div class="product-content"><h3>Abstract Vision Tee</h3><div class="price">₹749</div></div></div>
+<div class="product-card"><div class="product-image"><a href="product.html"><img src="../images/product4.png" alt=""></a></div><div class="product-content"><h3>Minimal Logo Tee</h3><div class="price">₹699</div></div></div>
+<div class="product-card"><div class="product-image"><a href="product.html"><img src="../images/product5.png" alt=""></a></div><div class="product-content"><h3>Street Graphic Tee</h3><div class="price">₹849</div></div></div>
+</div>
 </div>
 </section>
 
-<style>
-.reviews-section{padding:60px 0;background:var(--bg2);}
-.reviews-header{text-align:center;margin-bottom:40px;}
-.reviews-header h2{font-size:28px;margin-bottom:12px;color:var(--text);}
-.reviews-summary{display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;}
-.reviews-avg{font-size:36px;font-weight:800;color:#f97316;}
-.reviews-stars{font-size:18px;color:#f97316;letter-spacing:2px;}
-.reviews-count{font-size:14px;color:var(--text3);}
-.reviews-list{max-width:600px;margin:0 auto;display:flex;flex-direction:column;gap:16px;}
-.review-card{background:var(--bg-card);border:1px solid var(--border);border-radius:12px;padding:18px 20px;}
-.review-card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;}
-.review-card-name{font-weight:600;font-size:14px;color:var(--text);}
-.review-card-stars{color:#f97316;font-size:14px;letter-spacing:1px;}
-.review-card-date{font-size:11px;color:var(--text3);}
-.review-card-text{font-size:14px;color:var(--text2);line-height:1.5;}
-.reviews-loading,.reviews-empty{text-align:center;color:var(--text3);padding:30px 0;}
-</style>
-
-<div class="checkout-overlay" id="checkoutOverlay">
-  <div class="checkout-modal">
-    <span class="checkout-close" id="checkoutClose">&times;</span>
-    <h3>Place Your Order</h3>
-    <div class="checkout-product" id="checkoutProduct"></div>
-    <form id="checkoutForm">
-      <input type="hidden" id="checkoutProductId">
-      <input type="hidden" id="checkoutPrice">
-      <input type="text" id="checkoutName" placeholder="Full Name" required>
-      <input type="tel" id="checkoutPhone" placeholder="Phone Number" required>
-      <textarea id="checkoutAddress" placeholder="Full Address" required></textarea>
-      <input type="text" id="checkoutPincode" placeholder="Pincode" required oninput="window.fetchPincode && window.fetchPincode(this.value, 'checkout')">
-      <input type="text" id="checkoutCity" placeholder="City" required>
-      <input type="text" id="checkoutDistrict" placeholder="District (auto-fetched)" readonly>
-      <input type="text" id="checkoutState" placeholder="State (auto-fetched)" readonly>
-      <div class="checkout-row">
-        <select id="checkoutSize">
-          <option value="S">S</option>
-          <option value="M" selected>M</option>
-          <option value="L">L</option>
-          <option value="XL">XL</option>
-          <option value="XXL">XXL</option>
-        </select>
-        <input type="number" id="checkoutQty" value="1" min="1">
-      </div>
-      <button type="submit" class="checkout-submit">Place Order</button>
-    </form>
-  </div>
+<footer>
+<div class="container foot">
+<div><img src="../images/logo.png" alt="Pehrawa Logo"><p>HOME OF HM — Premium printed and custom printed t-shirts for men who love to stand out.</p><div class="socials"><a href="#"><i class="fab fa-facebook-f"></i></a><a href="#"><i class="fab fa-instagram"></i></a><a href="#"><i class="fab fa-youtube"></i></a></div></div>
+<div><h4>SHOP</h4><a href="shop.html">All Products</a><a href="shop.html">T-Shirts</a><a href="collections.html">Collections</a></div>
+<div><h4>HELP</h4><a href="size-guide.html">Size Guide</a><a href="shipping-policy.html">Shipping Policy</a><a href="track-order.html">Track Order</a></div>
+<div><h4>CONTACT</h4><p><i class="fa-solid fa-phone"></i> +91 9855707708</p><p><i class="fa-solid fa-envelope"></i> pehrawamenswear@gmail.com</p><p><i class="fa-solid fa-location-dot"></i> Punjab, India</p></div>
 </div>
-
-<footer class="footer">
-<div class="container footer-grid">
-<div class="footer-col">
-<img src="../images/logo.png" class="footer-logo" alt="Pehrawa">
-<p>Premium oversized and graphic printed t-shirts for modern men.</p>
-<div class="socials">
-<a href="#"><i class="fab fa-facebook-f"></i></a>
-<a href="#"><i class="fab fa-instagram"></i></a>
-<a href="#"><i class="fab fa-youtube"></i></a>
-</div>
-</div>
-<div class="footer-col">
-<h3>QUICK LINKS</h3>
-<ul>
-<li><a href="home.html">Home</a></li>
-<li><a href="shop.html">Shop</a></li>
-<li><a href="about.html">About</a></li>
-<li><a href="contact.html">Contact</a></li>
-<li><a href="size-guide.html">Size Guide</a></li>
-</ul>
-</div>
-<div class="footer-col">
-<h3>CUSTOMER CARE</h3>
-<ul>
-<li><a href="track-order.html">Track Order</a></li>
-<li><a href="shipping-policy.html">Shipping Policy</a></li>
-<li><a href="privacy-policy.html">Privacy Policy</a></li>
-<li><a href="terms.html">Terms &amp; Conditions</a></li>
-</ul>
-</div>
-<div class="footer-col">
-<h3>CONTACT</h3>
-<p><i class="fa-solid fa-phone"></i> +91 9855707708</p>
-<p><i class="fa-solid fa-envelope"></i> pehrawamenswear@gmail.com</p>
-<p><i class="fa-solid fa-location-dot"></i> India</p>
-</div>
-</div>
-<div class="copyright">&copy; 2026 Pehrawa Menswear. All Rights Reserved.</div>
+<div class="copyright">© 2026 Pehrawa Menswear. All Rights Reserved.</div>
 </footer>
 
 <script src="../js/script.js"></script>
-<script src="../js/customer-auth.js"></script>
 <script src="../js/animations.js"></script>
-<script src="../js/product.js"></script>
+<script>
+let selectedSize = "M";
+function selectSize(btn) {
+  document.querySelectorAll(".size-options button").forEach(b => { b.style.background = "#0d0d0d"; b.style.borderColor = "#333"; });
+  btn.style.background = "#ff6b00"; btn.style.borderColor = "#ff6b00"; btn.style.color = "#000";
+  selectedSize = btn.textContent;
+}
+function addToCartFromProduct() {
+  const name = document.getElementById("productName").textContent;
+  const price = document.getElementById("productPrice").textContent.replace("₹","");
+  const qty = document.getElementById("qty").value;
+  alert(`Added ${qty}x ${name} (${selectedSize}) to cart - ₹${parseInt(price)*parseInt(qty)}`);
+}
+function addToWishlistFromProduct() {
+  alert("Added to wishlist!");
+}
+</script>
 
 <a href="https://wa.me/919855707708" target="_blank" class="whatsapp-float" aria-label="Chat on WhatsApp">
-  <i class="fa-brands fa-whatsapp"></i>
-  <span class="wa-tooltip">Chat with us</span>
-  <span class="wa-badge"></span>
+  <i class="fa-brands fa-whatsapp"></i><span class="wa-tooltip">Chat with us</span><span class="wa-badge"></span>
 </a>
 </body>
 </html>
-
-
-
-
-
-

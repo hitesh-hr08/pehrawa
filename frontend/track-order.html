@@ -3,157 +3,91 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>Track Order | Pehrawa Menswear</title>
-
+<title>Track Order | Pehrawa</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-
-<link rel="stylesheet"
-href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-
 <link rel="stylesheet" href="../css/style.css">
-<link rel="stylesheet" href="../css/track-order.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 <script src="../js/config.js"></script>
 </head>
-
 <body>
+<div class="top-bar">TRACK YOUR ORDER</div>
 
-<div class="announcement-bar">
-    <p>&#128666; FREE SHIPPING ON ORDERS ABOVE &#8377;999 | &#128293; BUY 2 TEES & GET 10% OFF</p>
-</div>
-
-<header class="header">
-
-<div class="container">
-
-<a href="home.html" class="logo">
-<img src="../images/logo.png" alt="Pehrawa Logo">
-</a>
-
-<nav class="navbar">
-
-<ul class="nav-links">
+<header>
+<div class="container nav">
+<a href="home.html" class="logo"><img src="../images/logo.png" alt="Pehrawa Logo"></a>
+<nav>
+<ul>
 <li><a href="home.html">HOME</a></li>
 <li><a href="shop.html">SHOP</a></li>
+<li><a href="collections.html">COLLECTIONS</a></li>
 <li><a href="custom-print.html">CUSTOM PRINT</a></li>
-<li><a href="track-order.html">TRACK ORDER</a></li>
-<li><a href="about.html">ABOUT US</a></li>
-<li><a href="contact.html">CONTACT US</a></li>
+<li><a href="about.html">ABOUT</a></li>
+<li><a href="contact.html">CONTACT</a></li>
 </ul>
-
 </nav>
-
-<div class="nav-icons">
-
-<div class="search-wrapper">
-
-    <i class="fa-solid fa-magnifying-glass search-icon"></i>
-
-    <input
-    type="text"
-    class="search-input"
-    placeholder="Search products...">
-
+<div class="nav-right">
+<a href="wishlist.html"><i class="fa-regular fa-heart"></i><span>0</span></a>
+<a href="cart.html"><i class="fa-solid fa-cart-shopping"></i><span>0</span></a>
+<a href="login.html" class="login-btn"><i class="fa-regular fa-user"></i><span class="login-text">LOGIN</span></a>
+<div class="menu-btn"><i class="fa-solid fa-bars"></i></div>
 </div>
-
-<a href="wishlist.html">
-<i class="fa-regular fa-heart"></i>
-<span>0</span>
-</a>
-
-<a href="cart.html">
-<i class="fa-solid fa-cart-shopping"></i>
-<span>0</span>
-</a>
-
-
-<div class="menu-btn">
-<i class="fa-solid fa-bars"></i>
 </div>
-
-</div>
-
-</div>
-
 </header>
 
-<section class="track-hero">
-
+<section style="padding:100px 0;text-align:center;background:linear-gradient(180deg,#050505,#080808);border-bottom:1px solid #121212;">
 <div class="container">
-
-<h1>TRACK YOUR ORDER</h1>
-
-<p>
-Enter your Order ID and Phone Number to request an order status update.
-</p>
-
+<h1 style="font-size:72px;font-weight:800;margin-bottom:18px;">TRACK ORDER</h1>
+<p style="max-width:600px;margin:auto;font-size:20px;opacity:.75;">Enter your order ID or phone number to track your order status.</p>
 </div>
-
 </section>
 
-<section class="track-section">
-
-<div class="container">
-
-<div class="track-box">
-
-<h2>Order Tracking Request</h2>
-
-<form id="trackOrderForm">
-
-<input
-type="text"
-id="orderId"
-placeholder="Order ID (Example: PHR1025)"
-required>
-
-<input
-type="tel"
-id="customerPhone"
-placeholder="Phone Number"
-required>
-
-<button
-type="submit"
-class="track-btn">
-
-Track My Order
-
-</button>
-
-</form>
-
+<section style="padding:80px 0;">
+<div class="container" style="max-width:600px;margin:auto;">
+<div style="display:flex;gap:14px;">
+<input type="text" id="trackInput" placeholder="Order ID or Phone Number" style="flex:1;padding:16px;background:#0d0d0d;border:1px solid #181818;color:#fff;outline:none;">
+<button onclick="trackOrder()" style="padding:16px 32px;background:#ff6b00;border:none;color:#000;font-weight:700;cursor:pointer;">TRACK</button>
 </div>
-
+<div id="trackResult" style="margin-top:30px;"></div>
 </div>
-
 </section>
 
-<footer class="footer">
-
-<div class="copyright">
-© 2026 Pehrawa Menswear. All Rights Reserved.
+<footer>
+<div class="container foot">
+<div><img src="../images/logo.png" alt="Pehrawa Logo"><p>HOME OF HM — Premium printed and custom printed t-shirts for men who love to stand out.</p><div class="socials"><a href="#"><i class="fab fa-facebook-f"></i></a><a href="#"><i class="fab fa-instagram"></i></a><a href="#"><i class="fab fa-youtube"></i></a></div></div>
+<div><h4>SHOP</h4><a href="shop.html">All Products</a><a href="shop.html">T-Shirts</a><a href="collections.html">Collections</a></div>
+<div><h4>HELP</h4><a href="size-guide.html">Size Guide</a><a href="shipping-policy.html">Shipping Policy</a><a href="track-order.html">Track Order</a></div>
+<div><h4>CONTACT</h4><p><i class="fa-solid fa-phone"></i> +91 9855707708</p><p><i class="fa-solid fa-envelope"></i> pehrawamenswear@gmail.com</p><p><i class="fa-solid fa-location-dot"></i> Punjab, India</p></div>
 </div>
-
+<div class="copyright">© 2026 Pehrawa Menswear. All Rights Reserved.</div>
 </footer>
 
 <script src="../js/script.js"></script>
-<script src="../js/customer-auth.js"></script>
 <script src="../js/animations.js"></script>
 <script src="../js/track-order.js"></script>
+<script>
+async function trackOrder(){
+  var input = document.getElementById("trackInput").value.trim();
+  var result = document.getElementById("trackResult");
+  if(!input){result.innerHTML='<p style="color:#ff4d4d;">Please enter order ID or phone number</p>';return;}
+  try{
+    var res = await fetch((window.PEHRAWA_API_BASE||"http://localhost:5000")+"/api/orders/track/"+encodeURIComponent(input));
+    var data = await res.json();
+    if(data.success && data.order){
+      var o = data.order;
+      var statusColors = {Pending:"#ff6b00",Processing:"#ffa500",Shipped:"#36b37e",Delivered:"#38d27a",Cancelled:"#ff4d4d"};
+      result.innerHTML='<div style="background:#0a0a0a;border:1px solid #181818;padding:30px;text-align:left;"><h3 style="color:#ff6b00;margin-bottom:16px;">Order #'+o.id+'</h3><p style="color:#aaa;margin-bottom:8px;"><strong style="color:#fff;">Customer:</strong> '+o.customer_name+'</p><p style="color:#aaa;margin-bottom:8px;"><strong style="color:#fff;">Status:</strong> <span style="color:'+(statusColors[o.status]||"#fff")+';font-weight:700;">'+o.status+'</span></p><p style="color:#aaa;margin-bottom:8px;"><strong style="color:#fff;">Amount:</strong> ₹'+parseFloat(o.total_amount).toFixed(2)+'</p><p style="color:#aaa;"><strong style="color:#fff;">Address:</strong> '+o.address+'</p></div>';
+    } else {
+      result.innerHTML='<p style="color:#ff4d4d;">Order not found. Please check your details.</p>';
+    }
+  } catch(err){
+    result.innerHTML='<p style="color:#ff4d4d;">Server not connected. Please try again.</p>';
+  }
+}
+</script>
 
 <a href="https://wa.me/919855707708" target="_blank" class="whatsapp-float" aria-label="Chat on WhatsApp">
-  <i class="fa-brands fa-whatsapp"></i>
-  <span class="wa-tooltip">Chat with us</span>
-  <span class="wa-badge"></span>
+  <i class="fa-brands fa-whatsapp"></i><span class="wa-tooltip">Chat with us</span><span class="wa-badge"></span>
 </a>
 </body>
 </html>
-
-
-
-
-

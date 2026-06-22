@@ -3,198 +3,64 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>Cart | Pehrawa Menswear</title>
-
+<title>Cart | Pehrawa</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-
-<link rel="stylesheet"
-href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-
 <link rel="stylesheet" href="../css/style.css">
-<link rel="stylesheet" href="../css/cart.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 <script src="../js/config.js"></script>
 </head>
-
 <body>
+<div class="top-bar">FREE SHIPPING ABOVE ₹999</div>
 
-<div class="announcement-bar">
-    <p>&#128666; FREE SHIPPING ON ORDERS ABOVE &#8377;999 | &#128293; BUY 2 TEES & GET 10% OFF</p>
-</div>
-
-<header class="header">
-
-<div class="container">
-
-<a href="home.html" class="logo">
-<img src="../images/logo.png" alt="Pehrawa Logo">
-</a>
-
-<nav class="navbar">
-
-<ul class="nav-links">
+<header>
+<div class="container nav">
+<a href="home.html" class="logo"><img src="../images/logo.png" alt="Pehrawa Logo"></a>
+<nav>
+<ul>
 <li><a href="home.html">HOME</a></li>
 <li><a href="shop.html">SHOP</a></li>
+<li><a href="collections.html">COLLECTIONS</a></li>
 <li><a href="custom-print.html">CUSTOM PRINT</a></li>
-<li><a href="track-order.html">TRACK ORDER</a></li>
-<li><a href="about.html">ABOUT US</a></li>
-<li><a href="contact.html">CONTACT US</a></li>
+<li><a href="about.html">ABOUT</a></li>
+<li><a href="contact.html">CONTACT</a></li>
 </ul>
-
 </nav>
-
-<div class="nav-icons">
-
-<div class="search-wrapper">
-
-    <i class="fa-solid fa-magnifying-glass search-icon"></i>
-
-    <input
-    type="text"
-    class="search-input"
-    placeholder="Search products...">
-
+<div class="nav-right">
+<a href="wishlist.html"><i class="fa-regular fa-heart"></i><span>0</span></a>
+<a href="cart.html"><i class="fa-solid fa-cart-shopping"></i><span id="cartCount">0</span></a>
+<a href="login.html" class="login-btn"><i class="fa-regular fa-user"></i><span class="login-text">LOGIN</span></a>
+<div class="menu-btn"><i class="fa-solid fa-bars"></i></div>
 </div>
-
-<a href="wishlist.html">
-<i class="fa-regular fa-heart"></i>
-<span>0</span>
-</a>
-
-<a href="cart.html">
-<i class="fa-solid fa-cart-shopping"></i>
-<span>0</span>
-</a>
-
-
-<div class="menu-btn">
-<i class="fa-solid fa-bars"></i>
 </div>
-
-</div>
-
-</div>
-
 </header>
 
-<section class="cart-hero">
-
+<section style="padding:60px 0;">
 <div class="container">
-
-<h1>YOUR CART</h1>
-
-<p>
-Review your selected products before placing your order.
-</p>
-
+<h1 style="font-size:72px;font-weight:800;margin-bottom:10px;">YOUR CART</h1>
+<p style="color:#aaa;margin-bottom:40px;">Items in your shopping bag</p>
+<div id="cartContainer">
+<div class="shop-state">Your cart is empty. <a href="shop.html" style="color:#ff6b00;margin-left:6px;">Start shopping</a></div>
 </div>
-
+</div>
 </section>
 
-<section class="cart-section">
-
-<div class="container">
-
-<div class="cart-layout">
-
-<div class="cart-panel">
-<div class="cart-panel-head">
-<h2>Selected Items</h2>
-<button id="clearCartBtn" class="clear-cart-btn">Clear Cart</button>
+<footer>
+<div class="container foot">
+<div><img src="../images/logo.png" alt="Pehrawa Logo"><p>HOME OF HM — Premium printed and custom printed t-shirts for men who love to stand out.</p><div class="socials"><a href="#"><i class="fab fa-facebook-f"></i></a><a href="#"><i class="fab fa-instagram"></i></a><a href="#"><i class="fab fa-youtube"></i></a></div></div>
+<div><h4>SHOP</h4><a href="shop.html">All Products</a><a href="shop.html">T-Shirts</a><a href="collections.html">Collections</a></div>
+<div><h4>HELP</h4><a href="size-guide.html">Size Guide</a><a href="shipping-policy.html">Shipping Policy</a><a href="track-order.html">Track Order</a></div>
+<div><h4>CONTACT</h4><p><i class="fa-solid fa-phone"></i> +91 9855707708</p><p><i class="fa-solid fa-envelope"></i> pehrawamenswear@gmail.com</p><p><i class="fa-solid fa-location-dot"></i> Punjab, India</p></div>
 </div>
-
-<div id="cartItems"></div>
-</div>
-
-<aside class="cart-summary">
-
-<h2>Order Summary</h2>
-
-<div class="checkout-form">
-<label for="customerName">Full Name</label>
-<input type="text" id="customerName" placeholder="Your name">
-
-<label for="customerPhone">Phone Number</label>
-<input type="tel" id="customerPhone" placeholder="9876543210">
-
-<label for="customerAddress">Delivery Address</label>
-<textarea id="customerAddress" rows="4" placeholder="House no, street, city, state"></textarea>
-
-<label for="customerPincode">Pincode</label>
-<input type="text" id="customerPincode" placeholder="6 digit pincode" oninput="window.fetchPincode && window.fetchPincode(this.value, 'customer')">
-
-<label for="customerCity">City</label>
-<input type="text" id="customerCity" placeholder="Auto-fetched from pincode" readonly>
-
-<label for="customerState">State</label>
-<input type="text" id="customerState" placeholder="Auto-fetched from pincode" readonly>
-</div>
-
-<div class="summary-row">
-<span>Items</span>
-<strong id="cartItemCount">0</strong>
-</div>
-
-<div class="summary-row">
-<span>Subtotal</span>
-<strong>Rs. <span id="cartSubtotal">0</span></strong>
-</div>
-
-<div class="summary-row">
-<span>Shipping</span>
-<strong>Free (above ₹1999)</strong>
-</div>
-
-<div class="summary-total">
-<span>Total</span>
-<strong>Rs. <span id="cartTotal">0</span></strong>
-</div>
-
-<button id="checkoutBtn"
-class="buy-now-btn">
-
-<i class="fa-solid fa-bag-shopping"></i>
-BUY NOW
-
-</button>
-
-<a href="shop.html" class="continue-shopping">Continue Shopping</a>
-
-</aside>
-
-</div>
-
-</div>
-
-</section>
-
-<footer class="footer">
-
-<div class="copyright">
-© 2026 Pehrawa Menswear. All Rights Reserved.
-</div>
-
+<div class="copyright">© 2026 Pehrawa Menswear. All Rights Reserved.</div>
 </footer>
 
-<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 <script src="../js/script.js"></script>
-<script src="../js/cart.js"></script>
-<script src="../js/customer-auth.js"></script>
 <script src="../js/animations.js"></script>
+<script src="../js/cart.js"></script>
 
 <a href="https://wa.me/919855707708" target="_blank" class="whatsapp-float" aria-label="Chat on WhatsApp">
-  <i class="fa-brands fa-whatsapp"></i>
-  <span class="wa-tooltip">Chat with us</span>
-  <span class="wa-badge"></span>
+  <i class="fa-brands fa-whatsapp"></i><span class="wa-tooltip">Chat with us</span><span class="wa-badge"></span>
 </a>
 </body>
 </html>
-
-
-
-
-
-
