@@ -9,9 +9,12 @@ gap:60px;
 align-items:start;
 }
 
-.product-image img{
+.product-detail-image img{
 width:100%;
+height:auto;
+object-fit:contain;
 border-radius:12px;
+display:block;
 }
 
 .badge{
