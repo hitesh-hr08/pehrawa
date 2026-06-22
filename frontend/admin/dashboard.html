@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -17,12 +17,12 @@
       </div>
 
       <nav class="admin-nav">
-        <a class="active" href="#dashboard"><i class="fa-solid fa-chart-line"></i> Dashboard</div>
-        <a href="#products"><i class="fa-solid fa-shirt"></i> Products</div>
-        <a href="#orders"><i class="fa-solid fa-bag-shopping"></i> Orders</div>
-        <a href="#requests"><i class="fa-solid fa-wand-magic-sparkles"></i> Custom Requests</div>
-        <a href="#customers"><i class="fa-solid fa-users"></i> Customers</div>
-        <a href="#settings"><i class="fa-solid fa-gear"></i> Settings</div>
+        <a class="active" href="#dashboard"><i class="fa-solid fa-chart-line"></i> Dashboard</a>
+        <a href="#products"><i class="fa-solid fa-shirt"></i> Products</a>
+        <a href="#orders"><i class="fa-solid fa-bag-shopping"></i> Orders</a>
+        <a href="#requests"><i class="fa-solid fa-wand-magic-sparkles"></i> Custom Requests</a>
+        <a href="#customers"><i class="fa-solid fa-users"></i> Customers</a>
+        <a href="#settings"><i class="fa-solid fa-gear"></i> Settings</a>
       </nav>
 
       <div class="sidebar-card">
@@ -545,7 +545,7 @@
             </div>
           </td>
           <td>${product.category || "-"}</td>
-          <td>₹${Number(product.price).toFixed(2)}</td>
+          <td>â‚¹${Number(product.price).toFixed(2)}</td>
           <td>${product.stock || 0}</td>
           <td>
             <div class="table-actions">
@@ -682,7 +682,7 @@
             </div>
           </td>
           <td>${order.phone}</td>
-          <td>₹${Number(order.total_amount).toFixed(2)}</td>
+          <td>â‚¹${Number(order.total_amount).toFixed(2)}</td>
           <td>
             <select class="status-select" onchange="updateOrderStatus(${order.id}, this.value)">
               ${["Pending", "Processing", "Shipped", "Delivered", "Cancelled"].map((status) => `
@@ -846,7 +846,7 @@
           </td>
           <td>${request.phone || "-"}</td>
           <td>
-            ${request.image_url ? `<a class="artwork-link" href="${request.image_url}" target="_blank">View</div>` : "-"}
+            ${request.image_url ? `<a class="artwork-link" href="${request.image_url}" target="_blank">View</a>` : "-"}
           </td>
           <td>
             <select class="status-select" onchange="updateRequestStatus(${request.id}, this.value)">
@@ -998,7 +998,7 @@
               <td>${c.email || "-"}</td>
               <td>${c.phone || "-"}</td>
               <td>${c.order_count || 0}</td>
-              <td>₹${Number(c.total_spent || 0).toFixed(2)}</td>
+              <td>â‚¹${Number(c.total_spent || 0).toFixed(2)}</td>
               <td>${new Date(c.created_at).toLocaleDateString()}</td>
               <td><button class="danger-icon" onclick="deleteCustomer(${c.id},'${c.name || "Guest"}')"><i class="fa-solid fa-trash"></i></button></td>
             </tr>
