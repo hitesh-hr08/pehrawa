@@ -1883,16 +1883,16 @@ RESPONSIVE
 .mobile-menu{
   position:fixed;
   top:0;
-  right:-300px;
+  left:-300px;
   width:280px;
   height:100vh;
   background:#0a0a0a;
   padding:80px 30px;
   transition:.4s;
   z-index:9998;
-  border-left:1px solid #181818;
+  border-right:1px solid #181818;
 }
-.mobile-menu.open{right:0;}
+.mobile-menu.open{left:0;}
 .mobile-menu ul{list-style:none;display:flex;flex-direction:column;gap:24px;}
 .mobile-menu ul li a{color:#fff;font-size:16px;font-weight:500;letter-spacing:2px;}
 .mobile-menu ul li a:hover{color:#ff6b00;}
