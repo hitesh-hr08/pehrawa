@@ -14,7 +14,7 @@
 // === 2. SCROLL REVEAL (IntersectionObserver) ===
 (function () {
   var els = document.querySelectorAll(
-    ".product-card, .feature-box, .step, .process-card, .section-title, .hero-content, .hero-image, .custom-left, .custom-right, .shop-banner, .category-head, .footer-col, .why-card, .custom-hero, .custom-form-box, .about-content, .contact-content"
+    ".product-card, .feature-box, .step, .process-card, .section-title, .hero-content, .hero-image, .custom-left, .custom-right, .shop-banner, .category-head, .footer-col, .why-card, .custom-hero, .custom-form-box, .about-content, .contact-content, .collection-box, .card, .benefit, .value"
   );
   if (!("IntersectionObserver" in window)) {
     els.forEach(function (el) { el.classList.add("revealed"); });
