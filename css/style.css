@@ -395,6 +395,15 @@ display:grid;
 grid-template-columns:repeat(4,1fr);
 gap:20px;
 }
+@media(max-width:991px){
+.grid{grid-template-columns:repeat(3,1fr);}
+}
+@media(max-width:768px){
+.grid{grid-template-columns:repeat(2,1fr);}
+}
+@media(max-width:480px){
+.grid{grid-template-columns:repeat(1,1fr);}
+}
 
 .card{
 background:#080808;
@@ -1614,7 +1623,7 @@ nav{display:none;}
 .hero-wrap{grid-template-columns:1fr;padding:80px 0;}
 .hero-left{padding:40px 20px;}
 .hero h1{font-size:48px;}
-.grid,.product-grid,.benefits .container,.foot{grid-template-columns:1fr;}
+.product-grid,.benefits .container,.foot{grid-template-columns:1fr;}
 .about-wrap{grid-template-columns:1fr;}
 .about-right{justify-content:center;}
 .about-right img{height:auto;max-width:500px;}
@@ -1643,6 +1652,7 @@ border:1px solid #555;background:#111;color:#fff;border-radius:30px;font-size:12
 }
 
 @media(max-width:768px){
+.card img{height:200px;}
 .hero h1{font-size:40px;}
 .shop-text h1{font-size:54px;}
 .collection-hero h1{font-size:54px;}
