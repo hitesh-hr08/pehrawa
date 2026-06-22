@@ -72,6 +72,7 @@ app.use("/api/admin", adminRoutes);
 app.use("/api/products", verifyAdmin, productRoutes);
 app.use("/api/orders", verifyAdmin, orderRoutes);
 app.use("/api/requests", verifyAdmin, requestRoutes);
+app.use("/api/custom-print", requestRoutes);
 app.use("/api/customers", customerRoutes);
 app.use("/api/user", customerRoutes);
 

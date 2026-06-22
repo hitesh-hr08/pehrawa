@@ -68,7 +68,18 @@
 <option>1 Piece</option><option>2 Pieces</option><option>3 Pieces</option><option>5 Pieces</option><option>10+ Pieces</option>
 </select>
 <textarea id="customDescription" placeholder="Describe your design idea" rows="5" required style="width:100%;padding:16px;background:#0d0d0d;border:1px solid #181818;color:#fff;outline:none;resize:vertical;"></textarea>
-<input type="text" id="customReference" placeholder="Reference image URL (optional)" style="width:100%;padding:16px;background:#0d0d0d;border:1px solid #181818;color:#fff;outline:none;">
+<div style="display:flex;flex-direction:column;gap:8px;">
+<label style="color:#aaa;font-size:13px;">Upload Design Image (optional)</label>
+<div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+<label for="customImage" style="display:inline-flex;align-items:center;gap:8px;padding:14px 20px;background:#0d0d0d;border:1px solid #181818;border-radius:6px;color:#fff;cursor:pointer;transition:.3s;">
+<i class="fa-solid fa-cloud-arrow-up" style="color:#ff6b00;font-size:18px;"></i>
+<span>Choose File</span>
+</label>
+<input type="file" id="customImage" accept="image/jpeg,image/png,image/gif,image/webp" style="display:none;">
+<span id="customImageName" style="color:#888;font-size:13px;">No file chosen</span>
+</div>
+<p style="color:#555;font-size:11px;">Max 5MB · JPG, PNG, GIF, WebP</p>
+</div>
 <button type="submit" style="height:56px;background:#ff6b00;border:none;color:#000;font-weight:700;font-size:16px;cursor:pointer;">SUBMIT REQUEST</button>
 <p id="customMsg" style="text-align:center;font-size:13px;min-height:20px;"></p>
 </form>
@@ -97,23 +108,24 @@
 <script src="../js/script.js"></script>
 <script src="../js/animations.js"></script>
 <script>
+document.getElementById("customImage").addEventListener("change", function() {
+  document.getElementById("customImageName").textContent = this.files[0] ? this.files[0].name : "No file chosen";
+});
 document.getElementById("customPrintForm").addEventListener("submit", async function(e) {
   e.preventDefault();
   var msg = document.getElementById("customMsg");
-  var data = {
-    name: document.getElementById("customName").value.trim(),
-    phone: document.getElementById("customPhone").value.trim(),
-    email: document.getElementById("customEmail").value.trim(),
-    quantity: document.getElementById("customQuantity").value,
-    description: document.getElementById("customDescription").value.trim(),
-    reference: document.getElementById("customReference").value.trim()
-  };
+  var fd = new FormData();
+  fd.append("name", document.getElementById("customName").value.trim());
+  fd.append("phone", document.getElementById("customPhone").value.trim());
+  fd.append("description", "Qty: " + document.getElementById("customQuantity").value + "\n" + document.getElementById("customDescription").value.trim());
+  var fileInput = document.getElementById("customImage");
+  if (fileInput.files[0]) fd.append("design_image", fileInput.files[0]);
   try {
-    var res = await fetch((window.PEHRAWA_API_BASE||"http://localhost:5000")+"/api/custom-print", {
-      method: "POST", headers: {"Content-Type":"application/json"}, body: JSON.stringify(data)
+    var res = await fetch((window.PEHRAWA_API_BASE||"http://localhost:5000")+"/api/custom-print/submit", {
+      method: "POST", body: fd
     });
     var result = await res.json();
-    if(result.success) { msg.textContent = "Request submitted! We'll contact you soon."; msg.style.color = "#38d27a"; this.reset(); }
+    if(result.success) { msg.textContent = "Request submitted! We'll contact you soon."; msg.style.color = "#38d27a"; this.reset(); document.getElementById("customImageName").textContent = "No file chosen"; }
     else { msg.textContent = result.message || "Submission failed"; msg.style.color = "#ff4d4d"; }
   } catch(err) { msg.textContent = "Server not connected. Please try again."; msg.style.color = "#ff4d4d"; }
 });
