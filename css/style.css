@@ -1137,17 +1137,16 @@ ABOUT PAGE
 ======================= */
 
 .about-hero{
-min-height:900px;
+height:900px;
 display:flex;
 align-items:center;
-background:linear-gradient(180deg,#050505,#080808);
+background:url("../images/about-image.png") no-repeat center/contain, linear-gradient(180deg,#050505,#080808);
 border-bottom:1px solid #121212;
-overflow:hidden;
 }
 
 .about-wrap{
 display:grid;
-grid-template-columns:1fr 1fr;
+grid-template-columns:1fr;
 gap:60px;
 align-items:center;
 }
@@ -1171,17 +1170,6 @@ max-width:620px;
 font-size:20px;
 line-height:1.9;
 opacity:.78;
-}
-
-.about-right{
-display:flex;
-justify-content:end;
-}
-
-.about-right img{
-height:600px;
-object-fit:contain;
-filter:drop-shadow(0 0 70px rgba(255,255,255,.08));
 }
 
 /* STORY */
@@ -1642,8 +1630,7 @@ nav{display:none;}
 .hero h1{font-size:48px;}
 .product-grid,.benefits .container,.foot{grid-template-columns:1fr;}
 .about-wrap{grid-template-columns:1fr;}
-.about-right{justify-content:center;}
-.about-right img{height:auto;max-width:500px;}
+.about-hero{background-size:cover;background-position:center;}
 .about-left h1{font-size:56px;}
 .story-box{grid-template-columns:1fr;gap:40px;}
 .story h2{font-size:42px;}
