@@ -1147,14 +1147,11 @@ border-bottom:1px solid #121212;
 .about-caption{
 position:absolute;
 bottom:60px;
-left:0;
-right:0;
-text-align:center;
+left:120px;
+text-align:left;
 font-size:16px;
 color:#999;
-max-width:700px;
-margin:auto;
-padding:0 20px;
+max-width:600px;
 letter-spacing:1px;
 line-height:1.6;
 }
