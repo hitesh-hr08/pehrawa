@@ -1,44 +1,52 @@
-var API = (window.PEHRAWA_API_BASE || "http://localhost:5000") + "/api/orders";
+(function () {
+  var container = document.getElementById("ordersContainer");
+  if (!container) return;
 
-async function loadOrders() {
-  try {
-    var res = await fetch(API);
-    var data = await res.json();
-    var tbody = document.getElementById("ordersTable");
-    if (!tbody) return;
-    tbody.innerHTML = "";
-    data.forEach(function(order) {
-      tbody.innerHTML += '<tr><td>' + (order.orderId || order.id) + '</td><td>' + order.name + '</td><td>' + order.phone + '</td><td>' + order.quantity + '</td><td><select onchange="updateStatus(\'' + (order._id || order.id) + '\', this.value)"><option value="Pending"' + (order.status === "Pending" ? " selected" : "") + '>Pending</option><option value="Shipped"' + (order.status === "Shipped" ? " selected" : "") + '>Shipped</option><option value="Delivered"' + (order.status === "Delivered" ? " selected" : "") + '>Delivered</option></select></td></tr>';
-    });
-  } catch (err) {
-    console.log("Order Load Error:", err);
+  var token = localStorage.getItem("pehrawa_customer_token");
+  var userData = localStorage.getItem("pehrawa_customer");
+
+  if (!token || !userData) {
+    container.innerHTML = '<div class="shop-state">Please <a href="login.html" style="color:#ff6b00;margin-left:6px;">login</a> to view your orders.</div>';
+    return;
   }
-}
 
-async function updateStatus(id, status) {
-  try {
-    await fetch(API + "/" + id, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ status: status })
+  var user = JSON.parse(userData);
+  var apiBase = window.PEHRAWA_API_BASE || "http://localhost:5000";
+
+  fetch(apiBase + "/api/customers/" + user.id + "/orders", {
+    headers: { "Authorization": "Bearer " + token }
+  })
+  .then(function (r) { return r.json(); })
+  .then(function (data) {
+    if (!data.success) {
+      container.innerHTML = '<div class="shop-state">' + (data.message || "Failed to load orders") + "</div>";
+      return;
+    }
+    if (!data.orders || data.orders.length === 0) {
+      container.innerHTML = '<div class="shop-state">No orders yet. <a href="shop.html" style="color:#ff6b00;margin-left:6px;">Start shopping</a></div>';
+      return;
+    }
+    var html = '<div style="display:flex;flex-direction:column;gap:16px;">';
+    data.orders.forEach(function (o) {
+      var statusColor = "#f59e0b";
+      if ((o.status || "").toLowerCase() === "shipped") statusColor = "#8b5cf6";
+      else if ((o.status || "").toLowerCase() === "delivered") statusColor = "#10b981";
+      else if ((o.status || "").toLowerCase() === "cancelled") statusColor = "#ef4444";
+      html += '<div style="background:#0a0a0a;border:1px solid #181818;border-radius:10px;padding:24px;">' +
+        '<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;margin-bottom:12px;">' +
+        '<span style="font-size:12px;color:#666;">ORDER #' + (o.tracking_id || "PHR-" + String(o.id).padStart(6, "0")) + "</span>" +
+        '<span style="font-size:11px;padding:4px 12px;border-radius:20px;background:' + statusColor + ";color:#000;font-weight:600;text-transform:uppercase;\">" + (o.status || "Pending") + "</span>" +
+        "</div>" +
+        '<div style="color:#fff;font-size:15px;font-weight:500;margin-bottom:6px;">' + (o.customer_name || "") + "</div>" +
+        '<div style="color:#aaa;font-size:13px;">Total: ₹' + (Number(o.total_amount) || 0).toLocaleString() + "</div>" +
+        (o.items ? '<div style="color:#666;font-size:12px;margin-top:6px;">' + o.items.replace(/\n/g, "<br>") + "</div>" : "") +
+        '<div style="color:#555;font-size:11px;margin-top:8px;">' + new Date(o.created_at).toLocaleDateString() + "</div>" +
+        "</div>";
     });
-    loadOrders();
-  } catch (err) {
-    console.log("Status Update Error:", err);
-  }
-}
-
-async function createOrder(orderData) {
-  try {
-    var res = await fetch(API, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(orderData)
-    });
-    return await res.json();
-  } catch (err) {
-    console.log("Create Order Error:", err);
-  }
-}
-
-window.onload = function() { loadOrders(); };
+    html += "</div>";
+    container.innerHTML = html;
+  })
+  .catch(function () {
+    container.innerHTML = '<div class="shop-state">Server not connected. Please try again later.</div>';
+  });
+})();
