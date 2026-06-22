@@ -269,9 +269,9 @@ HERO
 ======================= */
 
 .hero{
-height:980px;
+padding:140px 0 100px;
 position:relative;
-background:url("../images/Hero-Image.png") no-repeat center 30%/contain, linear-gradient(180deg,#060606,#030303);
+background:linear-gradient(180deg,#060606,#030303);
 overflow:hidden;
 }
 
@@ -1637,9 +1637,9 @@ RESPONSIVE
   .navbar{display:none;}
   .menu-btn{display:flex !important;}
 
-  .hero{height:760px;background-position:center;background-size:contain;}
+  .hero{padding:100px 0 80px;}
   .hero-wrap{grid-template-columns:1fr;}
-  .hero-left{padding:80px 40px 0;align-items:flex-start;}
+  .hero-left{padding:0 40px;align-items:flex-start;}
   .hero h1{font-size:48px;}
   .hm::before{width:50px;}
   .hm{margin-top:40px;}
@@ -1718,8 +1718,8 @@ RESPONSIVE
   .logo img{width:110px;}
 
   .hero h1{font-size:36px;}
-  .hero{height:620px;background-position:center;}
-  .hero-left{padding:60px 24px 0;}
+  .hero{padding:80px 0 60px;}
+  .hero-left{padding:0 24px;}
   .hero-btns a{height:50px;padding:0 22px;font-size:13px;}
 
   .hm{margin-top:36px;}
@@ -1787,8 +1787,8 @@ RESPONSIVE
   .menu-btn{font-size:18px;}
 
   .hero h1{font-size:28px;}
-  .hero{height:480px;background-position:center;}
-  .hero-left{padding:50px 16px 0;}
+  .hero{padding:60px 0 40px;}
+  .hero-left{padding:0 16px;}
   .mini{font-size:11px;letter-spacing:4px;margin-bottom:14px;}
   .sub{font-size:15px;line-height:1.6;}
   .hero-btns{margin-top:20px;flex-direction:column;}
