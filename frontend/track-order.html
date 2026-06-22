@@ -90,7 +90,7 @@ async function trackOrder(){
     if(data.success && data.order){
       var o = data.order;
       var statusColors = {Pending:"#ff6b00",Processing:"#ffa500",Shipped:"#36b37e",Delivered:"#38d27a",Cancelled:"#ff4d4d"};
-      result.innerHTML='<div style="background:#0a0a0a;border:1px solid #181818;padding:30px;text-align:left;"><h3 style="color:#ff6b00;margin-bottom:16px;">Order #'+o.id+'</h3><p style="color:#aaa;margin-bottom:8px;"><strong style="color:#fff;">Customer:</strong> '+o.customer_name+'</p><p style="color:#aaa;margin-bottom:8px;"><strong style="color:#fff;">Status:</strong> <span style="color:'+(statusColors[o.status]||"#fff")+';font-weight:700;">'+o.status+'</span></p><p style="color:#aaa;margin-bottom:8px;"><strong style="color:#fff;">Amount:</strong> â‚¹'+parseFloat(o.total_amount).toFixed(2)+'</p><p style="color:#aaa;"><strong style="color:#fff;">Address:</strong> '+o.address+'</p></div>';
+      result.innerHTML='<div style="background:#0a0a0a;border:1px solid #181818;padding:30px;text-align:left;"><h3 style="color:#ff6b00;margin-bottom:16px;">Order #'+o.id+'</h3><p style="color:#aaa;margin-bottom:8px;"><strong style="color:#fff;">Customer:</strong> '+o.customer_name+'</p><p style="color:#aaa;margin-bottom:8px;"><strong style="color:#fff;">Status:</strong> <span style="color:'+(statusColors[o.status]||"#fff")+';font-weight:700;">'+o.status+'</span></p><p style="color:#aaa;margin-bottom:8px;"><strong style="color:#fff;">Amount:</strong> &#8377;'+parseFloat(o.total_amount).toFixed(2)+'</p><p style="color:#aaa;"><strong style="color:#fff;">Address:</strong> '+o.address+'</p></div>';
     } else {
       result.innerHTML='<p style="color:#ff4d4d;">Order not found. Please check your details.</p>';
     }

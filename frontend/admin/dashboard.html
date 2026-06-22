@@ -545,7 +545,7 @@
             </div>
           </td>
           <td>${product.category || "-"}</td>
-          <td>â‚¹${Number(product.price).toFixed(2)}</td>
+          <td>&#8377;${Number(product.price).toFixed(2)}</td>
           <td>${product.stock || 0}</td>
           <td>
             <div class="table-actions">
@@ -682,7 +682,7 @@
             </div>
           </td>
           <td>${order.phone}</td>
-          <td>â‚¹${Number(order.total_amount).toFixed(2)}</td>
+          <td>&#8377;${Number(order.total_amount).toFixed(2)}</td>
           <td>
             <select class="status-select" onchange="updateOrderStatus(${order.id}, this.value)">
               ${["Pending", "Processing", "Shipped", "Delivered", "Cancelled"].map((status) => `
@@ -998,7 +998,7 @@
               <td>${c.email || "-"}</td>
               <td>${c.phone || "-"}</td>
               <td>${c.order_count || 0}</td>
-              <td>â‚¹${Number(c.total_spent || 0).toFixed(2)}</td>
+              <td>&#8377;${Number(c.total_spent || 0).toFixed(2)}</td>
               <td>${new Date(c.created_at).toLocaleDateString()}</td>
               <td><button class="danger-icon" onclick="deleteCustomer(${c.id},'${c.name || "Guest"}')"><i class="fa-solid fa-trash"></i></button></td>
             </tr>

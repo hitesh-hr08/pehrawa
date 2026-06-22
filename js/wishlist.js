@@ -1,5 +1,3 @@
-var wishlist = JSON.parse(localStorage.getItem("wishlist")) || [];
-var cart = JSON.parse(localStorage.getItem("cart")) || [];
 var wishlistContainer = document.getElementById("wishlistItems");
 
 function renderWishlist() {
