@@ -224,13 +224,13 @@ right:-10px;
 width:18px;
 height:18px;
 border-radius:50%;
-background:#ff6b00;
-color:#000;
+background:#e53935;
+color:#fff;
 font-size:10px;
 display:flex;
 align-items:center;
 justify-content:center;
-font-weight:600;
+font-weight:700;
 }
 
 .menu-btn{
@@ -1716,7 +1716,8 @@ RESPONSIVE
 @media(max-width:768px){
   header{padding:10px 0;}
   .nav-right{gap:12px;}
-  .nav-right a{font-size:16px;}
+  .nav-right a,.nav-icons a{font-size:16px;}
+  .nav-icons{gap:14px;}
   .logo img{width:110px;}
 
   .hero h1{font-size:40px;}
@@ -1781,7 +1782,8 @@ RESPONSIVE
   .logo img{width:85px;}
   .nav-right{gap:10px;}
   .nav-right a{font-size:14px;}
-  .nav-right a span{width:14px;height:14px;font-size:8px;top:-4px;right:-5px;}
+  .nav-right a span,.nav-icons span{width:14px;height:14px;font-size:8px;top:-4px;right:-5px;}
+  .nav-icons{gap:10px;}
   .login-btn{padding:4px 10px;font-size:11px;}
   .login-text{display:none;}
   .menu-btn{font-size:18px;}
