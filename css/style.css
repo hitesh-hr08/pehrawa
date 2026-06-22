@@ -1145,13 +1145,15 @@ background:url("../images/about-image.png") no-repeat center/contain, linear-gra
 border-bottom:1px solid #121212;
 }
 .about-caption{
-margin-top:30px;
+position:absolute;
+bottom:60px;
+left:120px;
 text-align:left;
-font-size:15px;
+font-size:16px;
 color:#999;
 max-width:600px;
-letter-spacing:0.5px;
-line-height:1.7;
+letter-spacing:1px;
+line-height:1.6;
 }
 
 .about-wrap{
@@ -1165,9 +1167,6 @@ align-items:center;
 color:#ff6b00;
 letter-spacing:4px;
 margin-bottom:28px;
-}
-.about-left .collection-brand{
-margin-top:30px;
 }
 
 .about-left h1{
@@ -1644,7 +1643,7 @@ nav{display:none;}
 .product-grid,.benefits .container,.foot{grid-template-columns:1fr;}
 .about-wrap{grid-template-columns:1fr;}
 .about-hero{background-size:cover;background-position:center;}
-
+.about-caption{position:static;padding:30px 20px 0;}
 .about-left h1{font-size:56px;}
 .story-box{grid-template-columns:1fr;gap:40px;}
 .story h2{font-size:42px;}
