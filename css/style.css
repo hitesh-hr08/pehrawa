@@ -1024,6 +1024,23 @@ color:#ff6b00;
 letter-spacing:4px;
 margin-bottom:26px;
 }
+.collection-brand{
+display:flex !important;
+align-items:center;
+gap:16px;
+letter-spacing:0 !important;
+}
+.coll-pehrawa{
+height:30px;
+}
+.coll-x{
+color:#ff6b00;
+font-size:20px;
+font-weight:600;
+}
+.coll-hm{
+height:28px;
+}
 
 .collection-hero h1{
 font-size:92px;
