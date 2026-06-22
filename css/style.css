@@ -777,7 +777,7 @@ z-index:999;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #fff;
+  color: #fff !important;
   font-size: 28px;
   z-index: 9999;
   text-decoration: none;
@@ -807,7 +807,7 @@ z-index:999;
 .whatsapp-float i {
   position: relative;
   z-index: 1;
-  color: #25d366;
+  color: #fff;
   font-size: 31px;
   width: 40px;
   height: 40px;
@@ -874,6 +874,8 @@ z-index:999;
   border-radius: 50%;
 }
 
+.whatsapp-float:visited,.whatsapp-float:link,.whatsapp-float:active{color:#fff !important;}
+.whatsapp-float i:visited,.whatsapp-float i:link,.whatsapp-float i:active{color:#fff !important;}
 .whatsapp-float:hover {
   transform: scale(1.08) rotate(-3deg);
   box-shadow: 0 10px 40px rgba(37, 211, 102, 0.45);
