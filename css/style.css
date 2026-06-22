@@ -807,16 +807,16 @@ z-index:999;
 .whatsapp-float i {
   position: relative;
   z-index: 1;
-  color: #fff;
-  font-size: 31px;
-  width: 40px;
-  height: 40px;
+  color: #25d366;
+  font-size: 32px;
   background: #fff;
+  width: 44px;
+  height: 44px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
   animation: waIconPulse 2.5s ease-in-out infinite;
 }
 
