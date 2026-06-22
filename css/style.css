@@ -825,6 +825,7 @@ z-index:999;
   right: 68px;
   background: #1a1a1a;
   color: #fff !important;
+  -webkit-text-fill-color: #fff !important;
   padding: 8px 16px;
   border-radius: 8px;
   font-size: 13px;
@@ -874,8 +875,9 @@ z-index:999;
   border-radius: 50%;
 }
 
-.whatsapp-float:visited,.whatsapp-float:link,.whatsapp-float:active{color:#fff !important;}
-.whatsapp-float i:visited,.whatsapp-float i:link,.whatsapp-float i:active{color:#fff !important;}
+.whatsapp-float:visited,.whatsapp-float:link,.whatsapp-float:active,.whatsapp-float:any-link{color:#fff !important;}
+.whatsapp-float i:visited,.whatsapp-float i:link,.whatsapp-float i:active,.whatsapp-float i:any-link{color:#fff !important;}
+.whatsapp-float .wa-tooltip:visited,.whatsapp-float .wa-tooltip:link,.whatsapp-float .wa-tooltip:active,.whatsapp-float .wa-tooltip:any-link{color:#fff !important;}
 .whatsapp-float:hover {
   transform: scale(1.08) rotate(-3deg);
   box-shadow: 0 10px 40px rgba(37, 211, 102, 0.45);
