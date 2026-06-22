@@ -82,6 +82,8 @@ function updateSummary(itemCount, total) {
   cartItemCount.innerText = itemCount;
   cartSubtotal.innerText = total.toFixed(2);
   cartTotal.innerText = total.toFixed(2);
+  var summaryCount = document.getElementById("summaryItemCount");
+  if (summaryCount) summaryCount.innerText = itemCount;
   updateHeaderCartCount(itemCount);
 }
 

@@ -7,6 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/cart.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 <script src="../js/config.js"></script>
 </head>
@@ -27,9 +28,10 @@
 </ul>
 </nav>
 <div class="nav-right">
+<div class="search-wrapper"><i class="fa-solid fa-magnifying-glass search-icon"></i><input type="text" class="search-input" placeholder="Search products..."></div>
 <div class="nav-icons">
 <a href="wishlist.html"><i class="fa-regular fa-heart"></i><span>0</span></a>
-<a href="cart.html"><i class="fa-solid fa-cart-shopping"></i><span id="cartCount">0</span></a>
+<a href="cart.html"><i class="fa-solid fa-cart-shopping"></i><span>0</span></a>
 </div>
 <a href="login.html" class="login-btn"><i class="fa-regular fa-user"></i><span class="login-text">LOGIN</span></a>
 <div class="menu-btn"><i class="fa-solid fa-bars"></i></div>
@@ -49,24 +51,69 @@
 </ul>
 </div>
 
-<section style="padding:60px 0;">
+<section class="cart-hero">
 <div class="container">
-<h1 style="font-size:72px;font-weight:800;margin-bottom:10px;">YOUR CART</h1>
-<p style="color:#aaa;margin-bottom:40px;">Items in your shopping bag</p>
-<div id="cartContainer">
-<div class="shop-state">Your cart is empty. <a href="shop.html" style="color:#ff6b00;margin-left:6px;">Start shopping</a></div>
+<h1>YOUR CART</h1>
+<p>Items in your shopping bag</p>
+</div>
+</section>
+
+<section class="cart-section">
+<div class="container">
+<div class="cart-layout">
+<div class="cart-panel">
+<div class="cart-panel-head">
+<h2>Shopping Bag <span id="cartItemCount">0</span></h2>
+<button class="clear-cart-btn" id="clearCartBtn">Clear Cart</button>
+</div>
+<div id="cartItems"></div>
+<div id="cartContainer" style="display:none;"></div>
+</div>
+<div class="cart-summary">
+<h2>Order Summary</h2>
+<div class="checkout-form">
+<label>Full Name</label>
+<input type="text" id="customerName" placeholder="Your name">
+<label>Phone Number</label>
+<input type="tel" id="customerPhone" placeholder="Phone number">
+<label>Pincode</label>
+<input type="text" id="customerPincode" maxlength="6" placeholder="Pincode" oninput="fetchPincode(this.value,'customer')">
+<label>City</label>
+<input type="text" id="customerCity" placeholder="City">
+<label>District</label>
+<input type="text" id="customerDistrict" placeholder="District">
+<label>State</label>
+<input type="text" id="customerState" placeholder="State">
+<label>Delivery Address</label>
+<textarea id="customerAddress" rows="3" placeholder="House no, street, area"></textarea>
+</div>
+<div class="summary-row">
+<span>Items</span>
+<strong id="summaryItemCount">0</strong>
+</div>
+<div class="summary-row">
+<span>Subtotal</span>
+<strong>&#8377;<span id="cartSubtotal">0.00</span></strong>
+</div>
+<div class="summary-total">
+<span>Total</span>
+<strong>&#8377;<span id="cartTotal">0.00</span></strong>
+</div>
+<button class="checkout-btn" id="checkoutBtn"><i class="fa-solid fa-bag-shopping"></i> PLACE ORDER</button>
+<a href="shop.html" class="continue-shopping">Continue Shopping</a>
+</div>
 </div>
 </div>
 </section>
 
 <footer>
 <div class="container foot">
-<div><img src="../images/logo.png" alt="Pehrawa Logo"><p>HOME OF HM â€” Premium printed and custom printed t-shirts for men who love to stand out.</p><div class="socials"><a href="#"><i class="fab fa-facebook-f"></i></a><a href="#"><i class="fab fa-instagram"></i></a><a href="#"><i class="fab fa-youtube"></i></a></div></div>
+<div><img src="../images/logo.png" alt="Pehrawa Logo"><p>HOME OF HM — Premium printed and custom printed t-shirts for men who love to stand out.</p><div class="socials"><a href="#"><i class="fab fa-facebook-f"></i></a><a href="#"><i class="fab fa-instagram"></i></a><a href="#"><i class="fab fa-youtube"></i></a></div></div>
 <div><h4>SHOP</h4><a href="shop.html">All Products</a><a href="shop.html">T-Shirts</a><a href="collections.html">Collections</a></div>
 <div><h4>HELP</h4><a href="size-guide.html">Size Guide</a><a href="shipping-policy.html">Shipping Policy</a><a href="track-order.html">Track Order</a></div>
 <div><h4>CONTACT</h4><p><i class="fa-solid fa-phone"></i> +91 9855707708</p><p><i class="fa-solid fa-envelope"></i> pehrawamenswear@gmail.com</p><p><i class="fa-solid fa-location-dot"></i> Punjab, India</p></div>
 </div>
-<div class="copyright">Â© 2026 Pehrawa Menswear. All Rights Reserved.</div>
+<div class="copyright">&copy; 2026 Pehrawa Menswear. All Rights Reserved.</div>
 </footer>
 
 <script src="../js/script.js"></script>
