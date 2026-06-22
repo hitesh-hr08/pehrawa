@@ -1637,15 +1637,11 @@ RESPONSIVE
   .navbar{display:none;}
   .menu-btn{display:flex !important;}
 
-  .hero{height:auto;background-size:cover;background-position:center;}
-  .hero-wrap{grid-template-columns:1fr;padding:60px 0;}
-  .hero-left{padding:40px 20px;text-align:center;align-items:center;}
-  .hero-left .mini{text-align:center;}
-  .hero-left .sub{text-align:center;margin:auto;}
-  .hero-btns{justify-content:center;}
-  .hm{justify-content:center;}
+  .hero{height:auto;min-height:700px;background-size:cover;background-position:70% center;}
+  .hero-wrap{grid-template-columns:1fr;padding:80px 0;}
+  .hero-left{padding:40px 40px;align-items:flex-start;}
+  .hero h1{font-size:48px;}
   .hm::before{width:50px;}
-  .hero h1{font-size:48px;max-width:100%;}
 
   .product-grid,.benefits .container,.foot{grid-template-columns:1fr;}
   .shop-products .product-grid{grid-template-columns:repeat(2,1fr);}
@@ -1721,7 +1717,8 @@ RESPONSIVE
   .logo img{width:110px;}
 
   .hero h1{font-size:40px;}
-  .hero-left{padding:30px 16px;}
+  .hero{min-height:600px;}
+  .hero-left{padding:30px 20px;}
   .hero-btns a{height:54px;padding:0 24px;font-size:14px;}
 
   .hm{margin-top:50px;}
@@ -1789,7 +1786,8 @@ RESPONSIVE
   .menu-btn{font-size:18px;}
 
   .hero h1{font-size:32px;}
-  .hero-left{padding:20px 12px;}
+  .hero{min-height:450px;}
+  .hero-left{padding:20px 16px;}
   .mini{font-size:11px;letter-spacing:4px;margin-bottom:18px;}
   .sub{font-size:16px;line-height:1.6;}
   .hero-btns{margin-top:24px;}
