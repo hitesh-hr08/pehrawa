@@ -362,13 +362,14 @@ background:#444;
 }
 .hm-badge{
 display:flex;align-items:center;justify-content:center;
-width:44px;height:44px;
+width:56px;height:56px;
 background:#ff6b00;
 color:#000;
-font-weight:800;
-font-size:16px;
-border-radius:4px;
-letter-spacing:0;
+font-weight:900;
+font-size:22px;
+border-radius:8px;
+letter-spacing:1px;
+box-shadow:0 0 30px rgba(255,107,0,.3);
 }
 .hm-by{
 font-size:13px;
