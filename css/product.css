@@ -2,11 +2,11 @@
 padding:120px 0 80px;
 }
 
-.product-grid{
+.product-detail{
 display:grid;
 grid-template-columns:1fr 1fr;
 gap:60px;
-align-items:center;
+align-items:start;
 }
 
 .product-image img{
@@ -104,7 +104,7 @@ margin:10px 0;
 
 @media(max-width:768px){
 
-.product-grid{
+.product-detail{
 grid-template-columns:1fr;
 }
 

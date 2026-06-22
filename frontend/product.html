@@ -50,33 +50,38 @@
 </ul>
 </div>
 
-<section class="product-page" style="padding:80px 0;">
+<link rel="stylesheet" href="../css/product.css">
+<section class="product-section">
 <div class="container">
-<div class="product-wrapper" style="display:grid;grid-template-columns:1fr 1fr;gap:50px;align-items:start;">
+<div class="product-detail">
 <div>
-<img id="mainProductImage" src="../images/product1.png" alt="Product" style="width:100%;border:1px solid #222;">
+<div class="product-image">
+<img id="productImage" src="../images/product1.png" alt="Product">
+</div>
 <div class="thumbs" style="display:flex;gap:10px;margin-top:15px;">
-<img src="../images/product1.png" style="width:90px;cursor:pointer;border:1px solid #333;" onclick="document.getElementById('mainProductImage').src=this.src">
-<img src="../images/product2.png" style="width:90px;cursor:pointer;border:1px solid #333;" onclick="document.getElementById('mainProductImage').src=this.src">
+<img src="../images/product1.png" style="width:90px;cursor:pointer;border:1px solid #333;" onclick="document.getElementById('productImage').src=this.src">
+<img src="../images/product2.png" style="width:90px;cursor:pointer;border:1px solid #333;" onclick="document.getElementById('productImage').src=this.src">
 </div>
 </div>
 <div class="product-details">
-<p class="product-sku" style="color:#999;font-size:14px;" id="productSku">PM-GR-001</p>
-<h1 style="font-size:42px;margin:15px 0;" id="productName">Fearless Oversized Tee</h1>
-<div class="product-price" style="font-size:35px;font-weight:700;color:#ff6b00;margin-bottom:20px;" id="productPrice">â‚¹799</div>
-<p class="product-description" style="color:#bbb;line-height:1.8;margin-bottom:25px;" id="productDesc">Premium cotton oversized t-shirt with high quality print.</p>
-<div><h4 style="margin-bottom:12px;">Size</h4><div class="size-options" style="display:flex;gap:10px;margin:15px 0 25px;">
-<button style="padding:12px 20px;background:#0d0d0d;border:1px solid #333;color:#fff;cursor:pointer;" onclick="selectSize(this)">S</button>
-<button style="padding:12px 20px;background:#0d0d0d;border:1px solid #333;color:#fff;cursor:pointer;" onclick="selectSize(this)">M</button>
-<button style="padding:12px 20px;background:#0d0d0d;border:1px solid #333;color:#fff;cursor:pointer;" onclick="selectSize(this)">L</button>
-<button style="padding:12px 20px;background:#0d0d0d;border:1px solid #333;color:#fff;cursor:pointer;" onclick="selectSize(this)">XL</button>
-<button style="padding:12px 20px;background:#0d0d0d;border:1px solid #333;color:#fff;cursor:pointer;" onclick="selectSize(this)">XXL</button>
+<p class="badge" id="productSku">PM-GR-001</p>
+<h1 id="productName">Fearless Oversized Tee</h1>
+<h2 id="productPrice">₹799</h2>
+<p class="product-description" id="productDescription">Premium cotton oversized t-shirt with high quality print.</p>
+<div><h4 style="margin-bottom:12px;">Size</h4><div class="sizes">
+<button class="size-btn">S</button>
+<button class="size-btn">M</button>
+<button class="size-btn">L</button>
+<button class="size-btn">XL</button>
+<button class="size-btn">XXL</button>
 </div></div>
-<label style="display:block;margin-bottom:6px;">Quantity</label>
-<input type="number" id="qty" value="1" min="1" style="width:100px;padding:12px;margin:15px 0 25px;background:#0d0d0d;border:1px solid #333;color:#fff;">
-<div class="product-buttons" style="display:flex;gap:15px;">
-<button class="add-cart-btn" style="padding:15px 25px;background:#ff6b00;border:none;color:#000;font-weight:600;cursor:pointer;" onclick="addToCartFromProduct()">ADD TO CART</button>
-<button style="padding:15px 25px;border:1px solid #444;background:transparent;color:#fff;cursor:pointer;" onclick="addToWishlistFromProduct()"><i class="fa-regular fa-heart"></i> WISHLIST</button>
+<div class="quantity-box">
+<label>Quantity</label>
+<input type="number" id="quantity" value="1" min="1">
+</div>
+<div class="product-actions">
+<button class="add-cart-btn" id="addCartBtn">ADD TO CART</button>
+<button class="buy-btn" id="buyWhatsapp"><i class="fa-brands fa-whatsapp"></i> BUY ON WHATSAPP</button>
 </div>
 </div>
 </div>
@@ -105,25 +110,9 @@
 <div class="copyright">Â© 2026 Pehrawa Menswear. All Rights Reserved.</div>
 </footer>
 
+<script src="../js/product.js"></script>
 <script src="../js/script.js"></script>
 <script src="../js/animations.js"></script>
-<script>
-let selectedSize = "M";
-function selectSize(btn) {
-  document.querySelectorAll(".size-options button").forEach(b => { b.style.background = "#0d0d0d"; b.style.borderColor = "#333"; });
-  btn.style.background = "#ff6b00"; btn.style.borderColor = "#ff6b00"; btn.style.color = "#000";
-  selectedSize = btn.textContent;
-}
-function addToCartFromProduct() {
-  const name = document.getElementById("productName").textContent;
-  const price = document.getElementById("productPrice").textContent.replace("â‚¹","");
-  const qty = document.getElementById("qty").value;
-  alert(`Added ${qty}x ${name} (${selectedSize}) to cart - â‚¹${parseInt(price)*parseInt(qty)}`);
-}
-function addToWishlistFromProduct() {
-  alert("Added to wishlist!");
-}
-</script>
 
 <div class="whatsapp-float" onclick="window.open('https://wa.me/919855707708','_blank')" role="button" tabindex="0" aria-label="Chat on WhatsApp">
   <i class="fa-brands fa-whatsapp"></i><span class="wa-tooltip">Chat with us</span><span class="wa-badge"></span>

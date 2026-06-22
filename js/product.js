@@ -92,13 +92,15 @@ loadProductDetails();
 // Load reviews
 (function () {
   if (!productId) return;
+  var listEl = document.getElementById("reviewsList");
+  if (!listEl) return;
   var api = window.PEHRAWA_API_BASE || "http://localhost:5000";
 
   fetch(api + "/api/products/" + productId + "/reviews")
     .then(function (r) { return r.json(); })
     .then(function (data) {
       if (!data.success) {
-        document.getElementById("reviewsList").innerHTML = '<p class="reviews-empty">Could not load reviews.</p>';
+        listEl.innerHTML = '<p class="reviews-empty">Could not load reviews.</p>';
         return;
       }
 
@@ -106,16 +108,24 @@ loadProductDetails();
       var stats = data.stats || { count: 0, avg_rating: 0 };
 
       // Summary
-      document.getElementById("reviewsSummary").querySelector(".reviews-avg").textContent = stats.avg_rating || "--";
-      document.getElementById("reviewsCount").textContent = "(" + stats.count + " review" + (stats.count !== 1 ? "s" : "") + ")";
-      var avgStars = "";
-      var avg = Math.round(stats.avg_rating || 0);
-      for (var i = 1; i <= 5; i++) { avgStars += i <= avg ? "★" : "☆"; }
-      document.getElementById("reviewsAvgStars").textContent = avgStars;
+      var summaryEl = document.getElementById("reviewsSummary");
+      if (summaryEl) {
+        var avgEl = summaryEl.querySelector(".reviews-avg");
+        if (avgEl) avgEl.textContent = stats.avg_rating || "--";
+        var countEl = document.getElementById("reviewsCount");
+        if (countEl) countEl.textContent = "(" + stats.count + " review" + (stats.count !== 1 ? "s" : "") + ")";
+        var starsEl = document.getElementById("reviewsAvgStars");
+        if (starsEl) {
+          var avgStars = "";
+          var avg = Math.round(stats.avg_rating || 0);
+          for (var i = 1; i <= 5; i++) { avgStars += i <= avg ? "★" : "☆"; }
+          starsEl.textContent = avgStars;
+        }
+      }
 
       // List
       if (reviews.length === 0) {
-        document.getElementById("reviewsList").innerHTML = '<p class="reviews-empty">No reviews yet. Be the first to review!</p>';
+        listEl.innerHTML = '<p class="reviews-empty">No reviews yet. Be the first to review!</p>';
         return;
       }
 
@@ -134,9 +144,9 @@ loadProductDetails();
         '</div>';
       }).join("");
 
-      document.getElementById("reviewsList").innerHTML = html;
+      listEl.innerHTML = html;
     })
     .catch(function () {
-      document.getElementById("reviewsList").innerHTML = '<p class="reviews-empty">Failed to load reviews.</p>';
+      listEl.innerHTML = '<p class="reviews-empty">Failed to load reviews.</p>';
     });
 })();
