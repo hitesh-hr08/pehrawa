@@ -1650,7 +1650,7 @@ RESPONSIVE
 @media(max-width:1100px){
   nav{display:none;}
   .navbar{display:none;}
-  .menu-btn{display:flex !important;margin-right:auto;}
+  .menu-btn{display:flex !important;}
 
   .hero{height:auto;}
   .hero-img{position:static;height:500px;background-size:cover;background-position:center;}
