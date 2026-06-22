@@ -17,12 +17,12 @@
       </div>
 
       <nav class="admin-nav">
-        <a class="active" href="#dashboard"><i class="fa-solid fa-chart-line"></i> Dashboard</a>
-        <a href="#products"><i class="fa-solid fa-shirt"></i> Products</a>
-        <a href="#orders"><i class="fa-solid fa-bag-shopping"></i> Orders</a>
-        <a href="#requests"><i class="fa-solid fa-wand-magic-sparkles"></i> Custom Requests</a>
-        <a href="#customers"><i class="fa-solid fa-users"></i> Customers</a>
-        <a href="#settings"><i class="fa-solid fa-gear"></i> Settings</a>
+        <a class="active" href="#dashboard"><i class="fa-solid fa-chart-line"></i> Dashboard</div>
+        <a href="#products"><i class="fa-solid fa-shirt"></i> Products</div>
+        <a href="#orders"><i class="fa-solid fa-bag-shopping"></i> Orders</div>
+        <a href="#requests"><i class="fa-solid fa-wand-magic-sparkles"></i> Custom Requests</div>
+        <a href="#customers"><i class="fa-solid fa-users"></i> Customers</div>
+        <a href="#settings"><i class="fa-solid fa-gear"></i> Settings</div>
       </nav>
 
       <div class="sidebar-card">
@@ -846,7 +846,7 @@
           </td>
           <td>${request.phone || "-"}</td>
           <td>
-            ${request.image_url ? `<a class="artwork-link" href="${request.image_url}" target="_blank">View</a>` : "-"}
+            ${request.image_url ? `<a class="artwork-link" href="${request.image_url}" target="_blank">View</div>` : "-"}
           </td>
           <td>
             <select class="status-select" onchange="updateRequestStatus(${request.id}, this.value)">
@@ -1063,11 +1063,11 @@
     };
     loadSettings();
   </script>
-<a href="https://wa.me/919855707708" target="_blank" class="whatsapp-float" aria-label="Chat on WhatsApp">
+<div class="whatsapp-float" onclick="window.open('https://wa.me/919855707708','_blank')" role="button" tabindex="0" aria-label="Chat on WhatsApp">
   <i class="fa-brands fa-whatsapp"></i>
   <span class="wa-tooltip">Chat with us</span>
   <span class="wa-badge"></span>
-</a>
+</div>
 </body>
 </html>
 
