@@ -304,11 +304,11 @@ margin-bottom:30px;
 }
 
 .hero h1{
-font-size:88px;
-line-height:0.95;
-font-weight:800;
-max-width:420px;
-margin-bottom:30px;
+font-size:64px;
+line-height:1.1;
+font-weight:700;
+max-width:500px;
+margin-bottom:24px;
 }
 
 .hero h1 span{display:block;}
@@ -1601,7 +1601,7 @@ nav{display:none;}
 .hero{height:auto;background-size:cover;background-position:center;}
 .hero-wrap{grid-template-columns:1fr;padding:80px 0;}
 .hero-left{padding:40px 20px;}
-.hero h1{font-size:56px;}
+.hero h1{font-size:48px;}
 .grid,.product-grid,.benefits .container,.foot{grid-template-columns:1fr;}
 .about-wrap{grid-template-columns:1fr;}
 .about-right{justify-content:center;}
@@ -1631,7 +1631,7 @@ border:1px solid #555;background:#111;color:#fff;border-radius:30px;font-size:12
 }
 
 @media(max-width:768px){
-.hero h1{font-size:48px;}
+.hero h1{font-size:40px;}
 .shop-text h1{font-size:54px;}
 .collection-hero h1{font-size:54px;}
 .contact-hero h1{font-size:54px;}
@@ -1657,7 +1657,7 @@ border:1px solid #555;background:#111;color:#fff;border-radius:30px;font-size:12
 }
 
 @media(max-width:480px){
-.hero h1{font-size:36px;}
+.hero h1{font-size:32px;}
 .logo img{width:95px;}
 .nav-icons{gap:18px;}
 .nav-icons a{font-size:14px;}
