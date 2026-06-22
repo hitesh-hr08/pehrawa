@@ -361,10 +361,8 @@ height:1px;
 background:#444;
 }
 .hm-img{
-width:60px;
-height:60px;
-border-radius:10px;
-filter:drop-shadow(0 0 25px rgba(255,107,0,.35));
+height:50px;
+width:auto;
 }
 .hm-by{
 font-size:13px;
