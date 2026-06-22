@@ -60,8 +60,8 @@ document.getElementById("registerForm").addEventListener("submit", async functio
     });
     var data = await res.json();
     if(data.success){
-      localStorage.setItem("pehrawaToken",data.token);
-      localStorage.setItem("pehrawaUser",JSON.stringify(data.user));
+      localStorage.setItem("pehrawa_customer_token",data.token);
+      localStorage.setItem("pehrawa_customer",JSON.stringify(data.user));
       window.location.href = "home.html";
     } else {
       msg.textContent = data.message || "Registration failed";

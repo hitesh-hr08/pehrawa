@@ -19,8 +19,8 @@
       const res = await fetch((window.PEHRAWA_API_BASE||"http://localhost:5000")+"/api/auth/verify?token="+token);
       const data = await res.json();
       if(data.success){
-        localStorage.setItem("pehrawaToken",data.token||token);
-        localStorage.setItem("pehrawaUser",JSON.stringify(data.user));
+        localStorage.setItem("pehrawa_customer_token",data.token||token);
+        localStorage.setItem("pehrawa_customer",JSON.stringify(data.user));
         window.location.href = "home.html";
       } else { window.location.href = "login.html?error=verify_failed"; }
     } catch(e) { window.location.href = "login.html?error=server_error"; }
