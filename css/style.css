@@ -1141,7 +1141,7 @@ height:700px;
 display:flex;
 align-items:center;
 position:relative;
-background:url("../images/about-image.png") no-repeat center/contain, linear-gradient(180deg,#050505,#080808);
+background:url("../images/about-image.png") no-repeat center/100% 100%, linear-gradient(180deg,#050505,#080808);
 border-bottom:1px solid #121212;
 }
 .about-caption{
