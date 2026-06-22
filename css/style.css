@@ -1137,7 +1137,7 @@ ABOUT PAGE
 ======================= */
 
 .about-hero{
-height:900px;
+height:700px;
 display:flex;
 align-items:center;
 position:relative;
@@ -1146,7 +1146,7 @@ border-bottom:1px solid #121212;
 }
 .about-caption{
 position:absolute;
-bottom:60px;
+bottom:30px;
 left:120px;
 text-align:left;
 font-size:16px;
@@ -1185,7 +1185,7 @@ opacity:.78;
 }
 
 /* STORY */
-.story{padding:120px 0;}
+.story{padding:60px 0;}
 
 .story-box{
 display:grid;
