@@ -350,18 +350,35 @@ border:1px solid #444;
 
 .hm{
 margin-top:90px;
-font-size:15px;
-letter-spacing:5px;
-opacity:.75;
 display:flex;
 align-items:center;
-gap:20px;
+gap:18px;
 }
 .hm::before{
 content:"";
 width:80px;
 height:1px;
 background:#444;
+}
+.hm-badge{
+display:flex;align-items:center;justify-content:center;
+width:44px;height:44px;
+background:#ff6b00;
+color:#000;
+font-weight:800;
+font-size:16px;
+border-radius:4px;
+letter-spacing:0;
+}
+.hm-by{
+font-size:13px;
+color:#888;
+letter-spacing:3px;
+text-transform:uppercase;
+}
+.hm-logo{
+height:28px;
+opacity:.85;
 }
 
 /* =======================
