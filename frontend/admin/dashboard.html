@@ -203,7 +203,14 @@
 
               <div class="form-group wide">
                 <label for="productImage">Image URL</label>
-                <input type="text" id="productImage" placeholder="../images/product1.png" />
+                <div class="image-upload-row">
+                  <input type="text" id="productImage" placeholder="../images/product1.png" />
+                  <input type="file" id="productImageUpload" accept="image/*" />
+                </div>
+                <div class="image-upload-preview" id="imagePreview" style="display:none;">
+                  <img src="" alt="Preview" />
+                  <span class="image-upload-remove" onclick="document.getElementById('productImage').value='';document.getElementById('imagePreview').style.display='none'">&times;</span>
+                </div>
               </div>
 
               <div class="form-group wide">
@@ -655,6 +662,27 @@
       }
     });
 
+    document.getElementById("productImageUpload").addEventListener("change", async function() {
+      var file = this.files[0];
+      if (!file) return;
+      var formData = new FormData();
+      formData.append("image", file);
+      try {
+        var res = await fetch((window.PEHRAWA_API_BASE || "http://localhost:5000") + "/api/admin/upload", {
+          method: "POST",
+          headers: { Authorization: "Bearer " + token },
+          body: formData
+        });
+        var data = await res.json();
+        if (data.success) {
+          document.getElementById("productImage").value = data.url;
+          var preview = document.getElementById("imagePreview");
+          preview.style.display = "flex";
+          preview.querySelector("img").src = data.url;
+        }
+      } catch(e) {}
+    });
+
     function editProduct(id) {
       const product = products.find((item) => item.id === id);
       if (!product) return;
@@ -668,7 +696,15 @@
       document.getElementById("productNewArrival").checked = !!product.is_new_arrival;
       document.getElementById("productTrending").checked = !!product.is_trending;
       document.getElementById("productHotSeller").checked = !!product.is_hot_seller;
-      document.getElementById("productImage").value = product.image_url || "";
+      var imgUrl = product.image_url || "";
+      document.getElementById("productImage").value = imgUrl;
+      var preview = document.getElementById("imagePreview");
+      if (imgUrl) {
+        preview.style.display = "flex";
+        preview.querySelector("img").src = imgUrl;
+      } else {
+        preview.style.display = "none";
+      }
       document.getElementById("productDescription").value = product.description || "";
       document.getElementById("saveProductBtn").textContent = "Update Product";
       document.getElementById("products").scrollIntoView({ behavior: "smooth" });
@@ -700,6 +736,8 @@
       productForm.reset();
       document.getElementById("productId").value = "";
       document.getElementById("saveProductBtn").textContent = "Save Product";
+      document.getElementById("imagePreview").style.display = "none";
+      document.getElementById("productImageUpload").value = "";
 
       if (clearMessage) {
         productMessage.textContent = "";

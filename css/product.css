@@ -1,4 +1,6 @@
 /* === PRODUCT DETAIL === */
+#productDetail { visibility: hidden; }
+#productDetail.visible { visibility: visible; }
 .product-section{
   padding:130px 0 80px;
   position:relative;

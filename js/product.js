@@ -141,6 +141,7 @@ function getCategoryConfig(cat) {
 }
 
 function renderProduct(product) {
+  document.getElementById("productDetail").classList.add("visible");
   document.title = `${product.name} | Pehrawa Menswear`;
   document.getElementById("productImage").src = product.image_url || "../images/product1.png";
   document.getElementById("productImage").alt = product.name;
