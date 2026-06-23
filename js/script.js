@@ -103,7 +103,7 @@ function addToCart(productId) {
 
   localStorage.setItem("cart", JSON.stringify(cart));
   updateCartCount();
-  showToast(product.name + " added to cart");
+  if (typeof showToast === "function") showToast(product.name + " added to cart");
 }
 
 updateCartCount();
@@ -134,7 +134,7 @@ function addToWishlist(productId) {
 
   localStorage.setItem("wishlist", JSON.stringify(wishlist));
   updateWishlistCount();
-  showToast(product.name + " added to wishlist");
+  if (typeof showToast === "function") showToast(product.name + " added to wishlist");
 }
 
 updateWishlistCount();
@@ -176,10 +176,10 @@ whatsappButtons.forEach((button) => {
       button.closest(".product-card");
 
     const productName =
-      card.querySelector("h3").innerText;
+      card.querySelector("h3")?.innerText || "Product";
 
     const price =
-      card.querySelector(".price").innerText;
+      card.querySelector(".price")?.innerText || "₹0";
 
     const message =
 `Hello Pehrawa Menswear,
@@ -209,8 +209,8 @@ Please share further details.`;
 // HEADER SHADOW ON SCROLL
 // ===============================
 
+var header = document.querySelector("header");
 window.addEventListener("scroll", function () {
-  var header = document.querySelector(".header");
   if (!header) return;
   header.style.boxShadow = window.scrollY > 30 ? "0 5px 20px rgba(0,0,0,.5)" : "none";
 });

@@ -175,7 +175,7 @@ async function checkoutWithPayment() {
     var data = await res.json();
 
     if (!data.success) {
-      showToast(data.message || "Order could not be saved.");
+      if (typeof showToast === "function") showToast(data.message || "Order could not be saved.");
       checkoutBtn.disabled = false;
       checkoutBtn.innerHTML = '<i class="fa-solid fa-bag-shopping"></i> BUY NOW';
       return;
@@ -184,9 +184,9 @@ async function checkoutWithPayment() {
     cart = [];
     saveCart();
     renderCart();
-    showToast("Order " + (data.order.tracking_id || "#" + data.order.id) + " placed! Track it in My Orders.");
+    if (typeof showToast === "function") showToast("Order " + (data.order.tracking_id || "#" + data.order.id) + " placed! Track it in My Orders.");
   } catch (err) {
-    showToast("Error placing order. Try again.");
+    if (typeof showToast === "function") showToast("Error placing order. Try again.");
   }
 
   checkoutBtn.disabled = false;
@@ -198,6 +198,126 @@ checkoutBtn.addEventListener("click", function () {
     if (loggedIn) checkoutWithPayment();
   });
 });
+
+document.getElementById("razorpayCheckoutBtn").addEventListener("click", function () {
+  window.requireAuth(function (loggedIn) {
+    if (loggedIn) checkoutWithRazorpay();
+  });
+});
+
+async function checkoutWithRazorpay() {
+  if (cart.length === 0) {
+    alert("Cart is empty");
+    return;
+  }
+  var customerName = document.getElementById("customerName").value.trim();
+  var customerPhone = document.getElementById("customerPhone").value.trim();
+  var customerAddress = document.getElementById("customerAddress").value.trim();
+  if (!customerName || !customerPhone || !customerAddress) {
+    alert("Please fill name, phone, and delivery address");
+    return;
+  }
+  var total = cart.reduce(function (sum, item) {
+    return sum + (Number(item.price) * Number(item.quantity || 1));
+  }, 0);
+  var api = window.PEHRAWA_API_BASE || "http://localhost:5000";
+  try {
+    var keyRes = await fetch(api + "/api/razorpay-key");
+    var keyData = await keyRes.json();
+    if (!keyData.key) {
+      if (typeof showToast === "function") showToast("Razorpay not configured on server");
+      return;
+    }
+    var orderRes = await fetch(api + "/api/create-order", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ amount: total })
+    });
+    var orderData = await orderRes.json();
+    if (!orderData.success) {
+      if (typeof showToast === "function") showToast(orderData.message || "Payment error");
+      return;
+    }
+    var itemsSummary = cart.map(function (item) { return item.name; }).join(", ");
+    var options = {
+      key: keyData.key,
+      amount: orderData.amount,
+      currency: orderData.currency || "INR",
+      name: "Pehrawa Menswear",
+      description: itemsSummary.slice(0, 100),
+      image: "../images/logo.png",
+      order_id: orderData.order_id,
+      handler: function (response) {
+        placeOrderAfterPayment(response.razorpay_payment_id);
+      },
+      modal: {
+        ondismiss: function () {
+          if (typeof showToast === "function") showToast("Payment cancelled");
+        }
+      },
+      prefill: {
+        name: customerName,
+        contact: customerPhone,
+        email: ""
+      },
+      theme: { color: "#f97316" }
+    };
+    var rzp = new Razorpay(options);
+    rzp.open();
+  } catch (err) {
+    if (typeof showToast === "function") showToast("Payment failed to initialize");
+  }
+}
+
+async function placeOrderAfterPayment(paymentId) {
+  var customerName = document.getElementById("customerName").value.trim();
+  var customerPhone = document.getElementById("customerPhone").value.trim();
+  var customerAddress = document.getElementById("customerAddress").value.trim();
+  var total = cart.reduce(function (sum, item) {
+    return sum + (Number(item.price) * Number(item.quantity || 1));
+  }, 0);
+  var savedCustomerId = null;
+  var cust = window.getCustomer ? window.getCustomer() : null;
+  if (cust && cust.id) {
+    savedCustomerId = cust.id;
+    localStorage.setItem("customerId", cust.id);
+  } else {
+    savedCustomerId = localStorage.getItem("customerId");
+  }
+  var api = window.PEHRAWA_API_BASE || "http://localhost:5000";
+  try {
+    var res = await fetch(api + "/api/public/orders", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer " + (window.getCustomerToken ? window.getCustomerToken() : "")
+      },
+      body: JSON.stringify({
+        customer_name: customerName,
+        customer_id: savedCustomerId,
+        phone: customerPhone,
+        address: customerAddress + ", " + (document.getElementById("customerCity")?.value || "") + ", " + (document.getElementById("customerState")?.value || "") + ", Pincode: " + (document.getElementById("customerPincode")?.value || ""),
+        total_amount: total,
+        payment_id: paymentId || null,
+        items: cart.map(function (item) {
+          return { id: item.id, name: item.name, price: item.price, quantity: item.quantity, size: item.size };
+        })
+      })
+    });
+    var data = await res.json();
+    if (data.success) {
+      cart = [];
+      saveCart();
+      renderCart();
+      if (typeof showToast === "function") showToast("Order " + (data.order.tracking_id || "#" + data.order.id) + " placed! Track in My Orders.");
+    } else {
+      if (typeof showToast === "function") showToast(data.message || "Failed to place order");
+    }
+  } catch (err) {
+    if (typeof showToast === "function") showToast("Error placing order");
+  }
+}
+
 clearCartBtn.addEventListener("click", clearCart);
 
 renderCart();

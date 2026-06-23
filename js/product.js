@@ -327,6 +327,12 @@ document.getElementById("buyAddressForm").addEventListener("submit", function (e
   showBuyStep(2);
 });
 
+function getProductPrice() {
+  var pv = document.getElementById("productPriceValue");
+  if (pv) return parseFloat(pv.innerText.replace(/[^0-9.]/g, "")) || 0;
+  return currentProduct ? Number(currentProduct.price) : 0;
+}
+
 function populateBuyConfirmation() {
   var name = document.getElementById("buyName").value;
   var phone = document.getElementById("buyPhone").value;
@@ -337,7 +343,7 @@ function populateBuyConfirmation() {
   var size = document.getElementById("buySize").value;
   var qty = document.getElementById("buyQty").value;
   var productName = document.getElementById("productName").innerText;
-  var price = parseFloat(document.getElementById("productPrice").innerText.replace("₹", "").trim()) || 0;
+  var price = getProductPrice();
   var total = price * parseInt(qty);
 
   document.querySelector("#buyStep2 .buy-summary").innerHTML =
@@ -352,7 +358,7 @@ function populateBuyConfirmation() {
 
 function generateBuyQrCode() {
   var qty = parseInt(document.getElementById("buyQty").value) || 1;
-  var price = parseFloat(document.getElementById("productPrice").innerText.replace("₹", "").trim()) || 0;
+  var price = getProductPrice();
   var total = price * qty;
   var upiStr = "upi://pay?pa=hrandhan-1@okicici&pn=Pehrawa%20Menswear&am=" + total.toFixed(2) + "&cu=INR";
   document.getElementById("buyQrImage").src = "https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=" + encodeURIComponent(upiStr);
@@ -373,7 +379,7 @@ async function confirmBuyPayment() {
   var size = document.getElementById("buySize").value;
   var qty = document.getElementById("buyQty").value;
   var productName = document.getElementById("productName").innerText;
-  var price = parseFloat(document.getElementById("productPrice").innerText.replace("₹", "").trim()) || 0;
+  var price = getProductPrice();
   var total = price * parseInt(qty);
   var fullAddress = address + ", " + city + ", " + state + " - " + pincode;
   var api = window.PEHRAWA_API_BASE || "http://localhost:5000";
@@ -406,6 +412,63 @@ async function confirmBuyPayment() {
   btn.disabled = false;
   btn.textContent = "I've Paid — Place Order";
 }
+
+// Razorpay Buy handler
+document.getElementById("razorpayBuyBtn").addEventListener("click", async function () {
+  var qty = parseInt(document.getElementById("buyQty").value) || 1;
+  var amount = getProductPrice() * qty;
+  if (amount <= 0) {
+    if (typeof showToast === "function") showToast("Invalid amount");
+    return;
+  }
+  var api = window.PEHRAWA_API_BASE || "http://localhost:5000";
+  try {
+    var keyRes = await fetch(api + "/api/razorpay-key");
+    var keyData = await keyRes.json();
+    if (!keyData.key) {
+      if (typeof showToast === "function") showToast("Razorpay not configured");
+      return;
+    }
+    var orderRes = await fetch(api + "/api/create-order", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ amount: amount })
+    });
+    var orderData = await orderRes.json();
+    if (!orderData.success) {
+      if (typeof showToast === "function") showToast(orderData.message || "Payment error");
+      return;
+    }
+    var options = {
+      key: keyData.key,
+      amount: orderData.amount,
+      currency: orderData.currency || "INR",
+      name: "Pehrawa Menswear",
+      description: document.getElementById("productName").innerText,
+      image: "../images/logo.png",
+      order_id: orderData.order_id,
+      handler: function (response) {
+        document.getElementById("buyTxnId").value = response.razorpay_payment_id;
+        confirmBuyPayment();
+      },
+      modal: {
+        ondismiss: function () {
+          if (typeof showToast === "function") showToast("Payment cancelled");
+        }
+      },
+      prefill: {
+        name: document.getElementById("buyName").value || "",
+        contact: document.getElementById("buyPhone").value || "",
+        email: ""
+      },
+      theme: { color: "#f97316" }
+    };
+    var rzp = new Razorpay(options);
+    rzp.open();
+  } catch (err) {
+    if (typeof showToast === "function") showToast("Payment failed to initialize");
+  }
+});
 
 loadProductDetails();
 

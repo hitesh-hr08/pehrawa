@@ -53,7 +53,7 @@ document.getElementById("registerForm").addEventListener("submit", async functio
   var email = document.getElementById("email").value.trim();
   var password = document.getElementById("password").value;
   try {
-    var res = await fetch((window.PEHRAWA_API_BASE||"http://localhost:5000")+"/api/auth/register", {
+    var res = await fetch((window.PEHRAWA_API_BASE||"http://localhost:5000")+"/api/customers/register", {
       method: "POST",
       headers: {"Content-Type":"application/json"},
       body: JSON.stringify({name,email,password})
@@ -61,7 +61,7 @@ document.getElementById("registerForm").addEventListener("submit", async functio
     var data = await res.json();
     if(data.success){
       localStorage.setItem("pehrawa_customer_token",data.token);
-      localStorage.setItem("pehrawa_customer",JSON.stringify(data.user));
+      localStorage.setItem("pehrawa_customer",JSON.stringify(data.customer));
       window.location.href = "home.html";
     } else {
       msg.textContent = data.message || "Registration failed";

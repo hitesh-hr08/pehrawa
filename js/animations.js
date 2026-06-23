@@ -4,7 +4,7 @@
 
 // === 1. NAVBAR GLASS ===
 (function () {
-  var header = document.querySelector(".header");
+  var header = document.querySelector("header");
   if (!header) return;
   window.addEventListener("scroll", function () {
     header.classList.toggle("header-glass", window.scrollY > 50);

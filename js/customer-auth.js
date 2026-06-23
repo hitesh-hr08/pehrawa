@@ -323,11 +323,13 @@
     if (dropdown) dropdown.classList.remove("open");
   });
 
-  window.initProfileIcon = function () {
+  window.initProfileIcon = function (attempt) {
     if (document.getElementById("pehrawaProfileContainer")) return;
+    attempt = attempt || 0;
+    if (attempt > 10) return;
     var navIcons = document.querySelector(".nav-icons");
     if (!navIcons) {
-      setTimeout(window.initProfileIcon, 300);
+      setTimeout(function () { window.initProfileIcon(attempt + 1); }, 300);
       return;
     }
     var container = document.createElement("div");
