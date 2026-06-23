@@ -45,6 +45,19 @@ function renderProduct(product) {
   document.getElementById("productPrice").innerHTML = '&#8377;' + (isNaN(p) ? "0.00" : p.toFixed(2));
   document.getElementById("productDescription").innerText =
     product.description || "Premium Pehrawa menswear product crafted for comfort and style.";
+  document.getElementById("productSku").innerText = "PHR-" + String(product.id).padStart(6, "0");
+  if (product.stock_status === "out_of_stock") {
+    document.getElementById("addCartBtn").disabled = true;
+    document.getElementById("addCartBtn").style.opacity = "0.5";
+    document.getElementById("addCartBtn").style.cursor = "not-allowed";
+    document.getElementById("addCartBtn").innerText = "OUT OF STOCK";
+  } else {
+    document.getElementById("addCartBtn").disabled = false;
+    document.getElementById("addCartBtn").style.opacity = "1";
+    document.getElementById("addCartBtn").style.cursor = "pointer";
+    document.getElementById("addCartBtn").innerText = "ADD TO CART";
+  }
+  if (product.category) loadRelatedProducts(product.category, product.id);
 }
 
 document.getElementById("addCartBtn").addEventListener("click", () => {
@@ -88,6 +101,36 @@ document.getElementById("buyWhatsapp").addEventListener("click", () => {
 });
 
 loadProductDetails();
+
+async function loadRelatedProducts(category, excludeId) {
+  try {
+    const res = await fetch(API_URL + "?search=" + encodeURIComponent(category));
+    const data = await res.json();
+    if (!data.success || !data.products) return;
+    var related = data.products.filter(function(p){ return p.id !== excludeId; }).slice(0, 4);
+    if (related.length === 0) return;
+    renderRelatedProducts(related);
+  } catch(e) {}
+}
+
+function renderRelatedProducts(products) {
+  var grid = document.getElementById("relatedGrid");
+  if (!grid) return;
+  grid.innerHTML = products.map(function(p){
+    var badges = "";
+    if (p.stock_status === "out_of_stock") badges += '<span class="p-status p-out-of-stock">Out of Stock</span>';
+    else if (p.stock_status === "limited_stock") badges += '<span class="p-status p-limited">Limited</span>';
+    if (p.is_new_arrival) badges += '<span class="p-status p-new">New</span>';
+    if (p.is_trending) badges += '<span class="p-status p-trending">Trending</span>';
+    if (p.is_hot_seller) badges += '<span class="p-status p-hot">Hot</span>';
+    var img = p.image_url || "../images/product1.png";
+    return '<div class="product-card"><div class="product-image">' +
+      badges +
+      '<a href="product.html?id=' + p.id + '"><img src="' + img + '" alt="' + p.name + '"></a>' +
+      '</div><div class="product-content"><h3><a href="product.html?id=' + p.id + '">' + p.name + '</a></h3>' +
+      '<div class="price">&#8377;' + Number(p.price).toFixed(0) + '</div></div></div>';
+  }).join("");
+}
 
 // Load reviews
 (function () {

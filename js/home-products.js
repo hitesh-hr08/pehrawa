@@ -15,9 +15,16 @@
       var discount = Math.round((1 - p.price / origPrice) * 100);
       var rating = (3.5 + Math.random() * 1.5).toFixed(1);
       var reviews = Math.floor(Math.random() * 500) + 20;
+      var badges = "";
+      if (p.stock_status === "out_of_stock") badges += '<span class="p-status p-out-of-stock">Out of Stock</span>';
+      else if (p.stock_status === "limited_stock") badges += '<span class="p-status p-limited">Limited</span>';
+      if (p.is_new_arrival) badges += '<span class="p-status p-new">New</span>';
+      if (p.is_trending) badges += '<span class="p-status p-trending">Trending</span>';
+      if (p.is_hot_seller) badges += '<span class="p-status p-hot">Hot</span>';
       return '<div class="product-card revealed">' +
         '<div class="product-image">' +
           '<span class="product-badge">-' + discount + '%</span>' +
+          badges +
           '<a href="product.html?id=' + p.id + '">' +
             '<img src="' + img + '" alt="' + p.name + '">' +
           '</a>' +
