@@ -1,17 +1,9 @@
-let selectedSize = "M";
+let selectedSize = "";
 let currentProduct = null;
 
 const API_URL = `${window.PEHRAWA_API_BASE || "http://localhost:5000"}/api/public/products`;
 const params = new URLSearchParams(window.location.search);
 const productId = params.get("id");
-
-document.querySelectorAll(".size-btn").forEach((btn) => {
-  btn.addEventListener("click", () => {
-    document.querySelectorAll(".size-btn").forEach((item) => item.classList.remove("active"));
-    btn.classList.add("active");
-    selectedSize = btn.innerText;
-  });
-});
 
 var qtyInput = document.getElementById("quantity");
 document.getElementById("qtyMinus").addEventListener("click", function(){
@@ -24,7 +16,14 @@ document.getElementById("qtyPlus").addEventListener("click", function(){
 });
 
 async function loadProductDetails() {
-  if (!productId) return;
+  if (!productId) {
+    renderProduct({
+      id: 0, name: "Fearless Oversized Tee", price: 799,
+      description: "Premium cotton oversized t-shirt with high quality print.",
+      image_url: "../images/product1.png", category: "T-SHIRTS", stock_status: "in_stock"
+    });
+    return;
+  }
 
   try {
     const res = await fetch(`${API_URL}/${productId}`);
@@ -46,16 +45,155 @@ async function loadProductDetails() {
   }
 }
 
+var categoryConfig = {
+  "FOOTWEAR": {
+    sizes: ["EU 39","EU 40","EU 41","EU 42","EU 43","EU 44"],
+    sizeLabel: "Select EU Size",
+    highlights: [
+      {icon:"fa-solid fa-leaf", text:"Premium Leather"},
+      {icon:"fa-solid fa-shoe-prints", text:"Comfort Sole"},
+      {icon:"fa-solid fa-truck", text:"Free Shipping"}
+    ],
+    features: [
+      "Genuine Leather & Premium Materials",
+      "Cushioned Comfort Sole for All-Day Wear",
+      "Durable Outsole with Great Grip",
+      "Easy 30-Day Returns & Exchange"
+    ]
+  },
+  "JEANS": {
+    sizes: ["28","30","32","34","36","38"],
+    sizeLabel: "Select Waist Size",
+    highlights: [
+      {icon:"fa-solid fa-leaf", text:"Premium Denim"},
+      {icon:"fa-solid fa-ruler", text:"Regular Fit"},
+      {icon:"fa-solid fa-truck", text:"Free Shipping"}
+    ],
+    features: [
+      "Premium Stretch Denim Fabric",
+      "Reinforced Stitching for Durability",
+      "Classic Regular Fit Design",
+      "Easy 30-Day Returns & Exchange"
+    ]
+  },
+  "SHIRTS": {
+    sizes: ["S","M","L","XL","XXL"],
+    sizeLabel: "Select Size",
+    highlights: [
+      {icon:"fa-solid fa-leaf", text:"Premium Fabric"},
+      {icon:"fa-solid fa-shirt", text:"Regular Fit"},
+      {icon:"fa-solid fa-truck", text:"Free Shipping"}
+    ],
+    features: [
+      "100% Premium Cotton Fabric",
+      "Wrinkle Resistant & Easy Care",
+      "Classic Collar Design",
+      "Easy 30-Day Returns & Exchange"
+    ]
+  },
+  "WATCHES": {
+    sizes: [],
+    sizeLabel: "",
+    highlights: [
+      {icon:"fa-solid fa-gear", text:"Premium Build"},
+      {icon:"fa-solid fa-droplet", text:"Water Resistant"},
+      {icon:"fa-solid fa-truck", text:"Free Shipping"}
+    ],
+    features: [
+      "Premium Stainless Steel Build",
+      "Japanese Quartz Movement",
+      "Mineral Glass with Scratch Resistance",
+      "1-Year Warranty Included"
+    ]
+  },
+  "SUNGLASSES": {
+    sizes: [],
+    sizeLabel: "",
+    highlights: [
+      {icon:"fa-solid fa-sun", text:"UV Protection"},
+      {icon:"fa-solid fa-glasses", text:"Premium Frame"},
+      {icon:"fa-solid fa-truck", text:"Free Shipping"}
+    ],
+    features: [
+      "UV400 Protection for Eye Safety",
+      "Lightweight Premium Frame",
+      "Scratch Resistant Lenses",
+      "1-Year Warranty Included"
+    ]
+  }
+};
+
+categoryConfig["T-SHIRTS"] = categoryConfig["SHIRTS"];
+categoryConfig["OVERSIZED GRAPHIC"] = categoryConfig["SHIRTS"];
+categoryConfig["ANIME"] = categoryConfig["SHIRTS"];
+categoryConfig["GRAPHIC"] = categoryConfig["SHIRTS"];
+categoryConfig["MINIMAL"] = categoryConfig["SHIRTS"];
+categoryConfig["OVERSIZED"] = categoryConfig["SHIRTS"];
+categoryConfig["PRINTED T-SHIRTS"] = categoryConfig["SHIRTS"];
+
+function getCategoryConfig(cat) {
+  if (!cat) return categoryConfig["SHIRTS"];
+  var upper = cat.toUpperCase();
+  for (var key in categoryConfig) {
+    if (upper.includes(key)) return categoryConfig[key];
+  }
+  return categoryConfig["SHIRTS"];
+}
+
 function renderProduct(product) {
   document.title = `${product.name} | Pehrawa Menswear`;
   document.getElementById("productImage").src = product.image_url || "../images/product1.png";
   document.getElementById("productImage").alt = product.name;
   document.getElementById("productName").innerText = product.name;
   var p = Number(product.price);
-  document.getElementById("productPrice").innerHTML = '&#8377;' + (isNaN(p) ? "0.00" : p.toFixed(2));
+  var orig = Math.round(p * 1.5);
+  document.getElementById("productPrice").innerHTML = '&#8377;' + (isNaN(p) ? "0.00" : p.toFixed(0)) + ' <small>&#8377;' + orig + '</small>';
   document.getElementById("productDescription").innerText =
     product.description || "Premium Pehrawa menswear product crafted for comfort and style.";
   document.getElementById("productSku").innerText = "PHR-" + String(product.id).padStart(6, "0");
+
+  var config = getCategoryConfig(product.category);
+
+  // Highlights
+  var hlEl = document.getElementById("productHighlights");
+  if (hlEl) {
+    hlEl.innerHTML = config.highlights.map(function(h){
+      return '<div class="hl-item"><i class="' + h.icon + '"></i><span>' + h.text + '</span></div>';
+    }).join("");
+  }
+
+  // Sizes
+  var sizeSection = document.getElementById("sizeSection");
+  var sizeContainer = document.getElementById("sizeContainer");
+  var sizeLabel = document.getElementById("sizeLabel");
+  if (config.sizes.length > 0) {
+    sizeSection.style.display = "block";
+    sizeLabel.innerText = config.sizeLabel;
+    sizeContainer.innerHTML = config.sizes.map(function(s, i){
+      var active = i === 1 ? ' active' : '';
+      return '<button class="size-btn' + active + '">' + s + '</button>';
+    }).join("");
+    selectedSize = config.sizes[1] || config.sizes[0];
+    sizeContainer.querySelectorAll(".size-btn").forEach(function(btn){
+      btn.addEventListener("click", function(){
+        sizeContainer.querySelectorAll(".size-btn").forEach(function(b){ b.classList.remove("active"); });
+        btn.classList.add("active");
+        selectedSize = btn.innerText;
+      });
+    });
+  } else {
+    sizeSection.style.display = "none";
+    selectedSize = "ONE";
+  }
+
+  // Features
+  var featEl = document.getElementById("productFeatures");
+  if (featEl) {
+    featEl.innerHTML = config.features.map(function(f){
+      return '<div class="pf-item"><i class="fa-solid fa-check-circle"></i> ' + f + '</div>';
+    }).join("");
+  }
+
   if (product.stock_status === "out_of_stock") {
     document.getElementById("addCartBtn").disabled = true;
     document.getElementById("addCartBtn").style.opacity = "0.5";
@@ -67,6 +205,7 @@ function renderProduct(product) {
     document.getElementById("addCartBtn").style.cursor = "pointer";
     document.getElementById("addCartBtn").innerText = "ADD TO CART";
   }
+
   if (product.category) loadRelatedProducts(product.category, product.id);
 }
 

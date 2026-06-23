@@ -17,15 +17,15 @@
     { id: 7, name: "Classic Oxford Shirt", price: 1299, image_url: "../images/Shirt1.avif", category: "SHIRTS" },
     { id: 8, name: "Black Cuban Collar Shirt", price: 1399, image_url: "../images/Shirt2.webp", category: "SHIRTS" },
     { id: 9, name: "Relaxed Denim Shirt", price: 1599, image_url: "../images/Shirt3.webp", category: "SHIRTS" },
+    { id: 17, name: "Classic Blue Jeans", price: 1299, image_url: "../images/Jean1.webp", category: "JEANS" },
+    { id: 18, name: "Slim Black Jeans", price: 1399, image_url: "../images/Jean2.webp", category: "JEANS" },
     { id: 10, name: "White Street Sneakers", price: 2499, image_url: "../images/Footwear1.webp", category: "FOOTWEAR" },
     { id: 11, name: "Urban Slip-On Loafers", price: 2199, image_url: "../images/Footwear2.jpg", category: "FOOTWEAR" },
     { id: 12, name: "Chunky Street Sneakers", price: 2899, image_url: "../images/Footwear3.jpg", category: "FOOTWEAR" },
     { id: 13, name: "Aviator Sunglasses", price: 999, image_url: "../images/Sunglasses1.webp", category: "SUNGLASSES" },
     { id: 14, name: "Square Black Sunglasses", price: 1099, image_url: "../images/Sunglasses2.webp", category: "SUNGLASSES" },
     { id: 15, name: "Minimal Black Watch", price: 1899, image_url: "../images/Watch1.jpg", category: "WATCHES" },
-    { id: 16, name: "Brown Strap Chrono Watch", price: 2299, image_url: "../images/Watch2.jpg", category: "WATCHES" },
-    { id: 17, name: "Classic Blue Jeans", price: 1299, image_url: "../images/Jean1.webp", category: "JEANS" },
-    { id: 18, name: "Slim Black Jeans", price: 1399, image_url: "../images/Jean2.webp", category: "JEANS" }
+    { id: 16, name: "Brown Strap Chrono Watch", price: 2299, image_url: "../images/Watch2.jpg", category: "WATCHES" }
   ];
 
   if (!productGrid) return;
@@ -41,7 +41,16 @@
         return;
       }
 
-      shopProducts = data.products;
+      shopProducts = data.products.sort(function(a,b){
+        var tshirtCats = ["ANIME","GRAPHIC","MINIMAL","OVERSIZED","T-SHIRT","PRINTED"];
+        var ca = (a.category || "").toUpperCase();
+        var cb = (b.category || "").toUpperCase();
+        var aIsT = tshirtCats.some(function(k){ return ca.includes(k); });
+        var bIsT = tshirtCats.some(function(k){ return cb.includes(k); });
+        if (aIsT && !bIsT) return -1;
+        if (!aIsT && bIsT) return 1;
+        return 0;
+      });
       renderProducts();
     } catch (err) {
       shopProducts = staticFallback;
