@@ -17,8 +17,7 @@
     { id: 7, name: "Classic Oxford Shirt", price: 1299, image_url: "../images/Shirt1.avif", category: "SHIRTS" },
     { id: 8, name: "Black Cuban Collar Shirt", price: 1399, image_url: "../images/Shirt2.webp", category: "SHIRTS" },
     { id: 9, name: "Relaxed Denim Shirt", price: 1599, image_url: "../images/Shirt3.webp", category: "SHIRTS" },
-    { id: 17, name: "Classic Blue Jeans", price: 1299, image_url: "../images/Jean1.webp", category: "JEANS" },
-    { id: 18, name: "Slim Black Jeans", price: 1399, image_url: "../images/Jean2.webp", category: "JEANS" },
+
     { id: 10, name: "White Street Sneakers", price: 2499, image_url: "../images/Footwear1.webp", category: "FOOTWEAR" },
     { id: 11, name: "Urban Slip-On Loafers", price: 2199, image_url: "../images/Footwear2.jpg", category: "FOOTWEAR" },
     { id: 12, name: "Chunky Street Sneakers", price: 2899, image_url: "../images/Footwear3.jpg", category: "FOOTWEAR" },
@@ -62,8 +61,7 @@
     var tshirtCats = ["ANIME","GRAPHIC","MINIMAL","OVERSIZED","PRINTED T-SHIRTS"];
     var filterMap = {
       "T-SHIRTS": function(cat){ return tshirtCats.some(function(k){ return cat.includes(k); }); },
-      "SHIRTS": function(cat){ return cat.includes("SHIRTS") && !cat.includes("T-SHIRTS"); },
-      "JEANS": function(cat){ return cat.includes("JEANS"); }
+      "SHIRTS": function(cat){ return cat.includes("SHIRTS") && !cat.includes("T-SHIRTS"); }
     };
     const filteredProducts = shopProducts.filter((product) => {
       const category = (product.category || "").toUpperCase();

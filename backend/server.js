@@ -595,22 +595,7 @@ var HOST = process.env.HOST || "0.0.0.0";
     console.error("Product status migration error (non-fatal):", err.message);
   }
 
-  // Insert jeans products if they don't exist
-  try {
-    await pool.query(
-      `INSERT INTO products (name, description, price, image_url, stock, category)
-       SELECT 'Classic Blue Jeans', 'Regular fit blue denim jeans for everyday wear.', 1299, '/images/Jean1.webp', 15, 'JEANS'
-       WHERE NOT EXISTS (SELECT 1 FROM products WHERE category = 'JEANS')`
-    );
-    await pool.query(
-      `INSERT INTO products (name, description, price, image_url, stock, category)
-       SELECT 'Slim Black Jeans', 'Slim fit black denim jeans for modern streetwear looks.', 1399, '/images/Jean2.webp', 12, 'JEANS'
-       WHERE NOT EXISTS (SELECT 1 FROM products WHERE name = 'Slim Black Jeans')`
-    );
-    console.log("Database migration: inserted jeans products");
-  } catch (err) {
-    console.error("Jeans product insert error (non-fatal):", err.message);
-  }
+  // JEANS product migration removed per user request
 })();
 
 app.listen(PORT, HOST, function () {
