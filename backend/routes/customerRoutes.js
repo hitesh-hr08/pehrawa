@@ -180,7 +180,7 @@ router.get("/:id/orders", verifyCustomer, async (req, res) => {
     }
     // Get orders by customer_id AND also by phone (for orders placed before customer_id fix)
     const result = await pool.query(
-      `SELECT id, customer_name, total_amount, status, items, created_at FROM orders
+      `SELECT id, customer_name, phone, address, total_amount, status, items, created_at FROM orders
        WHERE customer_id = $1 OR (customer_id IS NULL AND phone = $2)
        ORDER BY created_at DESC`,
       [req.params.id, req.customer.phone]

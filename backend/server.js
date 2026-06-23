@@ -310,7 +310,7 @@ app.get("/api/public/settings", async (req, res) => {
 
 app.post("/api/public/orders", async (req, res) => {
   try {
-    let { customer_id, customer_name, phone, address, total_amount, items } = req.body;
+    let { customer_id, customer_name, phone, address, total_amount, items, status } = req.body;
 
     if (!customer_name || !phone || !address || !items || items.length === 0) {
       return res.status(400).json({
@@ -382,10 +382,10 @@ app.post("/api/public/orders", async (req, res) => {
     }
 
     const result = await pool.query(
-      `INSERT INTO orders (customer_id, customer_name, phone, address, total_amount, status, items)
-       VALUES ($1, $2, $3, $4, $5, $6, $7)
+      `INSERT INTO orders (customer_id, customer_name, phone, address, total_amount, status, items, payment_id)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
        RETURNING *`,
-      [customerId, customer_name, phone, address, total_amount, "Pending", itemSummary]
+      [customerId, customer_name, phone, address, total_amount, status || "Pending", itemSummary, req.body.payment_id || null]
     );
 
     for (const item of items) {
@@ -608,6 +608,16 @@ var HOST = process.env.HOST || "0.0.0.0";
         ADD COLUMN IF NOT EXISTS amount NUMERIC(10,2)
     `);
     console.log("Database migration: custom_requests columns added/verified");
+  } catch (err) {
+    console.error("Migration error (non-fatal):", err.message);
+  }
+
+  try {
+    await pool.query(`
+      ALTER TABLE orders
+        ADD COLUMN IF NOT EXISTS payment_id VARCHAR(255)
+    `);
+    console.log("Database migration: orders.payment_id column added/verified");
   } catch (err) {
     console.error("Migration error (non-fatal):", err.message);
   }

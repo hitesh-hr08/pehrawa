@@ -364,7 +364,7 @@ document.getElementById("cartUpiConfirm").addEventListener("click", async functi
         customer_name: name, customer_id: cust ? cust.id : localStorage.getItem("customerId"),
         phone: phone,
         address: addr + ", " + (document.getElementById("customerCity")?.value || "") + ", " + (document.getElementById("customerState")?.value || "") + ", Pincode: " + (document.getElementById("customerPincode")?.value || ""),
-        total_amount: total, payment_id: txnId || null,
+        total_amount: total, status: "Verifying Payment", payment_id: txnId || null,
         items: cart.map(function (item) { return { id: item.id, name: item.name, price: item.price, quantity: item.quantity, size: item.size }; })
       })
     });

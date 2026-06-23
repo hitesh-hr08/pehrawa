@@ -292,6 +292,7 @@
                 <label for="orderStatusInput">Status</label>
                 <select id="orderStatusInput">
                   <option>Pending</option>
+                  <option>Verifying Payment</option>
                   <option>Processing</option>
                   <option>Shipped</option>
                   <option>Delivered</option>
@@ -799,7 +800,7 @@
           <td>&#8377;${Number(order.total_amount).toFixed(2)}</td>
           <td>
             <select class="status-select" onchange="updateOrderStatus(${order.id}, this.value)">
-              ${["Pending", "Processing", "Shipped", "Delivered", "Cancelled"].map((status) => `
+              ${["Pending", "Verifying Payment", "Processing", "Shipped", "Delivered", "Cancelled"].map((status) => `
                 <option value="${status}" ${order.status === status ? "selected" : ""}>${status}</option>
               `).join("")}
             </select>
@@ -816,6 +817,7 @@
     function updateDashboardMetrics() {
       const totalSales = orders.reduce((sum, order) => sum + Number(order.total_amount || 0), 0);
       const pending = orders.filter((order) => String(order.status || "").toLowerCase() === "pending").length;
+      const verifying = orders.filter((order) => String(order.status || "").toLowerCase() === "verifying payment").length;
       const processing = orders.filter((order) => String(order.status || "").toLowerCase() === "processing").length;
       const completed = orders.filter((order) => {
         const status = String(order.status || "").toLowerCase();
@@ -831,6 +833,8 @@
       document.getElementById("processingCount").textContent = processing;
       document.getElementById("completedCount").textContent = completed;
       document.getElementById("rejectedCount").textContent = rejected;
+      // show verifying count in pending card
+      if (verifying > 0) document.getElementById("pendingCount").textContent = pending + " (+" + verifying + " verifying)";
     }
 
     orderForm.addEventListener("submit", async (e) => {

@@ -42,6 +42,7 @@
             '</div>' +
             '<div class="track-timeline">' +
               '<div class="tl-step completed"><span>Placed</span></div>' +
+              '<div class="tl-step' + (["verifying-payment", "processing", "shipped", "delivered"].includes(statusClass) ? " completed" : "") + '"><span>Verify Payment</span></div>' +
               '<div class="tl-step' + (["processing", "shipped", "delivered"].includes(statusClass) ? " completed" : "") + '"><span>Processing</span></div>' +
               '<div class="tl-step' + (["shipped", "delivered"].includes(statusClass) ? " completed" : "") + '"><span>Shipped</span></div>' +
               '<div class="tl-step' + (statusClass === "delivered" ? " completed" : "") + '"><span>Delivered</span></div>' +

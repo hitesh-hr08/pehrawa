@@ -404,6 +404,7 @@ async function confirmBuyPayment() {
         phone: phone,
         address: fullAddress,
         total_amount: total,
+        status: "Verifying Payment",
         payment_id: txnId || null,
         customer_id: cust ? cust.id : (localStorage.getItem("customerId") || null),
         items: [{ name: productName, size: size, quantity: Number(qty), price: price }]

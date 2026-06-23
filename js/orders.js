@@ -29,9 +29,12 @@
     var html = '<div style="display:flex;flex-direction:column;gap:16px;">';
     data.orders.forEach(function (o) {
       var statusColor = "#f59e0b";
-      if ((o.status || "").toLowerCase() === "shipped") statusColor = "#8b5cf6";
-      else if ((o.status || "").toLowerCase() === "delivered") statusColor = "#10b981";
-      else if ((o.status || "").toLowerCase() === "cancelled") statusColor = "#ef4444";
+      var s = (o.status || "").toLowerCase();
+      if (s === "verifying payment") statusColor = "#eab308";
+      else if (s === "processing") statusColor = "#8b5cf6";
+      else if (s === "shipped") statusColor = "#8b5cf6";
+      else if (s === "delivered") statusColor = "#10b981";
+      else if (s === "cancelled") statusColor = "#ef4444";
       var orderId = o.tracking_id || "PHR-" + String(o.id).padStart(6, "0");
       var trackUrl = "track-order.html?order=" + encodeURIComponent(orderId) + "&phone=" + encodeURIComponent(o.phone || user.phone || "");
       html += '<div style="background:#0a0a0a;border:1px solid #181818;border-radius:10px;padding:24px;">' +
