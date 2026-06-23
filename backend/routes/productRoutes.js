@@ -22,7 +22,7 @@ router.get("/count", async (req, res) => {
 
 router.post("/", async (req, res) => {
   try {
-    const { name, description, price, image_url, stock, category } = req.body;
+    const { name, description, price, image_url, stock, category, stock_status, is_new_arrival, is_trending, is_hot_seller } = req.body;
 
     if (!name || price === undefined || price === "") {
       return res.status(400).json({
@@ -32,10 +32,10 @@ router.post("/", async (req, res) => {
     }
 
     const result = await pool.query(
-      `INSERT INTO products (name, description, price, image_url, stock, category)
-       VALUES ($1, $2, $3, $4, $5, $6)
+      `INSERT INTO products (name, description, price, image_url, stock, category, stock_status, is_new_arrival, is_trending, is_hot_seller)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
        RETURNING *`,
-      [name, description || null, price, image_url || null, stock || 0, category || null]
+      [name, description || null, price, image_url || null, stock || 0, category || null, stock_status || 'in_stock', is_new_arrival || false, is_trending || false, is_hot_seller || false]
     );
 
     res.status(201).json({ success: true, product: result.rows[0] });
@@ -47,7 +47,7 @@ router.post("/", async (req, res) => {
 router.put("/:id", async (req, res) => {
   try {
     const { id } = req.params;
-    const { name, description, price, image_url, stock, category } = req.body;
+    const { name, description, price, image_url, stock, category, stock_status, is_new_arrival, is_trending, is_hot_seller } = req.body;
 
     const result = await pool.query(
       `UPDATE products
@@ -56,10 +56,14 @@ router.put("/:id", async (req, res) => {
            price = $3,
            image_url = $4,
            stock = $5,
-           category = $6
-       WHERE id = $7
+           category = $6,
+           stock_status = $7,
+           is_new_arrival = $8,
+           is_trending = $9,
+           is_hot_seller = $10
+       WHERE id = $11
        RETURNING *`,
-      [name, description || null, price, image_url || null, stock || 0, category || null, id]
+      [name, description || null, price, image_url || null, stock || 0, category || null, stock_status || 'in_stock', is_new_arrival || false, is_trending || false, is_hot_seller || false, id]
     );
 
     if (result.rows.length === 0) {

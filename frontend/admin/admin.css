@@ -848,6 +848,70 @@ select:focus {
   }
 }
 
+.tag-checkboxes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.tag-checkbox {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+}
+
+.tag-checkbox input {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--orange);
+  cursor: pointer;
+}
+
+.tag-label {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 999px;
+  letter-spacing: 0.3px;
+}
+
+.tag-new { background: rgba(56, 210, 122, 0.18); color: #38d27a; border: 1px solid rgba(56, 210, 122, 0.3); }
+.tag-trending { background: rgba(255, 107, 0, 0.18); color: var(--orange); border: 1px solid rgba(255, 107, 0, 0.3); }
+.tag-hot { background: rgba(255, 63, 63, 0.18); color: var(--danger); border: 1px solid rgba(255, 63, 63, 0.3); }
+
+.status-stack {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  align-items: center;
+}
+
+.stock-status {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+
+.status-in { background: rgba(56, 210, 122, 0.15); color: #38d27a; }
+.status-limited { background: rgba(255, 193, 7, 0.15); color: #ffc107; }
+.status-out { background: rgba(255, 63, 63, 0.15); color: var(--danger); }
+
+.tag-badge {
+  font-size: 10px;
+  font-weight: 800;
+  padding: 2px 7px;
+  border-radius: 999px;
+  letter-spacing: 0.3px;
+}
+
+.tag-badge-new { background: rgba(56, 210, 122, 0.15); color: #38d27a; }
+.tag-badge-trending { background: rgba(255, 107, 0, 0.15); color: var(--orange); }
+.tag-badge-hot { background: rgba(255, 63, 63, 0.15); color: var(--danger); }
+
 .admin-section {
   display: none;
 }

@@ -170,8 +170,35 @@
               </div>
 
               <div class="form-group">
-                <label for="productStock">Stock</label>
+                <label for="productStock">Stock Qty</label>
                 <input type="number" id="productStock" min="0" step="1" placeholder="20" />
+              </div>
+
+              <div class="form-group">
+                <label for="productStockStatus">Stock Status</label>
+                <select id="productStockStatus">
+                  <option value="in_stock">In Stock</option>
+                  <option value="limited_stock">Limited Stock</option>
+                  <option value="out_of_stock">Out of Stock</option>
+                </select>
+              </div>
+
+              <div class="form-group wide">
+                <label>Tags</label>
+                <div class="tag-checkboxes">
+                  <label class="tag-checkbox">
+                    <input type="checkbox" id="productNewArrival" />
+                    <span class="tag-label tag-new">New Arrival</span>
+                  </label>
+                  <label class="tag-checkbox">
+                    <input type="checkbox" id="productTrending" />
+                    <span class="tag-label tag-trending">Trending</span>
+                  </label>
+                  <label class="tag-checkbox">
+                    <input type="checkbox" id="productHotSeller" />
+                    <span class="tag-label tag-hot">Hot Seller</span>
+                  </label>
+                </div>
               </div>
 
               <div class="form-group wide">
@@ -209,12 +236,13 @@
                   <th>Category</th>
                   <th>Price</th>
                   <th>Stock</th>
+                  <th>Status</th>
                   <th>Actions</th>
                 </tr>
               </thead>
               <tbody id="productsTableBody">
                 <tr>
-                  <td colspan="5">Loading...</td>
+                  <td colspan="6">Loading...</td>
                 </tr>
               </tbody>
             </table>
@@ -529,11 +557,30 @@
       productTableStatus.textContent = `${products.length} product(s) found`;
 
       if (products.length === 0) {
-        productsTableBody.innerHTML = `<tr><td colspan="5">No products yet. Add your first Pehrawa product.</td></tr>`;
+        productsTableBody.innerHTML = `<tr><td colspan="6">No products yet. Add your first Pehrawa product.</td></tr>`;
         return;
       }
 
-      productsTableBody.innerHTML = products.map((product) => `
+      productsTableBody.innerHTML = products.map((product) => {
+        var stockLabel = "";
+        var stockClass = "";
+        if (product.stock_status === "out_of_stock") {
+          stockLabel = "Out of Stock";
+          stockClass = "status-out";
+        } else if (product.stock_status === "limited_stock") {
+          stockLabel = "Limited";
+          stockClass = "status-limited";
+        } else {
+          stockLabel = "In Stock";
+          stockClass = "status-in";
+        }
+
+        var tags = [];
+        if (product.is_new_arrival) tags.push(`<span class="tag-badge tag-badge-new">New</span>`);
+        if (product.is_trending) tags.push(`<span class="tag-badge tag-badge-trending">Trending</span>`);
+        if (product.is_hot_seller) tags.push(`<span class="tag-badge tag-badge-hot">Hot</span>`);
+
+        return `
         <tr>
           <td>
             <div class="product-cell">
@@ -548,13 +595,19 @@
           <td>&#8377;${Number(product.price).toFixed(2)}</td>
           <td>${product.stock || 0}</td>
           <td>
+            <div class="status-stack">
+              <span class="stock-status ${stockClass}">${stockLabel}</span>
+              ${tags.length ? tags.join("") : ""}
+            </div>
+          </td>
+          <td>
             <div class="table-actions">
               <button onclick="editProduct(${product.id})"><i class="fa-solid fa-pen"></i></button>
               <button class="danger-icon" onclick="deleteProduct(${product.id})"><i class="fa-solid fa-trash"></i></button>
             </div>
           </td>
-        </tr>
-      `).join("");
+        </tr>`;
+      }).join("");
     }
 
     productForm.addEventListener("submit", async (e) => {
@@ -566,6 +619,10 @@
         category: document.getElementById("productCategory").value.trim(),
         price: document.getElementById("productPrice").value,
         stock: document.getElementById("productStock").value || 0,
+        stock_status: document.getElementById("productStockStatus").value,
+        is_new_arrival: document.getElementById("productNewArrival").checked,
+        is_trending: document.getElementById("productTrending").checked,
+        is_hot_seller: document.getElementById("productHotSeller").checked,
         image_url: document.getElementById("productImage").value.trim(),
         description: document.getElementById("productDescription").value.trim()
       };
@@ -607,6 +664,10 @@
       document.getElementById("productCategory").value = product.category || "";
       document.getElementById("productPrice").value = product.price || "";
       document.getElementById("productStock").value = product.stock || 0;
+      document.getElementById("productStockStatus").value = product.stock_status || "in_stock";
+      document.getElementById("productNewArrival").checked = !!product.is_new_arrival;
+      document.getElementById("productTrending").checked = !!product.is_trending;
+      document.getElementById("productHotSeller").checked = !!product.is_hot_seller;
       document.getElementById("productImage").value = product.image_url || "";
       document.getElementById("productDescription").value = product.description || "";
       document.getElementById("saveProductBtn").textContent = "Update Product";

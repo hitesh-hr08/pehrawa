@@ -581,6 +581,20 @@ var HOST = process.env.HOST || "0.0.0.0";
     console.error("Product image migration error (non-fatal):", err.message);
   }
 
+  // Add product status/tag columns
+  try {
+    await pool.query(`
+      ALTER TABLE products
+        ADD COLUMN IF NOT EXISTS stock_status VARCHAR(20) DEFAULT 'in_stock',
+        ADD COLUMN IF NOT EXISTS is_new_arrival BOOLEAN DEFAULT FALSE,
+        ADD COLUMN IF NOT EXISTS is_trending BOOLEAN DEFAULT FALSE,
+        ADD COLUMN IF NOT EXISTS is_hot_seller BOOLEAN DEFAULT FALSE
+    `);
+    console.log("Database migration: product status columns added/verified");
+  } catch (err) {
+    console.error("Product status migration error (non-fatal):", err.message);
+  }
+
   // Insert jeans products if they don't exist
   try {
     await pool.query(

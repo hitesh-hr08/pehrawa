@@ -14,6 +14,10 @@ CREATE TABLE IF NOT EXISTS products (
   image_url TEXT,
   stock INTEGER DEFAULT 0,
   category VARCHAR(100),
+  stock_status VARCHAR(20) DEFAULT 'in_stock',
+  is_new_arrival BOOLEAN DEFAULT FALSE,
+  is_trending BOOLEAN DEFAULT FALSE,
+  is_hot_seller BOOLEAN DEFAULT FALSE,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
