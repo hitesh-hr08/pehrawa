@@ -545,3 +545,12 @@ whatsappURL,
   overlay.addEventListener('click', closeMenu);
 })();
 
+// reset mobile menu on page show (fix black screen on back navigation)
+window.addEventListener('pageshow', function(){
+  var menu = document.getElementById('mobileMenu');
+  var overlay = document.getElementById('mobileOverlay');
+  if(menu) menu.classList.remove('open');
+  if(overlay) overlay.classList.remove('open');
+  document.body.style.overflow = '';
+});
+
