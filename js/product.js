@@ -377,9 +377,7 @@ function generateBuyQrCode() {
         phonepay: "phonepe://pay?pa=hrandhan-1@okicici&pn=Pehrawa%20Menswear&am=" + amt + "&cu=INR",
         paytm: "paytmmp://pay?pa=hrandhan-1@okicici&pn=Pehrawa%20Menswear&am=" + amt + "&cu=INR"
       };
-      var url = links[app] || upiStr;
-      window.location.href = url;
-      setTimeout(function () { window.location.href = upiStr; }, 300);
+      window.location.href = links[app] || upiStr;
     };
   });
 }
