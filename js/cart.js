@@ -199,76 +199,6 @@ checkoutBtn.addEventListener("click", function () {
   });
 });
 
-document.getElementById("razorpayCheckoutBtn").addEventListener("click", function () {
-  window.requireAuth(function (loggedIn) {
-    if (loggedIn) checkoutWithRazorpay();
-  });
-});
-
-async function checkoutWithRazorpay() {
-  if (cart.length === 0) {
-    alert("Cart is empty");
-    return;
-  }
-  var customerName = document.getElementById("customerName").value.trim();
-  var customerPhone = document.getElementById("customerPhone").value.trim();
-  var customerAddress = document.getElementById("customerAddress").value.trim();
-  if (!customerName || !customerPhone || !customerAddress) {
-    alert("Please fill name, phone, and delivery address");
-    return;
-  }
-  var total = cart.reduce(function (sum, item) {
-    return sum + (Number(item.price) * Number(item.quantity || 1));
-  }, 0);
-  var api = window.PEHRAWA_API_BASE || "http://localhost:5000";
-  try {
-    var keyRes = await fetch(api + "/api/razorpay-key");
-    var keyData = await keyRes.json();
-    if (!keyData.key) {
-      if (typeof showToast === "function") showToast("Razorpay not configured on server");
-      return;
-    }
-    var orderRes = await fetch(api + "/api/create-order", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ amount: total })
-    });
-    var orderData = await orderRes.json();
-    if (!orderData.success) {
-      if (typeof showToast === "function") showToast(orderData.message || "Payment error");
-      return;
-    }
-    var itemsSummary = cart.map(function (item) { return item.name; }).join(", ");
-    var options = {
-      key: keyData.key,
-      amount: orderData.amount,
-      currency: orderData.currency || "INR",
-      name: "Pehrawa Menswear",
-      description: itemsSummary.slice(0, 100),
-      image: "../images/logo.png",
-      order_id: orderData.order_id,
-      handler: function (response) {
-        placeOrderAfterPayment(response.razorpay_payment_id);
-      },
-      modal: {
-        ondismiss: function () {
-          if (typeof showToast === "function") showToast("Payment cancelled");
-        }
-      },
-      prefill: {
-        name: customerName,
-        contact: customerPhone,
-        email: ""
-      },
-      theme: { color: "#f97316" }
-    };
-    var rzp = new Razorpay(options);
-    rzp.open();
-  } catch (err) {
-    if (typeof showToast === "function") showToast("Payment failed to initialize");
-  }
-}
-
 async function placeOrderAfterPayment(paymentId) {
   var customerName = document.getElementById("customerName").value.trim();
   var customerPhone = document.getElementById("customerPhone").value.trim();
@@ -330,7 +260,12 @@ document.getElementById("upiCheckoutBtn").addEventListener("click", function () 
     if (!name || !phone || !addr) { alert("Please fill name, phone, and address"); return; }
     var total = cart.reduce(function (s, item) { return s + (Number(item.price) * Number(item.quantity || 1)); }, 0);
     var upiStr = "upi://pay?pa=hrandhan-1@okicici&pn=Pehrawa%20Menswear&am=" + total.toFixed(2) + "&cu=INR";
-    document.getElementById("cartUpiQr").src = "https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=" + encodeURIComponent(upiStr);
+    // Load QR silently (ignore errors)
+    var qr = document.getElementById("cartUpiQr");
+    if (qr) {
+      qr.onerror = function () { qr.style.display = "none"; };
+      qr.src = "https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=" + encodeURIComponent(upiStr);
+    }
     // Open specific UPI app on button click
     document.querySelectorAll("#upiPaymentOverlay .upi-app-btn").forEach(function (btn) {
       btn.onclick = function () {
@@ -341,7 +276,14 @@ document.getElementById("upiCheckoutBtn").addEventListener("click", function () 
           phonepay: "phonepe://pay?pa=hrandhan-1@okicici&pn=Pehrawa%20Menswear&am=" + amt + "&cu=INR",
           paytm: "paytmmp://pay?pa=hrandhan-1@okicici&pn=Pehrawa%20Menswear&am=" + amt + "&cu=INR"
         };
-        window.location.href = links[app] || upiStr;
+        var isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+        if (isMobile) {
+          window.location.href = links[app] || upiStr;
+        } else {
+          var input = document.getElementById("cartUpiTxnId");
+          if (input) { input.value = ""; input.focus(); }
+          if (typeof showToast === "function") showToast("Pay using UPI ID: hrandhan-1@okicici from your phone");
+        }
       };
     });
     document.getElementById("upiPaymentOverlay").classList.add("active");
