@@ -345,6 +345,10 @@ document.getElementById("upiPaymentOverlay").addEventListener("click", function 
 document.getElementById("cartUpiConfirm").addEventListener("click", async function () {
   var txnId = document.getElementById("cartUpiTxnId").value.trim();
   var btn = document.getElementById("cartUpiConfirm");
+  if (!txnId) {
+    if (typeof showToast === "function") showToast("Please complete the UPI payment and enter the Transaction ID");
+    return;
+  }
   btn.disabled = true;
   btn.textContent = "Placing Order...";
   var name = document.getElementById("customerName").value.trim();

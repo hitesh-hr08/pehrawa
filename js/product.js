@@ -372,6 +372,10 @@ function generateBuyQrCode() {
 async function confirmBuyPayment() {
   var txnId = document.getElementById("buyTxnId").value.trim();
   var btn = document.querySelector("#buyStep3 .checkout-submit");
+  if (!txnId) {
+    if (typeof showToast === "function") showToast("Please complete the UPI payment and enter the Transaction ID");
+    return;
+  }
   btn.disabled = true;
   btn.textContent = "Placing Order...";
 
