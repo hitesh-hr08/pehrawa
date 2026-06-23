@@ -595,7 +595,16 @@ var HOST = process.env.HOST || "0.0.0.0";
     console.error("Product status migration error (non-fatal):", err.message);
   }
 
-  // JEANS product migration removed per user request
+  // Add original_price column
+  try {
+    await pool.query(`
+      ALTER TABLE products
+        ADD COLUMN IF NOT EXISTS original_price DECIMAL(10,2) DEFAULT NULL
+    `);
+    console.log("Database migration: original_price column added/verified");
+  } catch (err) {
+    console.error("Original price migration error (non-fatal):", err.message);
+  }
 })();
 
 app.listen(PORT, HOST, function () {

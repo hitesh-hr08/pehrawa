@@ -86,8 +86,8 @@
     productGrid.innerHTML = filteredProducts.map((product) => {
       const imageUrl = product.image_url || "../images/product1.png";
       const price = parseFloat(product.price) || 0;
-      const origPrice = Math.round(price * 1.5);
-      const discount = Math.round((1 - price / origPrice) * 100);
+      const origPrice = product.original_price ? Number(product.original_price) : Math.round(price * 1.5);
+      const discount = origPrice > price ? Math.round((1 - price / origPrice) * 100) : 0;
       const rating = (3.5 + Math.random() * 1.5).toFixed(1);
       const reviews = Math.floor(Math.random() * 500) + 20;
 

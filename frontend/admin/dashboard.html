@@ -165,8 +165,13 @@
               </div>
 
               <div class="form-group">
-                <label for="productPrice">Price</label>
+                <label for="productPrice">Selling Price</label>
                 <input type="number" id="productPrice" min="0" step="0.01" placeholder="799" required />
+              </div>
+
+              <div class="form-group">
+                <label for="productOriginalPrice">Original Price (MRP)</label>
+                <input type="number" id="productOriginalPrice" min="0" step="0.01" placeholder="1199" />
               </div>
 
               <div class="form-group">
@@ -625,6 +630,7 @@
         name: document.getElementById("productName").value.trim(),
         category: document.getElementById("productCategory").value.trim(),
         price: document.getElementById("productPrice").value,
+        original_price: document.getElementById("productOriginalPrice").value || null,
         stock: document.getElementById("productStock").value || 0,
         stock_status: document.getElementById("productStockStatus").value,
         is_new_arrival: document.getElementById("productNewArrival").checked,
@@ -691,6 +697,7 @@
       document.getElementById("productName").value = product.name || "";
       document.getElementById("productCategory").value = product.category || "";
       document.getElementById("productPrice").value = product.price || "";
+      document.getElementById("productOriginalPrice").value = product.original_price || "";
       document.getElementById("productStock").value = product.stock || 0;
       document.getElementById("productStockStatus").value = product.stock_status || "in_stock";
       document.getElementById("productNewArrival").checked = !!product.is_new_arrival;
@@ -738,6 +745,7 @@
       document.getElementById("saveProductBtn").textContent = "Save Product";
       document.getElementById("imagePreview").style.display = "none";
       document.getElementById("productImageUpload").value = "";
+      document.getElementById("productOriginalPrice").value = "";
 
       if (clearMessage) {
         productMessage.textContent = "";

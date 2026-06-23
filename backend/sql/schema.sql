@@ -11,6 +11,7 @@ CREATE TABLE IF NOT EXISTS products (
   name VARCHAR(255) NOT NULL,
   description TEXT,
   price NUMERIC(10,2) NOT NULL,
+  original_price NUMERIC(10,2) DEFAULT NULL,
   image_url TEXT,
   stock INTEGER DEFAULT 0,
   category VARCHAR(100),

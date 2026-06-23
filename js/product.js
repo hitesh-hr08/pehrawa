@@ -18,7 +18,7 @@ document.getElementById("qtyPlus").addEventListener("click", function(){
 async function loadProductDetails() {
   if (!productId) {
     renderProduct({
-      id: 0, name: "Fearless Oversized Tee", price: 799,
+      id: 0, name: "Fearless Oversized Tee", price: 799, original_price: 1199,
       description: "Premium cotton oversized t-shirt with high quality print.",
       image_url: "../images/product1.png", category: "T-SHIRTS", stock_status: "in_stock"
     });
@@ -147,7 +147,7 @@ function renderProduct(product) {
   document.getElementById("productImage").alt = product.name;
   document.getElementById("productName").innerText = product.name;
   var p = Number(product.price);
-  var orig = Math.round(p * 1.5);
+  var orig = product.original_price ? Number(product.original_price) : Math.round(p * 1.5);
   document.getElementById("productPrice").innerHTML = '&#8377;' + (isNaN(p) ? "0.00" : p.toFixed(0)) + ' <small>&#8377;' + orig + '</small>';
   document.getElementById("productDescription").innerText =
     product.description || "Premium Pehrawa menswear product crafted for comfort and style.";
@@ -274,11 +274,17 @@ function renderRelatedProducts(products) {
     if (p.is_trending) badges += '<span class="p-status p-trending">Trending</span>';
     if (p.is_hot_seller) badges += '<span class="p-status p-hot">Hot</span>';
     var img = p.image_url || "../images/product1.png";
+    var price = Number(p.price) || 0;
+    var orig = p.original_price ? Number(p.original_price) : Math.round(price * 1.5);
+    var disc = orig > price ? Math.round((1 - price / orig) * 100) : 0;
     return '<div class="product-card"><div class="product-image">' +
+      (disc > 0 ? '<span class="product-badge">-' + disc + '%</span>' : '') +
       badges +
       '<a href="product.html?id=' + p.id + '"><img src="' + img + '" alt="' + p.name + '"></a>' +
       '</div><div class="product-content"><h3><a href="product.html?id=' + p.id + '">' + p.name + '</a></h3>' +
-      '<div class="price">&#8377;' + Number(p.price).toFixed(0) + '</div></div></div>';
+      '<div class="price">&#8377;' + price.toFixed(0) +
+      (orig > price ? '<span class="orig">&#8377;' + orig + '</span>' : '') +
+      '</div></div></div>';
   }).join("");
 }
 

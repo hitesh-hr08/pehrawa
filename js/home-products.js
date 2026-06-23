@@ -11,8 +11,8 @@
   function renderProducts(products) {
     return products.map(function (p) {
       var img = p.image_url || p.image;
-      var origPrice = Math.round(p.price * 1.5);
-      var discount = Math.round((1 - p.price / origPrice) * 100);
+      var origPrice = p.original_price ? Number(p.original_price) : Math.round(p.price * 1.5);
+      var discount = origPrice > p.price ? Math.round((1 - p.price / origPrice) * 100) : 0;
       var rating = (3.5 + Math.random() * 1.5).toFixed(1);
       var reviews = Math.floor(Math.random() * 500) + 20;
       var badges = "";
