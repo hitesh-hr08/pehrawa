@@ -17,11 +17,12 @@ document.getElementById("qtyPlus").addEventListener("click", function(){
 
 async function loadProductDetails() {
   if (!productId) {
-    renderProduct({
+    currentProduct = {
       id: 0, name: "Fearless Oversized Tee", price: 799, original_price: 1199,
       description: "Premium cotton oversized t-shirt with high quality print.",
       image_url: "../images/product1.png", category: "T-SHIRTS", stock_status: "in_stock"
-    }, []);
+    };
+    renderProduct(currentProduct, []);
     return;
   }
 

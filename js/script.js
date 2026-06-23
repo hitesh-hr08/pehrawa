@@ -209,21 +209,10 @@ Please share further details.`;
 // HEADER SHADOW ON SCROLL
 // ===============================
 
-window.addEventListener("scroll", () => {
-
-  const header =
-    document.querySelector(".header");
-
-  if (window.scrollY > 30) {
-
-    header.style.boxShadow =
-      "0 5px 20px rgba(0,0,0,.5)";
-
-  } else {
-
-    header.style.boxShadow =
-      "none";
-  }
+window.addEventListener("scroll", function () {
+  var header = document.querySelector(".header");
+  if (!header) return;
+  header.style.boxShadow = window.scrollY > 30 ? "0 5px 20px rgba(0,0,0,.5)" : "none";
 });
 
 // ===============================
