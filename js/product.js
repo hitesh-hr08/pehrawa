@@ -367,9 +367,20 @@ function generateBuyQrCode() {
   var total = price * qty;
   var upiStr = "upi://pay?pa=hrandhan-1@okicici&pn=Pehrawa%20Menswear&am=" + total.toFixed(2) + "&cu=INR";
   document.getElementById("buyQrImage").src = "https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=" + encodeURIComponent(upiStr);
-  // Set upi intent on each app button
+  // Open specific UPI app on button click
   document.querySelectorAll("#buyStep3 .upi-app-btn").forEach(function (btn) {
-    btn.onclick = function () { window.location.href = upiStr; };
+    btn.onclick = function () {
+      var app = btn.getAttribute("data-upi-app");
+      var amt = total.toFixed(2);
+      var links = {
+        gpay: "tez://upi/pay?pa=hrandhan-1@okicici&pn=Pehrawa%20Menswear&am=" + amt + "&cu=INR",
+        phonepay: "phonepe://pay?pa=hrandhan-1@okicici&pn=Pehrawa%20Menswear&am=" + amt + "&cu=INR",
+        paytm: "paytmmp://pay?pa=hrandhan-1@okicici&pn=Pehrawa%20Menswear&am=" + amt + "&cu=INR"
+      };
+      var url = links[app] || upiStr;
+      window.location.href = url;
+      setTimeout(function () { window.location.href = upiStr; }, 300);
+    };
   });
 }
 
