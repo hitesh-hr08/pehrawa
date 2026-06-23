@@ -191,15 +191,15 @@
               <div class="form-group wide">
                 <label>Tags</label>
                 <div class="tag-checkboxes">
-                  <label class="tag-checkbox">
+                  <label class="tag-checkbox tag-new-bg">
                     <input type="checkbox" id="productNewArrival" />
                     <span class="tag-label tag-new">New Arrival</span>
                   </label>
-                  <label class="tag-checkbox">
+                  <label class="tag-checkbox tag-trending-bg">
                     <input type="checkbox" id="productTrending" />
                     <span class="tag-label tag-trending">Trending</span>
                   </label>
-                  <label class="tag-checkbox">
+                  <label class="tag-checkbox tag-hot-bg">
                     <input type="checkbox" id="productHotSeller" />
                     <span class="tag-label tag-hot">Hot Seller</span>
                   </label>
@@ -696,6 +696,12 @@
       } catch(e) {}
     });
 
+    document.querySelectorAll(".tag-checkbox input[type=checkbox]").forEach(function(cb) {
+      cb.addEventListener("change", function() {
+        this.parentElement.classList.toggle("checked", this.checked);
+      });
+    });
+
     document.getElementById("imagePreviewRemove").addEventListener("click", function() {
       document.getElementById("productImage").value = "";
       document.getElementById("imagePreview").style.display = "none";
@@ -715,8 +721,11 @@
       document.getElementById("productStock").value = product.stock || 0;
       document.getElementById("productStockStatus").value = product.stock_status || "in_stock";
       document.getElementById("productNewArrival").checked = !!product.is_new_arrival;
+      document.getElementById("productNewArrival").parentElement.classList.toggle("checked", !!product.is_new_arrival);
       document.getElementById("productTrending").checked = !!product.is_trending;
+      document.getElementById("productTrending").parentElement.classList.toggle("checked", !!product.is_trending);
       document.getElementById("productHotSeller").checked = !!product.is_hot_seller;
+      document.getElementById("productHotSeller").parentElement.classList.toggle("checked", !!product.is_hot_seller);
       var imgUrl = product.image_url || "";
       document.getElementById("productImage").value = imgUrl;
       var preview = document.getElementById("imagePreview");

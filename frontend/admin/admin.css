@@ -851,35 +851,61 @@ select:focus {
 .tag-checkboxes {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: 10px;
   margin-top: 8px;
 }
 
 .tag-checkbox {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
   cursor: pointer;
+  padding: 8px 16px;
+  border-radius: 8px;
+  border: 1.5px solid #333;
+  background: #0d0d0d;
+  transition: .25s;
+  user-select: none;
+}
+
+.tag-checkbox:hover {
+  border-color: #555;
 }
 
 .tag-checkbox input {
-  width: 16px;
-  height: 16px;
-  accent-color: var(--orange);
-  cursor: pointer;
+  display: none;
 }
 
 .tag-label {
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 700;
-  padding: 4px 10px;
-  border-radius: 999px;
   letter-spacing: 0.3px;
+  color: #555;
+  transition: .25s;
 }
 
-.tag-new { background: rgba(56, 210, 122, 0.18); color: #38d27a; border: 1px solid rgba(56, 210, 122, 0.3); }
-.tag-trending { background: rgba(255, 107, 0, 0.18); color: var(--orange); border: 1px solid rgba(255, 107, 0, 0.3); }
-.tag-hot { background: rgba(255, 63, 63, 0.18); color: var(--danger); border: 1px solid rgba(255, 63, 63, 0.3); }
+.tag-checkbox.checked .tag-new { color: #38d27a; }
+.tag-checkbox.checked .tag-trending { color: var(--orange); }
+.tag-checkbox.checked .tag-hot { color: var(--danger); }
+
+.tag-checkbox.checked {
+  box-shadow: 0 0 12px rgba(255, 107, 0, 0.15);
+}
+
+.tag-checkbox.checked.tag-new-bg {
+  background: rgba(56, 210, 122, 0.12);
+  border-color: rgba(56, 210, 122, 0.4);
+}
+
+.tag-checkbox.checked.tag-trending-bg {
+  background: rgba(255, 107, 0, 0.12);
+  border-color: rgba(255, 107, 0, 0.4);
+}
+
+.tag-checkbox.checked.tag-hot-bg {
+  background: rgba(255, 63, 63, 0.12);
+  border-color: rgba(255, 63, 63, 0.4);
+}
 
 .status-stack {
   display: flex;
