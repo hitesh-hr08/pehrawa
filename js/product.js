@@ -61,6 +61,21 @@ var categoryConfig = {
       "Easy 30-Day Returns & Exchange"
     ]
   },
+  "JEANS": {
+    sizes: ["28","30","32","36"],
+    sizeLabel: "Select Waist Size",
+    highlights: [
+      {icon:"fa-solid fa-leaf", text:"Premium Denim"},
+      {icon:"fa-solid fa-ruler", text:"Regular Fit"},
+      {icon:"fa-solid fa-truck", text:"Free Shipping"}
+    ],
+    features: [
+      "High Quality Denim Fabric",
+      "Regular Fit with Comfort Stretch",
+      "Reinforced Stitching for Durability",
+      "Easy 30-Day Returns & Exchange"
+    ]
+  },
   "PANTS": {
     sizes: ["28","30","32","34","36"],
     sizeLabel: "Select Waist Size",
