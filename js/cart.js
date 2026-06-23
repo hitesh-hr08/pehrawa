@@ -309,7 +309,8 @@ async function placeOrderAfterPayment(paymentId) {
       cart = [];
       saveCart();
       renderCart();
-      if (typeof showToast === "function") showToast("Order " + (data.order.tracking_id || "#" + data.order.id) + " placed! Track in My Orders.");
+      if (typeof showToast === "function") showToast("✅ Order submitted successfully!");
+      setTimeout(function () { window.location.href = "my-orders.html"; }, 1500);
     } else {
       if (typeof showToast === "function") showToast(data.message || "Failed to place order");
     }
@@ -367,7 +368,11 @@ document.getElementById("cartUpiConfirm").addEventListener("click", async functi
     if (data.success) {
       cart = []; saveCart(); renderCart();
       document.getElementById("upiPaymentOverlay").classList.remove("active");
-      if (typeof showToast === "function") showToast("Order placed! Track in My Orders.");
+      if (typeof showToast === "function") showToast("✅ Order submitted successfully!");
+      btn.disabled = true;
+      btn.textContent = "Redirecting...";
+      setTimeout(function () { window.location.href = "my-orders.html"; }, 1500);
+      return;
     } else {
       if (typeof showToast === "function") showToast(data.message || "Failed to place order");
     }

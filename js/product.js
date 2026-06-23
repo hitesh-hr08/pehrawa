@@ -407,8 +407,12 @@ async function confirmBuyPayment() {
     });
     var data = await res.json();
     if (data.success) {
-      if (typeof showToast === "function") showToast("Order placed! Track in My Orders.");
+      if (typeof showToast === "function") showToast("✅ Order submitted successfully!");
       document.getElementById("buyCheckoutOverlay").classList.remove("active");
+      btn.disabled = true;
+      btn.textContent = "Redirecting...";
+      setTimeout(function () { window.location.href = "my-orders.html"; }, 1500);
+      return;
     } else {
       if (typeof showToast === "function") showToast(data.message || "Failed to place order");
     }
