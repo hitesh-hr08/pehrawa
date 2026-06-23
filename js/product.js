@@ -61,6 +61,21 @@ var categoryConfig = {
       "Easy 30-Day Returns & Exchange"
     ]
   },
+  "PANTS": {
+    sizes: ["28","30","32","34","36"],
+    sizeLabel: "Select Waist Size",
+    highlights: [
+      {icon:"fa-solid fa-leaf", text:"Premium Fabric"},
+      {icon:"fa-solid fa-ruler", text:"Regular Fit"},
+      {icon:"fa-solid fa-truck", text:"Free Shipping"}
+    ],
+    features: [
+      "Premium Quality Fabric for Comfort",
+      "Regular Fit with Stretch Comfort",
+      "Durable Stitching & Finish",
+      "Easy 30-Day Returns & Exchange"
+    ]
+  },
   "SHIRTS": {
     sizes: ["S","M","L","XL","XXL"],
     sizeLabel: "Select Size",
