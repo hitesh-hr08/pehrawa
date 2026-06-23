@@ -677,6 +677,12 @@
             '<button class="pi-remove-btn" onclick="removePiRow(0)" style="display:' + (data.product.image_url ? "flex" : "none") + ';">&times;</button></div>';
           piCount = 1;
           document.getElementById("piFile0").addEventListener("change", makePiUploadHandler(0));
+          document.getElementById("piUrl0").addEventListener("input", function() {
+            var btn = document.querySelector('.pi-row[data-idx="0"] .pi-remove-btn');
+            btn.style.display = this.value.trim() ? "flex" : "none";
+            checkPiAddBtn();
+            if (this.value.trim() && piCount < 5) document.getElementById("piAddBtn").style.display = "inline-flex";
+          });
         }
         loadProductImages(data.product.id);
         loadProducts();
@@ -706,6 +712,12 @@
         '<button class="pi-remove-btn" onclick="removePiRow(' + idx + ')" style="display:' + (url ? "flex" : "none") + ';">&times;</button>';
       list.appendChild(div);
       document.getElementById("piFile" + idx).addEventListener("change", makePiUploadHandler(idx));
+      document.getElementById("piUrl" + idx).addEventListener("input", function() {
+        var btn = document.querySelector('.pi-row[data-idx="' + idx + '"] .pi-remove-btn');
+        if (btn) btn.style.display = this.value.trim() ? "flex" : "none";
+        checkPiAddBtn();
+        if (this.value.trim() && piCount < 5) document.getElementById("piAddBtn").style.display = "inline-flex";
+      });
       piCount++;
       document.getElementById("piAddBtn").style.display = piCount >= 5 ? "none" : "inline-flex";
       if (url) checkPiAddBtn();
@@ -775,6 +787,7 @@
         data.images.forEach(function(img) { addPiRow(img.image_url); });
         if (piCount < 5) document.getElementById("piAddBtn").style.display = "inline-flex";
         else document.getElementById("piAddBtn").style.display = "none";
+        checkPiAddBtn();
       } catch(e) {}
     }
 
@@ -810,7 +823,6 @@
         checkPiAddBtn();
         if (this.value.trim() && piCount < 5) document.getElementById("piAddBtn").style.display = "inline-flex";
       });
-      loadProductImages(product.id);
       document.getElementById("productFormBody").classList.add("open");
       document.getElementById("saveProductBtn").textContent = "Update Product";
       loadProductImages(product.id);
