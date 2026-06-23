@@ -22,7 +22,7 @@ router.get("/count", async (req, res) => {
 
 router.post("/", async (req, res) => {
   try {
-    const { name, description, price, original_price, image_url, stock, category, stock_status, is_new_arrival, is_trending, is_hot_seller } = req.body;
+    const { name, description, price, original_price, image_url, images, stock, category, stock_status, is_new_arrival, is_trending, is_hot_seller } = req.body;
 
     if (!name || price === undefined || price === "") {
       return res.status(400).json({
@@ -38,7 +38,15 @@ router.post("/", async (req, res) => {
       [name, description || null, price, original_price || null, image_url || null, stock || 0, category || null, stock_status || 'in_stock', is_new_arrival || false, is_trending || false, is_hot_seller || false]
     );
 
-    res.status(201).json({ success: true, product: result.rows[0] });
+    const product = result.rows[0];
+
+    if (images && Array.isArray(images) && images.length) {
+      for (var i = 0; i < images.length; i++) {
+        await pool.query("INSERT INTO product_images (product_id, image_url, sort_order) VALUES ($1, $2, $3)", [product.id, images[i], i]);
+      }
+    }
+
+    res.status(201).json({ success: true, product });
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });
   }
@@ -47,7 +55,7 @@ router.post("/", async (req, res) => {
 router.put("/:id", async (req, res) => {
   try {
     const { id } = req.params;
-    const { name, description, price, original_price, image_url, stock, category, stock_status, is_new_arrival, is_trending, is_hot_seller } = req.body;
+    const { name, description, price, original_price, image_url, images, stock, category, stock_status, is_new_arrival, is_trending, is_hot_seller } = req.body;
 
     const result = await pool.query(
       `UPDATE products
@@ -69,6 +77,13 @@ router.put("/:id", async (req, res) => {
 
     if (result.rows.length === 0) {
       return res.status(404).json({ success: false, message: "Product not found" });
+    }
+
+    if (images && Array.isArray(images)) {
+      await pool.query("DELETE FROM product_images WHERE product_id = $1", [id]);
+      for (var i = 0; i < images.length; i++) {
+        await pool.query("INSERT INTO product_images (product_id, image_url, sort_order) VALUES ($1, $2, $3)", [id, images[i], i]);
+      }
     }
 
     res.json({ success: true, product: result.rows[0] });

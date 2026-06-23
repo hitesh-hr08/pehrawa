@@ -208,24 +208,17 @@
               </div>
 
               <div class="form-group wide">
-                <label>Primary Image URL</label>
-                <input type="text" id="productImage" placeholder="../images/product1.png" style="margin-top:6px;" />
-              </div>
-
-              <div class="form-group wide">
                 <label>Product Images (1‑5)</label>
-                <div class="product-images-grid" id="productImagesGrid"></div>
-                <div class="product-images-upload" id="productImagesUploadArea" style="display:none;">
-                  <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-top:8px;">
-                    <label for="productImagesUpload" class="upload-btn">
-                      <i class="fa-solid fa-cloud-arrow-up"></i>
-                      <span>Add Image</span>
-                    </label>
-                    <input type="file" id="productImagesUpload" accept="image/*" style="display:none;" />
-                    <span id="productImagesName" style="color:#888;font-size:13px;">No file chosen</span>
+                <div class="pi-list" id="piList">
+                  <div class="pi-row" data-idx="0">
+                    <input type="text" class="pi-url" id="piUrl0" placeholder="Image URL or upload" />
+                    <label for="piFile0" class="upload-btn sm"><i class="fa-solid fa-cloud-arrow-up"></i></label>
+                    <input type="file" class="pi-file" id="piFile0" accept="image/*" style="display:none;" />
+                    <button class="pi-remove-btn" onclick="removePiRow(0)" style="display:none;">&times;</button>
                   </div>
-                  <p style="color:#555;font-size:11px;margin:4px 0 0;">Max 5 images · 5MB each · JPG, PNG, WebP, SVG</p>
                 </div>
+                <button class="small-btn" id="piAddBtn" onclick="addPiRow()" style="margin-top:8px;display:none;"><i class="fa-solid fa-plus"></i> Add Image</button>
+                <p style="color:#555;font-size:11px;margin:4px 0 0;">Max 5 · Add at least 1 image · JPG, PNG, WebP, SVG</p>
               </div>
 
               <div class="form-group wide">
@@ -637,17 +630,19 @@
       e.preventDefault();
 
       const id = document.getElementById("productId").value;
+      var piUrls = getProductImages();
       const productData = {
         name: document.getElementById("productName").value.trim(),
         category: document.getElementById("productCategory").value.trim(),
         price: document.getElementById("productPrice").value,
         original_price: document.getElementById("productOriginalPrice").value || null,
         stock: document.getElementById("productStock").value || 0,
+        images: piUrls.length ? piUrls : undefined,
+        image_url: piUrls.length ? piUrls[0] : "",
         stock_status: document.getElementById("productStockStatus").value,
         is_new_arrival: document.getElementById("productNewArrival").checked,
         is_trending: document.getElementById("productTrending").checked,
         is_hot_seller: document.getElementById("productHotSeller").checked,
-        image_url: document.getElementById("productImage").value.trim(),
         description: document.getElementById("productDescription").value.trim()
       };
 
@@ -674,8 +669,16 @@
         document.getElementById("productId").value = data.product.id;
         document.getElementById("productFormBody").classList.add("open");
         document.getElementById("saveProductBtn").textContent = "Update Product";
+        if (!id) {
+          document.getElementById("piList").innerHTML = '<div class="pi-row" data-idx="0">' +
+            '<input type="text" class="pi-url" id="piUrl0" placeholder="Image URL or upload" value="' + (data.product.image_url || "") + '" />' +
+            '<label for="piFile0" class="upload-btn sm"><i class="fa-solid fa-cloud-arrow-up"></i></label>' +
+            '<input type="file" class="pi-file" id="piFile0" accept="image/*" style="display:none;" />' +
+            '<button class="pi-remove-btn" onclick="removePiRow(0)" style="display:' + (data.product.image_url ? "flex" : "none") + ';">&times;</button></div>';
+          piCount = 1;
+          document.getElementById("piFile0").addEventListener("change", makePiUploadHandler(0));
+        }
         loadProductImages(data.product.id);
-        document.getElementById("productImagesUploadArea").style.display = "block";
         loadProducts();
       } catch (err) {
         productMessage.textContent = "Server not connected";
@@ -689,66 +692,91 @@
       });
     });
 
+    var piCount = 1;
+    function addPiRow(url) {
+      if (piCount >= 5) return;
+      var idx = piCount;
+      var list = document.getElementById("piList");
+      var div = document.createElement("div");
+      div.className = "pi-row";
+      div.dataset.idx = idx;
+      div.innerHTML = '<input type="text" class="pi-url" id="piUrl' + idx + '" placeholder="Image URL or upload" value="' + (url || "") + '" />' +
+        '<label for="piFile' + idx + '" class="upload-btn sm"><i class="fa-solid fa-cloud-arrow-up"></i></label>' +
+        '<input type="file" class="pi-file" id="piFile' + idx + '" accept="image/*" style="display:none;" />' +
+        '<button class="pi-remove-btn" onclick="removePiRow(' + idx + ')" style="display:' + (url ? "flex" : "none") + ';">&times;</button>';
+      list.appendChild(div);
+      document.getElementById("piFile" + idx).addEventListener("change", makePiUploadHandler(idx));
+      piCount++;
+      document.getElementById("piAddBtn").style.display = piCount >= 5 ? "none" : "inline-flex";
+      if (url) checkPiAddBtn();
+    }
+
+    function removePiRow(idx) {
+      var row = document.querySelector('.pi-row[data-idx="' + idx + '"]');
+      if (row) row.remove();
+      piCount = Math.max(1, document.querySelectorAll(".pi-row").length);
+      document.getElementById("piAddBtn").style.display = piCount >= 5 ? "none" : "inline-flex";
+      checkPiAddBtn();
+    }
+
+    function checkPiAddBtn() {
+      var hasVal = Array.from(document.querySelectorAll(".pi-url")).some(function(inp){ return inp.value.trim(); });
+      document.getElementById("piAddBtn").style.display = (!hasVal || piCount >= 5) ? "none" : "inline-flex";
+    }
+
+    function makePiUploadHandler(idx) {
+      return async function() {
+        var file = this.files[0];
+        if (!file) return;
+        var label = this.previousElementSibling;
+        label.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
+        var fd = new FormData();
+        fd.append("image", file);
+        try {
+          var res = await fetch((window.PEHRAWA_API_BASE || "http://localhost:5000") + "/api/admin/upload", {
+            method: "POST", headers: { Authorization: "Bearer " + token }, body: fd
+          });
+          var data = await res.json();
+          label.innerHTML = '<i class="fa-solid fa-cloud-arrow-up"></i>';
+          if (data.success) {
+            document.getElementById("piUrl" + idx).value = data.url;
+            var btn = document.querySelector('.pi-row[data-idx="' + idx + '"] .pi-remove-btn');
+            if (btn) btn.style.display = "flex";
+            checkPiAddBtn();
+            if (piCount < 5) document.getElementById("piAddBtn").style.display = "inline-flex";
+          }
+        } catch(e) { label.innerHTML = '<i class="fa-solid fa-cloud-arrow-up"></i>'; }
+        this.value = "";
+      };
+    }
+
+    // Init first row upload handler
+    document.getElementById("piFile0").addEventListener("change", makePiUploadHandler(0));
+    document.getElementById("piUrl0").addEventListener("input", function() {
+      var btn = document.querySelector('.pi-row[data-idx="0"] .pi-remove-btn');
+      btn.style.display = this.value.trim() ? "flex" : "none";
+      checkPiAddBtn();
+      if (this.value.trim() && piCount < 5) document.getElementById("piAddBtn").style.display = "inline-flex";
+    });
+
+    function getProductImages() {
+      return Array.from(document.querySelectorAll(".pi-url")).map(function(inp){ return inp.value.trim(); }).filter(function(v){ return v; });
+    }
+
     async function loadProductImages(productId) {
-      var grid = document.getElementById("productImagesGrid");
-      var uploadArea = document.getElementById("productImagesUploadArea");
-      if (!productId) { grid.innerHTML = ""; uploadArea.style.display = "none"; return; }
+      if (!productId) return;
       try {
         var res = await authFetch((window.PEHRAWA_API_BASE || "http://localhost:5000") + "/api/products/" + productId + "/images");
         var data = await res.json();
-        if (!data.success) return;
-        renderProductImages(data.images, productId);
-        uploadArea.style.display = data.images.length >= 5 ? "none" : "block";
+        if (!data.success || !data.images.length) return;
+        var list = document.getElementById("piList");
+        list.innerHTML = "";
+        piCount = 0;
+        data.images.forEach(function(img) { addPiRow(img.image_url); });
+        if (piCount < 5) document.getElementById("piAddBtn").style.display = "inline-flex";
+        else document.getElementById("piAddBtn").style.display = "none";
       } catch(e) {}
     }
-
-    function renderProductImages(images, productId) {
-      var grid = document.getElementById("productImagesGrid");
-      grid.innerHTML = images.map(function(img, i) {
-        return '<div class="pi-item">' +
-          '<img src="' + img.image_url + '" alt="">' +
-          (i === 0 ? '<span class="pi-primary">Primary</span>' : '') +
-          '<button class="pi-remove" onclick="deleteProductImage(' + productId + ',' + img.id + ')">&times;</button>' +
-          '</div>';
-      }).join("");
-    }
-
-    window.deleteProductImage = async function(productId, imageId) {
-      if (!confirm("Delete this image?")) return;
-      try {
-        var res = await authFetch((window.PEHRAWA_API_BASE || "http://localhost:5000") + "/api/admin/products/" + productId + "/images/" + imageId, { method: "DELETE" });
-        var data = await res.json();
-        if (data.success) loadProductImages(productId);
-      } catch(e) {}
-    };
-
-    document.getElementById("productImagesUpload").addEventListener("change", async function() {
-      var file = this.files[0];
-      if (!file) return;
-      var pid = document.getElementById("productId").value;
-      if (!pid) { alert("Save the product first, then add images"); this.value = ""; return; }
-      document.getElementById("productImagesName").textContent = file.name;
-      var formData = new FormData();
-      formData.append("image", file);
-      try {
-        var res = await fetch((window.PEHRAWA_API_BASE || "http://localhost:5000") + "/api/admin/products/" + pid + "/images", {
-          method: "POST",
-          headers: { Authorization: "Bearer " + token },
-          body: formData
-        });
-        var data = await res.json();
-        this.value = "";
-        document.getElementById("productImagesName").textContent = "No file chosen";
-        if (data.success) {
-          if (!document.getElementById("productImage").value) {
-            document.getElementById("productImage").value = data.image.image_url;
-          }
-          loadProductImages(pid);
-        } else {
-          alert(data.message || "Upload failed");
-        }
-      } catch(e) { alert("Upload failed"); }
-    });
 
     function editProduct(id) {
       const product = products.find((item) => item.id === id);
@@ -767,16 +795,22 @@
       document.getElementById("productTrending").parentElement.classList.toggle("checked", !!product.is_trending);
       document.getElementById("productHotSeller").checked = !!product.is_hot_seller;
       document.getElementById("productHotSeller").parentElement.classList.toggle("checked", !!product.is_hot_seller);
-      var imgUrl = product.image_url || "";
-      document.getElementById("productImage").value = imgUrl;
-      var preview = document.getElementById("imagePreview");
-      if (imgUrl) {
-        preview.style.display = "flex";
-        preview.querySelector("img").src = imgUrl;
-      } else {
-        preview.style.display = "none";
-      }
       document.getElementById("productDescription").value = product.description || "";
+      // Reset image list and load from server
+      document.getElementById("piList").innerHTML = '<div class="pi-row" data-idx="0">' +
+        '<input type="text" class="pi-url" id="piUrl0" placeholder="Image URL or upload" value="' + (product.image_url || "") + '" />' +
+        '<label for="piFile0" class="upload-btn sm"><i class="fa-solid fa-cloud-arrow-up"></i></label>' +
+        '<input type="file" class="pi-file" id="piFile0" accept="image/*" style="display:none;" />' +
+        '<button class="pi-remove-btn" onclick="removePiRow(0)" style="display:' + (product.image_url ? "flex" : "none") + ';">&times;</button></div>';
+      piCount = 1;
+      document.getElementById("piFile0").addEventListener("change", makePiUploadHandler(0));
+      document.getElementById("piUrl0").addEventListener("input", function() {
+        var btn = document.querySelector('.pi-row[data-idx="0"] .pi-remove-btn');
+        btn.style.display = this.value.trim() ? "flex" : "none";
+        checkPiAddBtn();
+        if (this.value.trim() && piCount < 5) document.getElementById("piAddBtn").style.display = "inline-flex";
+      });
+      loadProductImages(product.id);
       document.getElementById("productFormBody").classList.add("open");
       document.getElementById("saveProductBtn").textContent = "Update Product";
       loadProductImages(product.id);
@@ -816,8 +850,6 @@
       document.getElementById("saveProductBtn").textContent = "Save Product";
       document.getElementById("productOriginalPrice").value = "";
       document.getElementById("productFormBody").classList.remove("open");
-      document.getElementById("productImagesGrid").innerHTML = "";
-      document.getElementById("productImagesUploadArea").style.display = "none";
 
       if (clearMessage) {
         productMessage.textContent = "";
