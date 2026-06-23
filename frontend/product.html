@@ -119,10 +119,11 @@
         <input type="text" id="buyName" placeholder="Full Name" required>
         <input type="tel" id="buyPhone" placeholder="Phone Number" required>
         <textarea id="buyAddress" placeholder="Full Address (House, Street, Area)" required></textarea>
-        <input type="text" id="buyPincode" placeholder="Pincode" required>
+        <input type="text" id="buyPincode" placeholder="Pincode" required oninput="window.fetchPincode && window.fetchPincode(this.value, 'buy')">
         <div class="checkout-row">
           <input type="text" id="buyCity" placeholder="City" required>
-          <input type="text" id="buyState" placeholder="State" required>
+          <input type="text" id="buyDistrict" placeholder="District (auto-fetched)" readonly>
+          <input type="text" id="buyState" placeholder="State (auto-fetched)" readonly>
         </div>
         <div class="checkout-row">
           <select id="buySize">

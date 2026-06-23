@@ -381,7 +381,8 @@ async function confirmBuyPayment() {
   var productName = document.getElementById("productName").innerText;
   var price = getProductPrice();
   var total = price * parseInt(qty);
-  var fullAddress = address + ", " + city + ", " + state + " - " + pincode;
+  var district = document.getElementById("buyDistrict")?.value || "";
+  var fullAddress = address + (district ? ", " + district : "") + ", " + city + ", " + state + " - " + pincode;
   var api = window.PEHRAWA_API_BASE || "http://localhost:5000";
   var cust = window.getCustomer ? window.getCustomer() : null;
 
