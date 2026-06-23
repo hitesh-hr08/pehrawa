@@ -559,6 +559,18 @@ input {
   margin-top: 6px;
 }
 
+.product-form-body {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height .35s ease, opacity .3s ease, margin .3s ease;
+  opacity: 0;
+}
+
+.product-form-body.open {
+  max-height: 800px;
+  opacity: 1;
+}
+
 .form-grid {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));

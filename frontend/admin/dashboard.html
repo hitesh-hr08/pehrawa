@@ -145,13 +145,14 @@
               <h2>Products Manager</h2>
               <span>Add, edit, and delete Pehrawa products from PostgreSQL</span>
             </div>
-            <button class="small-btn" onclick="resetProductForm()">
+            <button class="small-btn" onclick="openProductForm()">
               <i class="fa-solid fa-plus"></i> New Product
             </button>
           </div>
 
           <form class="product-form" id="productForm">
             <input type="hidden" id="productId" />
+            <div class="product-form-body" id="productFormBody">
 
             <div class="form-grid">
               <div class="form-group">
@@ -234,6 +235,7 @@
               <button class="primary-btn inline-btn" type="submit" id="saveProductBtn">Save Product</button>
               <button class="ghost-btn" type="button" onclick="resetProductForm()">Clear</button>
               <span class="form-message" id="productMessage"></span>
+            </div>
             </div>
           </form>
         </div>
@@ -736,6 +738,7 @@
         preview.style.display = "none";
       }
       document.getElementById("productDescription").value = product.description || "";
+      document.getElementById("productFormBody").classList.add("open");
       document.getElementById("saveProductBtn").textContent = "Update Product";
       document.getElementById("products").scrollIntoView({ behavior: "smooth" });
     }
@@ -762,6 +765,11 @@
       }
     }
 
+    function openProductForm() {
+      resetProductForm();
+      document.getElementById("productFormBody").classList.add("open");
+    }
+
     function resetProductForm(clearMessage = true) {
       productForm.reset();
       document.getElementById("productId").value = "";
@@ -770,6 +778,7 @@
       document.getElementById("productImageUpload").value = "";
       document.getElementById("productImageName").textContent = "No file chosen";
       document.getElementById("productOriginalPrice").value = "";
+      document.getElementById("productFormBody").classList.remove("open");
 
       if (clearMessage) {
         productMessage.textContent = "";
