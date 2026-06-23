@@ -62,7 +62,7 @@ var categoryConfig = {
     ]
   },
   "JEANS": {
-    sizes: ["28","30","32","36"],
+    sizes: ["28","30","32","34","36"],
     sizeLabel: "Select Waist Size",
     highlights: [
       {icon:"fa-solid fa-leaf", text:"Premium Denim"},
