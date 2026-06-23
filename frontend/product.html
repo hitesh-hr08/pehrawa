@@ -66,22 +66,42 @@
 <div class="product-details">
 <p class="badge" id="productSku">PM-GR-001</p>
 <h1 id="productName">Fearless Oversized Tee</h1>
-<h2 id="productPrice">&#8377;799</h2>
+<h2 id="productPrice">&#8377;799 <small>&#8377;1199</small></h2>
 <p class="product-description" id="productDescription">Premium cotton oversized t-shirt with high quality print.</p>
-<div><h4 style="margin-bottom:12px;">Size</h4><div class="sizes">
+
+<div class="product-highlights">
+<div class="hl-item"><i class="fa-solid fa-leaf"></i><span>Premium Cotton</span></div>
+<div class="hl-item"><i class="fa-solid fa-shirt"></i><span>Oversized Fit</span></div>
+<div class="hl-item"><i class="fa-solid fa-truck"></i><span>Free Shipping</span></div>
+</div>
+
+<div><span class="size-label">Select Size</span><div class="sizes">
 <button class="size-btn">S</button>
-<button class="size-btn">M</button>
+<button class="size-btn active">M</button>
 <button class="size-btn">L</button>
 <button class="size-btn">XL</button>
 <button class="size-btn">XXL</button>
 </div></div>
+
 <div class="quantity-box">
 <label>Quantity</label>
-<input type="number" id="quantity" value="1" min="1">
+<div class="qty-control">
+<button id="qtyMinus">&minus;</button>
+<input type="number" id="quantity" value="1" min="1" max="99">
+<button id="qtyPlus">+</button>
 </div>
+</div>
+
 <div class="product-actions">
-<button class="add-cart-btn" id="addCartBtn">ADD TO CART</button>
+<button class="add-cart-btn" id="addCartBtn"><i class="fa-solid fa-bag-shopping"></i> ADD TO CART</button>
 <button class="buy-btn" id="buyWhatsapp"><i class="fa-brands fa-whatsapp"></i> BUY ON WHATSAPP</button>
+</div>
+
+<div class="product-features">
+<div class="pf-item"><i class="fa-solid fa-check-circle"></i> 100% Premium Cotton Fabric</div>
+<div class="pf-item"><i class="fa-solid fa-check-circle"></i> High Quality Print, Fade Resistant</div>
+<div class="pf-item"><i class="fa-solid fa-check-circle"></i> Comfortable Oversized Streetwear Fit</div>
+<div class="pf-item"><i class="fa-solid fa-check-circle"></i> Easy 30-Day Returns & Exchange</div>
 </div>
 </div>
 </div>

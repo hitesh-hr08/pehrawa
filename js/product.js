@@ -13,6 +13,16 @@ document.querySelectorAll(".size-btn").forEach((btn) => {
   });
 });
 
+var qtyInput = document.getElementById("quantity");
+document.getElementById("qtyMinus").addEventListener("click", function(){
+  var v = parseInt(qtyInput.value) || 1;
+  if (v > 1) qtyInput.value = v - 1;
+});
+document.getElementById("qtyPlus").addEventListener("click", function(){
+  var v = parseInt(qtyInput.value) || 1;
+  if (v < 99) qtyInput.value = v + 1;
+});
+
 async function loadProductDetails() {
   if (!productId) return;
 
