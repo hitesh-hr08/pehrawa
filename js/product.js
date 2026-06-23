@@ -456,14 +456,24 @@ async function confirmBuyPayment() {
 loadProductDetails();
 
 async function loadRelatedProducts(category, excludeId) {
+  var grid = document.getElementById("relatedGrid");
+  if (!grid) return;
   try {
     const res = await fetch(API_URL + "?search=" + encodeURIComponent(category));
     const data = await res.json();
-    if (!data.success || !data.products) return;
+    if (!data.success || !data.products) {
+      grid.innerHTML = "";
+      return;
+    }
     var related = data.products.filter(function(p){ return p.id !== excludeId; }).slice(0, 4);
-    if (related.length === 0) return;
+    if (related.length === 0) {
+      grid.innerHTML = "";
+      return;
+    }
     renderRelatedProducts(related);
-  } catch(e) {}
+  } catch(e) {
+    grid.innerHTML = "";
+  }
 }
 
 function renderRelatedProducts(products) {
