@@ -261,18 +261,150 @@ document.getElementById("addCartBtn").addEventListener("click", () => {
   }
 });
 
-document.getElementById("buyWhatsapp").addEventListener("click", () => {
+// ==========================================
+// BUY BUTTON — Multi-step checkout flow
+// ==========================================
+
+document.getElementById("buyBtn").addEventListener("click", () => {
   if (!currentProduct) return;
 
-  const qty = document.getElementById("quantity").value;
-  const productName = document.getElementById("productName").innerText;
-  const productPrice = document.getElementById("productPrice").innerText.replace("₹", "").trim();
-  const productImage = document.getElementById("productImage").src;
+  window.requireAuth(function (loggedIn) {
+    if (!loggedIn) return;
 
-  if (typeof openCheckout === "function") {
-    openCheckout(currentProduct.id, productName, productPrice, productImage);
-  }
+    var qty = document.getElementById("quantity").value;
+    document.getElementById("buyQty").value = qty;
+    document.getElementById("buySize").value = selectedSize || "M";
+
+    var cust = window.getCustomer ? window.getCustomer() : null;
+    if (cust) {
+      var nEl = document.getElementById("buyName");
+      var pEl = document.getElementById("buyPhone");
+      if (nEl && cust.name) nEl.value = cust.name;
+      if (pEl && cust.phone) pEl.value = cust.phone;
+    }
+
+    showBuyStep(1);
+    document.getElementById("buyCheckoutOverlay").classList.add("active");
+  });
 });
+
+document.getElementById("buyCheckoutClose").addEventListener("click", function () {
+  document.getElementById("buyCheckoutOverlay").classList.remove("active");
+});
+document.getElementById("buyCheckoutOverlay").addEventListener("click", function (e) {
+  if (e.target === this) this.classList.remove("active");
+});
+
+// Step navigation
+function showBuyStep(step) {
+  document.getElementById("buyStep1").style.display = step === 1 ? "block" : "none";
+  document.getElementById("buyStep2").style.display = step === 2 ? "block" : "none";
+  document.getElementById("buyStep3").style.display = step === 3 ? "block" : "none";
+  if (step === 2) populateBuyConfirmation();
+  if (step === 3) generateBuyQrCode();
+}
+
+// Step 1 — Address form submit
+document.getElementById("buyAddressForm").addEventListener("submit", function (e) {
+  e.preventDefault();
+  var name = document.getElementById("buyName").value.trim();
+  var phone = document.getElementById("buyPhone").value.trim();
+  var address = document.getElementById("buyAddress").value.trim();
+  var pincode = document.getElementById("buyPincode").value.trim();
+  var city = document.getElementById("buyCity").value.trim();
+  var state = document.getElementById("buyState").value.trim();
+
+  if (!name || !phone || !address || !pincode || !city || !state) {
+    if (typeof showToast === "function") showToast("Please fill all fields");
+    return;
+  }
+  if (phone.length < 10) {
+    if (typeof showToast === "function") showToast("Enter valid phone number");
+    return;
+  }
+
+  showBuyStep(2);
+});
+
+function populateBuyConfirmation() {
+  var name = document.getElementById("buyName").value;
+  var phone = document.getElementById("buyPhone").value;
+  var address = document.getElementById("buyAddress").value;
+  var pincode = document.getElementById("buyPincode").value;
+  var city = document.getElementById("buyCity").value;
+  var state = document.getElementById("buyState").value;
+  var size = document.getElementById("buySize").value;
+  var qty = document.getElementById("buyQty").value;
+  var productName = document.getElementById("productName").innerText;
+  var price = parseFloat(document.getElementById("productPrice").innerText.replace("₹", "").trim()) || 0;
+  var total = price * parseInt(qty);
+
+  document.querySelector("#buyStep2 .buy-summary").innerHTML =
+    '<div class="buy-summary-row"><span>Product</span><span>' + productName + '</span></div>' +
+    '<div class="buy-summary-row"><span>Size</span><span>' + size + '</span></div>' +
+    '<div class="buy-summary-row"><span>Quantity</span><span>' + qty + '</span></div>' +
+    '<div class="buy-summary-row" style="border-bottom:1px solid #222;padding-bottom:10px;margin-bottom:4px;"><span style="font-weight:700;">Total</span><span style="color:#ff6b00;font-weight:700;">&#8377;' + total.toFixed(2) + '</span></div>' +
+    '<div class="buy-summary-row"><span>Name</span><span>' + name + '</span></div>' +
+    '<div class="buy-summary-row"><span>Phone</span><span>' + phone + '</span></div>' +
+    '<div class="buy-summary-row"><span>Address</span><span style="font-size:12px;">' + address + ', ' + city + ', ' + state + ' - ' + pincode + '</span></div>';
+}
+
+function generateBuyQrCode() {
+  var qty = parseInt(document.getElementById("buyQty").value) || 1;
+  var price = parseFloat(document.getElementById("productPrice").innerText.replace("₹", "").trim()) || 0;
+  var total = price * qty;
+  var upiStr = "upi://pay?pa=hrandhan-1@okicici&pn=Pehrawa%20Menswear&am=" + total.toFixed(2) + "&cu=INR";
+  document.getElementById("buyQrImage").src = "https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=" + encodeURIComponent(upiStr);
+}
+
+async function confirmBuyPayment() {
+  var txnId = document.getElementById("buyTxnId").value.trim();
+  var btn = document.querySelector("#buyStep3 .checkout-submit");
+  btn.disabled = true;
+  btn.textContent = "Placing Order...";
+
+  var name = document.getElementById("buyName").value;
+  var phone = document.getElementById("buyPhone").value;
+  var address = document.getElementById("buyAddress").value;
+  var pincode = document.getElementById("buyPincode").value;
+  var city = document.getElementById("buyCity").value;
+  var state = document.getElementById("buyState").value;
+  var size = document.getElementById("buySize").value;
+  var qty = document.getElementById("buyQty").value;
+  var productName = document.getElementById("productName").innerText;
+  var price = parseFloat(document.getElementById("productPrice").innerText.replace("₹", "").trim()) || 0;
+  var total = price * parseInt(qty);
+  var fullAddress = address + ", " + city + ", " + state + " - " + pincode;
+  var api = window.PEHRAWA_API_BASE || "http://localhost:5000";
+  var cust = window.getCustomer ? window.getCustomer() : null;
+
+  try {
+    var res = await fetch(api + "/api/public/orders", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        customer_name: name,
+        phone: phone,
+        address: fullAddress,
+        total_amount: total,
+        payment_id: txnId || null,
+        customer_id: cust ? cust.id : (localStorage.getItem("customerId") || null),
+        items: [{ name: productName, size: size, quantity: Number(qty), price: price }]
+      })
+    });
+    var data = await res.json();
+    if (data.success) {
+      if (typeof showToast === "function") showToast("Order placed! Track in My Orders.");
+      document.getElementById("buyCheckoutOverlay").classList.remove("active");
+    } else {
+      if (typeof showToast === "function") showToast(data.message || "Failed to place order");
+    }
+  } catch (err) {
+    if (typeof showToast === "function") showToast("Error placing order. Try again.");
+  }
+  btn.disabled = false;
+  btn.textContent = "I've Paid — Place Order";
+}
 
 loadProductDetails();
 

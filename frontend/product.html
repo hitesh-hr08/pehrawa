@@ -81,7 +81,7 @@
 
 <div class="product-actions">
 <button class="add-cart-btn" id="addCartBtn"><i class="fa-solid fa-bag-shopping"></i> ADD TO CART</button>
-<button class="buy-btn" id="buyWhatsapp"><i class="fa-brands fa-whatsapp"></i> BUY</button>
+<button class="buy-btn" id="buyBtn"><i class="fa-solid fa-bolt"></i> BUY</button>
 </div>
 
 <div class="product-features" id="productFeatures"></div>
@@ -106,6 +106,61 @@
 </div>
 <div class="copyright">© 2026 Pehrawa Menswear. All Rights Reserved.</div>
 </footer>
+
+<!-- BUY CHECKOUT MODAL -->
+<div class="checkout-overlay" id="buyCheckoutOverlay">
+  <div class="checkout-modal">
+    <span class="checkout-close" id="buyCheckoutClose">&times;</span>
+
+    <!-- Step 1: Address -->
+    <div class="buy-step" id="buyStep1">
+      <h3>Shipping Details</h3>
+      <form id="buyAddressForm">
+        <input type="text" id="buyName" placeholder="Full Name" required>
+        <input type="tel" id="buyPhone" placeholder="Phone Number" required>
+        <textarea id="buyAddress" placeholder="Full Address (House, Street, Area)" required></textarea>
+        <input type="text" id="buyPincode" placeholder="Pincode" required>
+        <div class="checkout-row">
+          <input type="text" id="buyCity" placeholder="City" required>
+          <input type="text" id="buyState" placeholder="State" required>
+        </div>
+        <div class="checkout-row">
+          <select id="buySize">
+            <option value="S">S</option>
+            <option value="M">M</option>
+            <option value="L">L</option>
+            <option value="XL">XL</option>
+            <option value="XXL">XXL</option>
+          </select>
+          <input type="number" id="buyQty" value="1" min="1">
+        </div>
+        <button type="submit" class="checkout-submit">Continue</button>
+      </form>
+    </div>
+
+    <!-- Step 2: Confirmation -->
+    <div class="buy-step" id="buyStep2" style="display:none">
+      <h3>Confirm Order</h3>
+      <div class="buy-summary"></div>
+      <div class="checkout-row" style="margin-top:16px;gap:10px;">
+        <button class="checkout-submit" style="background:#333;color:#fff;flex:1;" onclick="showBuyStep(1)">Back</button>
+        <button class="checkout-submit" style="flex:1;" onclick="showBuyStep(3)">Proceed to Payment</button>
+      </div>
+    </div>
+
+    <!-- Step 3: Payment -->
+    <div class="buy-step" id="buyStep3" style="display:none">
+      <h3>Pay via UPI</h3>
+      <div style="text-align:center;padding:16px 0;">
+        <img id="buyQrImage" src="" alt="UPI QR Code" style="width:220px;height:220px;border-radius:10px;background:#fff;padding:8px;">
+        <p style="color:#ff6b00;margin-top:8px;font-size:13px;">UPI ID: <strong>hrandhan-1@okicici</strong></p>
+      </div>
+      <p style="color:#888;font-size:13px;text-align:center;margin-bottom:12px;">Scan with Google Pay / PhonePe / Paytm to pay</p>
+      <input type="text" id="buyTxnId" placeholder="Enter UPI Transaction ID (optional)" style="width:100%;padding:12px;background:#0b0b0b;border:1px solid #333;color:#fff;border-radius:6px;font-size:14px;outline:none;box-sizing:border-box;">
+      <button class="checkout-submit" style="margin-top:12px;" onclick="confirmBuyPayment()">I've Paid — Place Order</button>
+    </div>
+  </div>
+</div>
 
 <script src="../js/product.js"></script>
 <script src="../js/script.js"></script>

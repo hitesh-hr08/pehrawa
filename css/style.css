@@ -1503,6 +1503,22 @@ CHECKOUT MODAL
 .checkout-submit:hover{background:#e06d00;}
 
 /* =======================
+BUY CHECKOUT STEPS
+======================= */
+.buy-summary{
+    font-size:14px;
+    color:#ccc;
+}
+.buy-summary-row{
+    display:flex;
+    justify-content:space-between;
+    padding:4px 0;
+    gap:12px;
+}
+.buy-summary-row span:first-child{color:#888;}
+.buy-summary-row span:last-child{text-align:right;}
+
+/* =======================
 TOAST
 ======================= */
 
