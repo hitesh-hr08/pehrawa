@@ -217,7 +217,7 @@
                     <button class="pi-remove-btn" onclick="removePiRow(0)" style="display:none;">&times;</button>
                   </div>
                 </div>
-                <button class="small-btn" id="piAddBtn" onclick="addPiRow()" style="margin-top:8px;display:none;"><i class="fa-solid fa-plus"></i> Add Image</button>
+                <button class="small-btn" id="piAddBtn" onclick="addPiRow()" style="margin-top:8px;"><i class="fa-solid fa-plus"></i> Add Image</button>
                 <p style="color:#555;font-size:11px;margin:4px 0 0;">Max 5 · Add at least 1 image · JPG, PNG, WebP, SVG</p>
               </div>
 
@@ -732,8 +732,7 @@
     }
 
     function checkPiAddBtn() {
-      var hasVal = Array.from(document.querySelectorAll(".pi-url")).some(function(inp){ return inp.value.trim(); });
-      document.getElementById("piAddBtn").style.display = (!hasVal || piCount >= 5) ? "none" : "inline-flex";
+      document.getElementById("piAddBtn").style.display = piCount >= 5 ? "none" : "inline-flex";
     }
 
     function makePiUploadHandler(idx) {
