@@ -102,6 +102,36 @@ app.post("/api/admin/upload", verifyAdmin, (req, res) => {
   });
 });
 
+app.post("/api/admin/products/:id/images", verifyAdmin, (req, res) => {
+  upload.single("image")(req, res, async function (err) {
+    if (err) return res.status(400).json({ success: false, message: err.message });
+    if (!req.file) return res.status(400).json({ success: false, message: "No file uploaded" });
+    try {
+      const existing = await pool.query("SELECT COUNT(*)::int AS cnt FROM product_images WHERE product_id = $1", [req.params.id]);
+      if (existing.rows[0].cnt >= 5) {
+        return res.status(400).json({ success: false, message: "Maximum 5 images allowed per product" });
+      }
+      const url = "/uploads/" + req.file.filename;
+      const result = await pool.query(
+        "INSERT INTO product_images (product_id, image_url, sort_order) VALUES ($1, $2, $3) RETURNING *",
+        [req.params.id, url, existing.rows[0].cnt]
+      );
+      res.json({ success: true, image: result.rows[0] });
+    } catch (e) {
+      res.status(500).json({ success: false, message: e.message });
+    }
+  });
+});
+
+app.delete("/api/admin/products/:id/images/:imageId", verifyAdmin, async (req, res) => {
+  try {
+    await pool.query("DELETE FROM product_images WHERE id = $1 AND product_id = $2", [req.params.imageId, req.params.id]);
+    res.json({ success: true, message: "Image deleted" });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
+
 app.get("/api/customers/all", verifyAdmin, async (req, res) => {
   try {
     const result = await pool.query(`
@@ -186,9 +216,19 @@ app.get("/api/public/products/:id", async (req, res) => {
     if (result.rows.length === 0) {
       return res.status(404).json({ success: false, message: "Product not found" });
     }
-    res.json({ success: true, product: result.rows[0] });
+    const images = await pool.query("SELECT id, image_url, sort_order FROM product_images WHERE product_id = $1 ORDER BY sort_order, id", [req.params.id]);
+    res.json({ success: true, product: result.rows[0], images: images.rows });
   } catch (err) {
     res.status(500).json({ success: false, message: "Failed to load product" });
+  }
+});
+
+app.get("/api/products/:id/images", verifyAdmin, async (req, res) => {
+  try {
+    const images = await pool.query("SELECT id, image_url, sort_order FROM product_images WHERE product_id = $1 ORDER BY sort_order, id", [req.params.id]);
+    res.json({ success: true, images: images.rows });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
   }
 });
 
@@ -613,6 +653,22 @@ var HOST = process.env.HOST || "0.0.0.0";
     console.log("Database migration: original_price column added/verified");
   } catch (err) {
     console.error("Original price migration error (non-fatal):", err.message);
+  }
+
+  // Create product_images table
+  try {
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS product_images (
+        id SERIAL PRIMARY KEY,
+        product_id INTEGER NOT NULL REFERENCES products(id) ON DELETE CASCADE,
+        image_url TEXT NOT NULL,
+        sort_order INTEGER DEFAULT 0,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      )
+    `);
+    console.log("Database migration: product_images table created/verified");
+  } catch (err) {
+    console.error("Product images table migration error (non-fatal):", err.message);
   }
 })();
 

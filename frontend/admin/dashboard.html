@@ -208,20 +208,23 @@
               </div>
 
               <div class="form-group wide">
-                <label>Product Image</label>
-                <input type="text" id="productImage" placeholder="../images/product1.png" style="margin-top:8px;" />
-                <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-top:10px;">
-                  <label for="productImageUpload" class="upload-btn">
-                    <i class="fa-solid fa-cloud-arrow-up"></i>
-                    <span>Upload Image</span>
-                  </label>
-                  <input type="file" id="productImageUpload" accept="image/*" style="display:none;" />
-                  <span id="productImageName" style="color:#888;font-size:13px;">No file chosen</span>
-                </div>
-                <p style="color:#555;font-size:11px;margin:4px 0 0;">Max 5MB · JPG, PNG, WebP, SVG</p>
-                <div class="image-upload-preview" id="imagePreview" style="display:none;">
-                  <img src="" alt="Preview" />
-                  <span class="image-upload-remove" id="imagePreviewRemove">&times;</span>
+                <label>Primary Image URL</label>
+                <input type="text" id="productImage" placeholder="../images/product1.png" style="margin-top:6px;" />
+              </div>
+
+              <div class="form-group wide">
+                <label>Product Images (1‑5)</label>
+                <div class="product-images-grid" id="productImagesGrid"></div>
+                <div class="product-images-upload" id="productImagesUploadArea" style="display:none;">
+                  <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-top:8px;">
+                    <label for="productImagesUpload" class="upload-btn">
+                      <i class="fa-solid fa-cloud-arrow-up"></i>
+                      <span>Add Image</span>
+                    </label>
+                    <input type="file" id="productImagesUpload" accept="image/*" style="display:none;" />
+                    <span id="productImagesName" style="color:#888;font-size:13px;">No file chosen</span>
+                  </div>
+                  <p style="color:#555;font-size:11px;margin:4px 0 0;">Max 5 images · 5MB each · JPG, PNG, WebP, SVG</p>
                 </div>
               </div>
 
@@ -668,34 +671,16 @@
 
         productMessage.textContent = id ? "Product updated" : "Product added";
         productMessage.className = "form-message success-text";
-        resetProductForm(false);
+        document.getElementById("productId").value = data.product.id;
+        document.getElementById("productFormBody").classList.add("open");
+        document.getElementById("saveProductBtn").textContent = "Update Product";
+        loadProductImages(data.product.id);
+        document.getElementById("productImagesUploadArea").style.display = "block";
         loadProducts();
       } catch (err) {
         productMessage.textContent = "Server not connected";
         productMessage.className = "form-message error-text";
       }
-    });
-
-    document.getElementById("productImageUpload").addEventListener("change", async function() {
-      var file = this.files[0];
-      if (!file) return;
-      document.getElementById("productImageName").textContent = file.name;
-      var formData = new FormData();
-      formData.append("image", file);
-      try {
-        var res = await fetch((window.PEHRAWA_API_BASE || "http://localhost:5000") + "/api/admin/upload", {
-          method: "POST",
-          headers: { Authorization: "Bearer " + token },
-          body: formData
-        });
-        var data = await res.json();
-        if (data.success) {
-          document.getElementById("productImage").value = data.url;
-          var preview = document.getElementById("imagePreview");
-          preview.style.display = "flex";
-          preview.querySelector("img").src = data.url;
-        }
-      } catch(e) {}
     });
 
     document.querySelectorAll(".tag-checkbox input[type=checkbox]").forEach(function(cb) {
@@ -704,11 +689,65 @@
       });
     });
 
-    document.getElementById("imagePreviewRemove").addEventListener("click", function() {
-      document.getElementById("productImage").value = "";
-      document.getElementById("imagePreview").style.display = "none";
-      document.getElementById("productImageName").textContent = "No file chosen";
-      document.getElementById("productImageUpload").value = "";
+    async function loadProductImages(productId) {
+      var grid = document.getElementById("productImagesGrid");
+      var uploadArea = document.getElementById("productImagesUploadArea");
+      if (!productId) { grid.innerHTML = ""; uploadArea.style.display = "none"; return; }
+      try {
+        var res = await authFetch((window.PEHRAWA_API_BASE || "http://localhost:5000") + "/api/products/" + productId + "/images");
+        var data = await res.json();
+        if (!data.success) return;
+        renderProductImages(data.images, productId);
+        uploadArea.style.display = data.images.length >= 5 ? "none" : "block";
+      } catch(e) {}
+    }
+
+    function renderProductImages(images, productId) {
+      var grid = document.getElementById("productImagesGrid");
+      grid.innerHTML = images.map(function(img, i) {
+        return '<div class="pi-item">' +
+          '<img src="' + img.image_url + '" alt="">' +
+          (i === 0 ? '<span class="pi-primary">Primary</span>' : '') +
+          '<button class="pi-remove" onclick="deleteProductImage(' + productId + ',' + img.id + ')">&times;</button>' +
+          '</div>';
+      }).join("");
+    }
+
+    window.deleteProductImage = async function(productId, imageId) {
+      if (!confirm("Delete this image?")) return;
+      try {
+        var res = await authFetch((window.PEHRAWA_API_BASE || "http://localhost:5000") + "/api/admin/products/" + productId + "/images/" + imageId, { method: "DELETE" });
+        var data = await res.json();
+        if (data.success) loadProductImages(productId);
+      } catch(e) {}
+    };
+
+    document.getElementById("productImagesUpload").addEventListener("change", async function() {
+      var file = this.files[0];
+      if (!file) return;
+      var pid = document.getElementById("productId").value;
+      if (!pid) { alert("Save the product first, then add images"); this.value = ""; return; }
+      document.getElementById("productImagesName").textContent = file.name;
+      var formData = new FormData();
+      formData.append("image", file);
+      try {
+        var res = await fetch((window.PEHRAWA_API_BASE || "http://localhost:5000") + "/api/admin/products/" + pid + "/images", {
+          method: "POST",
+          headers: { Authorization: "Bearer " + token },
+          body: formData
+        });
+        var data = await res.json();
+        this.value = "";
+        document.getElementById("productImagesName").textContent = "No file chosen";
+        if (data.success) {
+          if (!document.getElementById("productImage").value) {
+            document.getElementById("productImage").value = data.image.image_url;
+          }
+          loadProductImages(pid);
+        } else {
+          alert(data.message || "Upload failed");
+        }
+      } catch(e) { alert("Upload failed"); }
     });
 
     function editProduct(id) {
@@ -740,6 +779,7 @@
       document.getElementById("productDescription").value = product.description || "";
       document.getElementById("productFormBody").classList.add("open");
       document.getElementById("saveProductBtn").textContent = "Update Product";
+      loadProductImages(product.id);
       document.getElementById("products").scrollIntoView({ behavior: "smooth" });
     }
 
@@ -774,11 +814,10 @@
       productForm.reset();
       document.getElementById("productId").value = "";
       document.getElementById("saveProductBtn").textContent = "Save Product";
-      document.getElementById("imagePreview").style.display = "none";
-      document.getElementById("productImageUpload").value = "";
-      document.getElementById("productImageName").textContent = "No file chosen";
       document.getElementById("productOriginalPrice").value = "";
       document.getElementById("productFormBody").classList.remove("open");
+      document.getElementById("productImagesGrid").innerHTML = "";
+      document.getElementById("productImagesUploadArea").style.display = "none";
 
       if (clearMessage) {
         productMessage.textContent = "";

@@ -21,7 +21,7 @@ async function loadProductDetails() {
       id: 0, name: "Fearless Oversized Tee", price: 799, original_price: 1199,
       description: "Premium cotton oversized t-shirt with high quality print.",
       image_url: "../images/product1.png", category: "T-SHIRTS", stock_status: "in_stock"
-    });
+    }, []);
     return;
   }
 
@@ -38,7 +38,7 @@ async function loadProductDetails() {
     }
 
     currentProduct = data.product;
-    renderProduct(currentProduct);
+    renderProduct(currentProduct, data.images || []);
   } catch (err) {
     document.getElementById("productName").innerText = "Unable To Load Product";
     document.getElementById("productDescription").innerText = "Start backend server to view live product details.";
@@ -155,11 +155,18 @@ function getCategoryConfig(cat) {
   return categoryConfig["SHIRTS"];
 }
 
-function renderProduct(product) {
+function renderProduct(product, images) {
   document.getElementById("productDetail").classList.add("visible");
   document.title = `${product.name} | Pehrawa Menswear`;
-  document.getElementById("productImage").src = product.image_url || "../images/product1.png";
+  var allImages = images && images.length ? images.map(function(i){ return i.image_url; }) : [];
+  if (product.image_url && allImages.indexOf(product.image_url) === -1) allImages.unshift(product.image_url);
+  if (!allImages.length) allImages = ["../images/product1.png"];
+  document.getElementById("productImage").src = allImages[0];
   document.getElementById("productImage").alt = product.name;
+  var thumbsEl = document.getElementById("productThumbs");
+  thumbsEl.innerHTML = allImages.map(function(url, i){
+    return '<img src="' + url + '" style="width:70px;height:90px;object-fit:cover;cursor:pointer;border:' + (i === 0 ? '2px solid #ff6b00' : '1px solid #333') + ';border-radius:4px;" onclick="document.getElementById(\'productImage\').src=this.src;document.querySelectorAll(\'#productThumbs img\').forEach(function(t){t.style.border=\'1px solid #333\'});this.style.border=\'2px solid #ff6b00\'" onerror="this.style.display=\'none\'">';
+  }).join("");
   document.getElementById("productName").innerText = product.name;
   var p = Number(product.price);
   var orig = product.original_price ? Number(product.original_price) : Math.round(p * 1.5);
