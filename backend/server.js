@@ -76,7 +76,7 @@ const upload = multer({
 });
 
 app.get("/", (req, res) => {
-  res.redirect("/home.html");
+  res.sendFile(path.join(__dirname, "..", "frontend", "home.html"));
 });
 
 app.use(passport.initialize());
