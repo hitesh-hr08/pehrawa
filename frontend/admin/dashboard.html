@@ -214,10 +214,10 @@
                     <input type="text" class="pi-url" id="piUrl0" placeholder="Image URL or upload" />
                     <label for="piFile0" class="upload-btn sm"><i class="fa-solid fa-cloud-arrow-up"></i></label>
                     <input type="file" class="pi-file" id="piFile0" accept="image/*" style="display:none;" />
-                    <button class="pi-remove-btn" onclick="removePiRow(0)" style="display:none;">&times;</button>
+                    <button type="button" class="pi-remove-btn" onclick="removePiRow(0)" style="display:none;">&times;</button>
                   </div>
                 </div>
-                <button class="small-btn" id="piAddBtn" onclick="addPiRow()" style="margin-top:8px;"><i class="fa-solid fa-plus"></i> Add Image</button>
+                <button type="button" class="small-btn" id="piAddBtn" onclick="addPiRow()" style="margin-top:8px;"><i class="fa-solid fa-plus"></i> Add Image</button>
                 <p style="color:#555;font-size:11px;margin:4px 0 0;">Max 5 · Add at least 1 image · JPG, PNG, WebP, SVG</p>
               </div>
 
@@ -674,7 +674,7 @@
             '<input type="text" class="pi-url" id="piUrl0" placeholder="Image URL or upload" value="' + (data.product.image_url || "") + '" />' +
             '<label for="piFile0" class="upload-btn sm"><i class="fa-solid fa-cloud-arrow-up"></i></label>' +
             '<input type="file" class="pi-file" id="piFile0" accept="image/*" style="display:none;" />' +
-            '<button class="pi-remove-btn" onclick="removePiRow(0)" style="display:' + (data.product.image_url ? "flex" : "none") + ';">&times;</button></div>';
+            '<button type="button" class="pi-remove-btn" onclick="removePiRow(0)" style="display:' + (data.product.image_url ? "flex" : "none") + ';">&times;</button></div>';
           piCount = 1;
           document.getElementById("piFile0").addEventListener("change", makePiUploadHandler(0));
           document.getElementById("piUrl0").addEventListener("input", function() {
@@ -709,7 +709,7 @@
       div.innerHTML = '<input type="text" class="pi-url" id="piUrl' + idx + '" placeholder="Image URL or upload" value="' + (url || "") + '" />' +
         '<label for="piFile' + idx + '" class="upload-btn sm"><i class="fa-solid fa-cloud-arrow-up"></i></label>' +
         '<input type="file" class="pi-file" id="piFile' + idx + '" accept="image/*" style="display:none;" />' +
-        '<button class="pi-remove-btn" onclick="removePiRow(' + idx + ')" style="display:' + (url ? "flex" : "none") + ';">&times;</button>';
+        '<button type="button" class="pi-remove-btn" onclick="removePiRow(' + idx + ')" style="display:' + (url ? "flex" : "none") + ';">&times;</button>';
       list.appendChild(div);
       document.getElementById("piFile" + idx).addEventListener("change", makePiUploadHandler(idx));
       document.getElementById("piUrl" + idx).addEventListener("input", function() {
@@ -813,7 +813,7 @@
         '<input type="text" class="pi-url" id="piUrl0" placeholder="Image URL or upload" value="' + (product.image_url || "") + '" />' +
         '<label for="piFile0" class="upload-btn sm"><i class="fa-solid fa-cloud-arrow-up"></i></label>' +
         '<input type="file" class="pi-file" id="piFile0" accept="image/*" style="display:none;" />' +
-        '<button class="pi-remove-btn" onclick="removePiRow(0)" style="display:' + (product.image_url ? "flex" : "none") + ';">&times;</button></div>';
+        '<button type="button" class="pi-remove-btn" onclick="removePiRow(0)" style="display:' + (product.image_url ? "flex" : "none") + ';">&times;</button></div>';
       piCount = 1;
       document.getElementById("piFile0").addEventListener("change", makePiUploadHandler(0));
       document.getElementById("piUrl0").addEventListener("input", function() {
