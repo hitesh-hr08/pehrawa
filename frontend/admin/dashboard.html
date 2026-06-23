@@ -207,14 +207,20 @@
               </div>
 
               <div class="form-group wide">
-                <label for="productImage">Image URL</label>
-                <div class="image-upload-row">
-                  <input type="text" id="productImage" placeholder="../images/product1.png" />
-                  <input type="file" id="productImageUpload" accept="image/*" />
+                <label>Product Image</label>
+                <input type="text" id="productImage" placeholder="../images/product1.png" style="margin-top:8px;" />
+                <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-top:10px;">
+                  <label for="productImageUpload" class="upload-btn">
+                    <i class="fa-solid fa-cloud-arrow-up"></i>
+                    <span>Upload Image</span>
+                  </label>
+                  <input type="file" id="productImageUpload" accept="image/*" style="display:none;" />
+                  <span id="productImageName" style="color:#888;font-size:13px;">No file chosen</span>
                 </div>
+                <p style="color:#555;font-size:11px;margin:4px 0 0;">Max 5MB · JPG, PNG, WebP, SVG</p>
                 <div class="image-upload-preview" id="imagePreview" style="display:none;">
                   <img src="" alt="Preview" />
-                  <span class="image-upload-remove" onclick="document.getElementById('productImage').value='';document.getElementById('imagePreview').style.display='none'">&times;</span>
+                  <span class="image-upload-remove" id="imagePreviewRemove">&times;</span>
                 </div>
               </div>
 
@@ -671,6 +677,7 @@
     document.getElementById("productImageUpload").addEventListener("change", async function() {
       var file = this.files[0];
       if (!file) return;
+      document.getElementById("productImageName").textContent = file.name;
       var formData = new FormData();
       formData.append("image", file);
       try {
@@ -687,6 +694,13 @@
           preview.querySelector("img").src = data.url;
         }
       } catch(e) {}
+    });
+
+    document.getElementById("imagePreviewRemove").addEventListener("click", function() {
+      document.getElementById("productImage").value = "";
+      document.getElementById("imagePreview").style.display = "none";
+      document.getElementById("productImageName").textContent = "No file chosen";
+      document.getElementById("productImageUpload").value = "";
     });
 
     function editProduct(id) {
@@ -745,6 +759,7 @@
       document.getElementById("saveProductBtn").textContent = "Save Product";
       document.getElementById("imagePreview").style.display = "none";
       document.getElementById("productImageUpload").value = "";
+      document.getElementById("productImageName").textContent = "No file chosen";
       document.getElementById("productOriginalPrice").value = "";
 
       if (clearMessage) {
