@@ -328,9 +328,14 @@ document.getElementById("buyAddressForm").addEventListener("submit", function (e
 });
 
 function getProductPrice() {
+  if (currentProduct) return Number(currentProduct.price) || 0;
   var pv = document.getElementById("productPriceValue");
-  if (pv) return parseFloat(pv.innerText.replace(/[^0-9.]/g, "")) || 0;
-  return currentProduct ? Number(currentProduct.price) : 0;
+  if (pv) {
+    var txt = pv.innerText.replace(/[^0-9.]/g, "");
+    var match = txt.match(/^\d+(\.\d+)?/);
+    return match ? parseFloat(match[0]) : 0;
+  }
+  return 0;
 }
 
 function populateBuyConfirmation() {

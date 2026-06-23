@@ -318,6 +318,66 @@ async function placeOrderAfterPayment(paymentId) {
   }
 }
 
+// UPI Payment handlers
+document.getElementById("upiCheckoutBtn").addEventListener("click", function () {
+  window.requireAuth(function (loggedIn) {
+    if (!loggedIn) return;
+    if (cart.length === 0) { alert("Cart is empty"); return; }
+    var name = document.getElementById("customerName").value.trim();
+    var phone = document.getElementById("customerPhone").value.trim();
+    var addr = document.getElementById("customerAddress").value.trim();
+    if (!name || !phone || !addr) { alert("Please fill name, phone, and address"); return; }
+    var total = cart.reduce(function (s, item) { return s + (Number(item.price) * Number(item.quantity || 1)); }, 0);
+    var upiStr = "upi://pay?pa=hrandhan-1@okicici&pn=Pehrawa%20Menswear&am=" + total.toFixed(2) + "&cu=INR";
+    document.getElementById("cartUpiQr").src = "https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=" + encodeURIComponent(upiStr);
+    document.getElementById("upiPaymentOverlay").classList.add("active");
+  });
+});
+
+document.getElementById("upiPaymentClose").addEventListener("click", function () {
+  document.getElementById("upiPaymentOverlay").classList.remove("active");
+});
+document.getElementById("upiPaymentOverlay").addEventListener("click", function (e) {
+  if (e.target === this) this.classList.remove("active");
+});
+
+document.getElementById("cartUpiConfirm").addEventListener("click", async function () {
+  var txnId = document.getElementById("cartUpiTxnId").value.trim();
+  var btn = document.getElementById("cartUpiConfirm");
+  btn.disabled = true;
+  btn.textContent = "Placing Order...";
+  var name = document.getElementById("customerName").value.trim();
+  var phone = document.getElementById("customerPhone").value.trim();
+  var addr = document.getElementById("customerAddress").value.trim();
+  var total = cart.reduce(function (s, item) { return s + (Number(item.price) * Number(item.quantity || 1)); }, 0);
+  var cust = window.getCustomer ? window.getCustomer() : null;
+  var api = window.PEHRAWA_API_BASE || "http://localhost:5000";
+  try {
+    var res = await fetch(api + "/api/public/orders", {
+      method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        customer_name: name, customer_id: cust ? cust.id : localStorage.getItem("customerId"),
+        phone: phone,
+        address: addr + ", " + (document.getElementById("customerCity")?.value || "") + ", " + (document.getElementById("customerState")?.value || "") + ", Pincode: " + (document.getElementById("customerPincode")?.value || ""),
+        total_amount: total, payment_id: txnId || null,
+        items: cart.map(function (item) { return { id: item.id, name: item.name, price: item.price, quantity: item.quantity, size: item.size }; })
+      })
+    });
+    var data = await res.json();
+    if (data.success) {
+      cart = []; saveCart(); renderCart();
+      document.getElementById("upiPaymentOverlay").classList.remove("active");
+      if (typeof showToast === "function") showToast("Order placed! Track in My Orders.");
+    } else {
+      if (typeof showToast === "function") showToast(data.message || "Failed to place order");
+    }
+  } catch (err) {
+    if (typeof showToast === "function") showToast("Error placing order");
+  }
+  btn.disabled = false;
+  btn.textContent = "I've Paid — Place Order";
+});
+
 clearCartBtn.addEventListener("click", clearCart);
 
 renderCart();

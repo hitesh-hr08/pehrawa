@@ -101,11 +101,27 @@
 </div>
 <button class="checkout-btn" id="checkoutBtn" style="margin-bottom:8px;"><i class="fa-solid fa-bag-shopping"></i> PLACE ORDER</button>
 <button class="checkout-btn" id="razorpayCheckoutBtn" style="background:#3399ff;margin-bottom:8px;"><i class="fa-solid fa-credit-card"></i> PAY ONLINE (Razorpay)</button>
+<button class="checkout-btn" id="upiCheckoutBtn" style="background:#10b981;margin-bottom:8px;"><i class="fa-solid fa-qrcode"></i> PAY VIA UPI</button>
 <a href="shop.html" class="continue-shopping">Continue Shopping</a>
 </div>
 </div>
 </div>
 </section>
+
+<!-- UPI PAYMENT MODAL -->
+<div class="checkout-overlay" id="upiPaymentOverlay">
+  <div class="checkout-modal" style="max-width:420px;">
+    <span class="checkout-close" id="upiPaymentClose">&times;</span>
+    <h3>Pay via UPI</h3>
+    <div style="text-align:center;padding:16px 0;">
+      <img id="cartUpiQr" src="" alt="UPI QR Code" style="width:220px;height:220px;border-radius:10px;background:#fff;padding:8px;">
+      <p style="color:#ff6b00;margin-top:8px;font-size:13px;">UPI ID: <strong>hrandhan-1@okicici</strong></p>
+    </div>
+    <p style="color:#888;font-size:12px;text-align:center;margin-bottom:8px;">Scan with GPay / PhonePe / Paytm to pay</p>
+    <input type="text" id="cartUpiTxnId" placeholder="Enter UPI Transaction ID (optional)" style="width:100%;padding:12px;background:#0b0b0b;border:1px solid #333;color:#fff;border-radius:6px;font-size:14px;outline:none;box-sizing:border-box;">
+    <button class="checkout-submit" id="cartUpiConfirm" style="margin-top:8px;">I've Paid — Place Order</button>
+  </div>
+</div>
 
 <footer>
 <div class="container foot">
