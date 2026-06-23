@@ -8,6 +8,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../css/style.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+<link rel="stylesheet" href="../css/track-order.css">
 <script src="../js/config.js"></script>
 </head>
 <body>
@@ -57,11 +58,12 @@
 </section>
 
 <section style="padding:80px 0;">
-<div class="container" style="max-width:600px;margin:auto;">
-<div style="display:flex;gap:14px;">
-<input type="text" id="trackInput" placeholder="Order ID or Phone Number" style="flex:1;padding:16px;background:#0d0d0d;border:1px solid #181818;color:#fff;outline:none;">
-<button onclick="trackOrder()" style="padding:16px 32px;background:#ff6b00;border:none;color:#000;font-weight:700;cursor:pointer;">TRACK</button>
-</div>
+<div class="container track-box" style="max-width:600px;margin:auto;">
+<form id="trackOrderForm" style="display:flex;flex-direction:column;gap:14px;">
+<input type="text" id="orderId" placeholder="Order ID (e.g. PHR-000001)" style="width:100%;padding:16px;background:#0d0d0d;border:1px solid #181818;color:#fff;outline:none;border-radius:6px;box-sizing:border-box;">
+<input type="text" id="customerPhone" placeholder="Phone Number used at checkout" style="width:100%;padding:16px;background:#0d0d0d;border:1px solid #181818;color:#fff;outline:none;border-radius:6px;box-sizing:border-box;">
+<button type="submit" style="padding:16px 32px;background:#ff6b00;border:none;border-radius:6px;color:#000;font-weight:700;cursor:pointer;">TRACK ORDER</button>
+</form>
 <div id="trackResult" style="margin-top:30px;"></div>
 </div>
 </section>
@@ -79,26 +81,6 @@
 <script src="../js/script.js"></script>
 <script src="../js/animations.js"></script>
 <script src="../js/track-order.js"></script>
-<script>
-async function trackOrder(){
-  var input = document.getElementById("trackInput").value.trim();
-  var result = document.getElementById("trackResult");
-  if(!input){result.innerHTML='<p style="color:#ff4d4d;">Please enter order ID or phone number</p>';return;}
-  try{
-    var res = await fetch((window.PEHRAWA_API_BASE||"http://localhost:5000")+"/api/orders/track/"+encodeURIComponent(input));
-    var data = await res.json();
-    if(data.success && data.order){
-      var o = data.order;
-      var statusColors = {Pending:"#ff6b00",Processing:"#ffa500",Shipped:"#36b37e",Delivered:"#38d27a",Cancelled:"#ff4d4d"};
-      result.innerHTML='<div style="background:#0a0a0a;border:1px solid #181818;padding:30px;text-align:left;"><h3 style="color:#ff6b00;margin-bottom:16px;">Order #'+o.id+'</h3><p style="color:#aaa;margin-bottom:8px;"><strong style="color:#fff;">Customer:</strong> '+o.customer_name+'</p><p style="color:#aaa;margin-bottom:8px;"><strong style="color:#fff;">Status:</strong> <span style="color:'+(statusColors[o.status]||"#fff")+';font-weight:700;">'+o.status+'</span></p><p style="color:#aaa;margin-bottom:8px;"><strong style="color:#fff;">Amount:</strong> &#8377;'+parseFloat(o.total_amount).toFixed(2)+'</p><p style="color:#aaa;"><strong style="color:#fff;">Address:</strong> '+o.address+'</p></div>';
-    } else {
-      result.innerHTML='<p style="color:#ff4d4d;">Order not found. Please check your details.</p>';
-    }
-  } catch(err){
-    result.innerHTML='<p style="color:#ff4d4d;">Server not connected. Please try again.</p>';
-  }
-}
-</script>
 
 <div class="whatsapp-float" onclick="window.open('https://wa.me/919855707708','_blank')" role="button" tabindex="0" aria-label="Chat on WhatsApp">
   <i class="fa-brands fa-whatsapp"></i><span class="wa-tooltip">Chat with us</span><span class="wa-badge"></span>

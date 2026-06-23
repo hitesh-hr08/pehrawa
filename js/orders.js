@@ -32,15 +32,20 @@
       if ((o.status || "").toLowerCase() === "shipped") statusColor = "#8b5cf6";
       else if ((o.status || "").toLowerCase() === "delivered") statusColor = "#10b981";
       else if ((o.status || "").toLowerCase() === "cancelled") statusColor = "#ef4444";
+      var orderId = o.tracking_id || "PHR-" + String(o.id).padStart(6, "0");
+      var trackUrl = "track-order.html?order=" + encodeURIComponent(orderId) + "&phone=" + encodeURIComponent(o.phone || user.phone || "");
       html += '<div style="background:#0a0a0a;border:1px solid #181818;border-radius:10px;padding:24px;">' +
         '<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;margin-bottom:12px;">' +
-        '<span style="font-size:12px;color:#666;">ORDER #' + (o.tracking_id || "PHR-" + String(o.id).padStart(6, "0")) + "</span>" +
+        '<span style="font-size:12px;color:#666;">ORDER #' + orderId + "</span>" +
         '<span style="font-size:11px;padding:4px 12px;border-radius:20px;background:' + statusColor + ";color:#000;font-weight:600;text-transform:uppercase;\">" + (o.status || "Pending") + "</span>" +
         "</div>" +
         '<div style="color:#fff;font-size:15px;font-weight:500;margin-bottom:6px;">' + (o.customer_name || "") + "</div>" +
         '<div style="color:#aaa;font-size:13px;">Total: ₹' + (Number(o.total_amount) || 0).toLocaleString() + "</div>" +
         (o.items ? '<div style="color:#666;font-size:12px;margin-top:6px;">' + o.items.replace(/\n/g, "<br>") + "</div>" : "") +
-        '<div style="color:#555;font-size:11px;margin-top:8px;">' + new Date(o.created_at).toLocaleDateString() + "</div>" +
+        '<div style="display:flex;justify-content:space-between;align-items:center;margin-top:12px;">' +
+        '<div style="color:#555;font-size:11px;">' + new Date(o.created_at).toLocaleDateString() + "</div>" +
+        '<a href="' + trackUrl + '" style="display:inline-flex;align-items:center;gap:6px;padding:8px 18px;font-size:12px;font-weight:600;color:#ff6b00;border:1px solid #ff6b00;border-radius:6px;text-decoration:none;transition:.2s;" onmouseover="this.style.background=\'#ff6b00\';this.style.color=\'#000\';" onmouseout="this.style.background=\'transparent\';this.style.color=\'#ff6b00\';">📦 Track Order</a>' +
+        "</div>" +
         "</div>";
     });
     html += "</div>";
