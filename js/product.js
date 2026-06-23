@@ -163,7 +163,9 @@ function renderProduct(product) {
   document.getElementById("productName").innerText = product.name;
   var p = Number(product.price);
   var orig = product.original_price ? Number(product.original_price) : Math.round(p * 1.5);
-  document.getElementById("productPrice").innerHTML = '&#8377;' + (isNaN(p) ? "0.00" : p.toFixed(0)) + ' <small>&#8377;' + orig + '</small>';
+  var disc = orig > p ? Math.round((1 - p / orig) * 100) : 0;
+  document.getElementById("productPriceValue").innerHTML = '&#8377;' + (isNaN(p) ? "0.00" : p.toFixed(0)) + ' <small>&#8377;' + orig + '</small>';
+  document.getElementById("productDiscount").textContent = disc > 0 ? disc + '% OFF' : '';
   document.getElementById("productDescription").innerText =
     product.description || "Premium Pehrawa menswear product crafted for comfort and style.";
   document.getElementById("productSku").innerText = "PHR-" + String(product.id).padStart(6, "0");

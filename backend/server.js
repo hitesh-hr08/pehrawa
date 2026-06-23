@@ -576,7 +576,16 @@ var HOST = process.env.HOST || "0.0.0.0";
          ELSE image_url END
        FROM ranked WHERE products.id = ranked.id`
     );
-    console.log("Database migration: updated product images by category (watch, sunglass, footwear, shirts)");
+    // JEANS
+    await pool.query(
+      `WITH ranked AS (SELECT id, ROW_NUMBER() OVER (ORDER BY id) as rn FROM products WHERE category = 'JEANS')
+       UPDATE products SET image_url = CASE ranked.rn
+         WHEN 1 THEN '/images/Jean1.webp'
+         WHEN 2 THEN '/images/Jean2.webp'
+         ELSE image_url END
+       FROM ranked WHERE products.id = ranked.id`
+    );
+    console.log("Database migration: updated product images by category (watch, sunglass, footwear, shirts, jeans)");
   } catch (err) {
     console.error("Product image migration error (non-fatal):", err.message);
   }
