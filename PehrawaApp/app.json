@@ -1,0 +1,45 @@
+{
+  "expo": {
+    "name": "Pehrawa Menswear",
+    "slug": "pehrawa-menswear",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "dark",
+    "backgroundColor": "#050505",
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.pehrawa.menswear"
+    },
+    "plugins": [
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "kotlinVersion": "2.0.21",
+            "gradleVersion": "8.11"
+          }
+        }
+      ]
+    ],
+    "android": {
+      "package": "com.pehrawa.menswear",
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/android-icon-foreground.png",
+        "backgroundImage": "./assets/android-icon-background.png",
+        "monochromeImage": "./assets/android-icon-monochrome.png",
+        "backgroundColor": "#050505"
+      }
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "apiBaseUrl": "https://pehrawa-store.up.railway.app",
+      "eas": {
+        "projectId": "d842bd15-d4ec-45ac-aa62-074d41c7734f"
+      }
+    },
+    "owner": "hitesh-hr"
+  }
+}
