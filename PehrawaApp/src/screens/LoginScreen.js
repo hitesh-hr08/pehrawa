@@ -15,24 +15,34 @@ const LoginScreen = ({ navigation }) => {
     const data = await login(email, password);
     setLoading(false);
     if (data.success) {
-      showToast("Login successful!");
+      showToast("Welcome back!");
       navigation.goBack();
     } else {
-      showToast(data.message || "Login failed");
+      showToast(data.message || "Invalid email or password");
     }
   };
 
   return (
     <KeyboardAvoidingView style={styles.container} behavior={Platform.OS === "ios" ? "padding" : "height"}>
+      <TouchableOpacity style={styles.backBtn} onPress={() => navigation.goBack()}>
+        <Text style={styles.backBtnText}>← Back</Text>
+      </TouchableOpacity>
       <View style={styles.form}>
-        <Text style={styles.title}>LOGIN</Text>
-        <TextInput style={styles.input} placeholder="Email" placeholderTextColor="#666" value={email} onChangeText={setEmail} autoCapitalize="none" keyboardType="email-address" />
-        <TextInput style={styles.input} placeholder="Password" placeholderTextColor="#666" value={password} onChangeText={setPassword} secureTextEntry />
+        <Text style={styles.title}>Sign In</Text>
+        <Text style={styles.subtitle}>Welcome back to Pehrawa</Text>
+        <TextInput
+          style={styles.input} placeholder="Email" placeholderTextColor="#555"
+          value={email} onChangeText={setEmail} autoCapitalize="none" keyboardType="email-address"
+        />
+        <TextInput
+          style={styles.input} placeholder="Password" placeholderTextColor="#555"
+          value={password} onChangeText={setPassword} secureTextEntry
+        />
         <TouchableOpacity style={styles.btn} onPress={handleLogin} disabled={loading}>
-          <Text style={styles.btnText}>{loading ? "LOGGING IN..." : "LOGIN"}</Text>
+          <Text style={styles.btnText}>{loading ? "SIGNING IN..." : "SIGN IN"}</Text>
         </TouchableOpacity>
         <TouchableOpacity onPress={() => navigation.navigate("Register")}>
-          <Text style={styles.link}>Don't have an account? Register</Text>
+          <Text style={styles.link}>New here? <Text style={styles.linkHighlight}>Create Account</Text></Text>
         </TouchableOpacity>
       </View>
     </KeyboardAvoidingView>
@@ -41,12 +51,22 @@ const LoginScreen = ({ navigation }) => {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: "#050505", justifyContent: "center", padding: 24 },
-  form: { backgroundColor: "#0a0a0a", padding: 24, borderRadius: 16, borderWidth: 1, borderColor: "#1a1a1a" },
-  title: { fontSize: 28, fontWeight: "800", color: "#fff", marginBottom: 24, textAlign: "center" },
-  input: { backgroundColor: "#0d0d0d", borderWidth: 1, borderColor: "#222", borderRadius: 8, padding: 14, color: "#fff", marginBottom: 12, fontSize: 14 },
-  btn: { backgroundColor: "#ff6b00", padding: 16, borderRadius: 8, alignItems: "center", marginTop: 8 },
-  btnText: { color: "#000", fontWeight: "700", fontSize: 14 },
-  link: { color: "#ff6b00", textAlign: "center", marginTop: 16, fontSize: 13 },
+  backBtn: { position: "absolute", top: 50, left: 20, zIndex: 10 },
+  backBtnText: { color: "#ff6b00", fontSize: 15, fontWeight: "600" },
+  form: { backgroundColor: "#0a0a0a", padding: 28, borderRadius: 16, borderWidth: 1, borderColor: "#1a1a1a" },
+  title: { fontSize: 28, fontWeight: "800", color: "#fff", marginBottom: 4 },
+  subtitle: { color: "#666", fontSize: 14, marginBottom: 28 },
+  input: {
+    backgroundColor: "#0d0d0d", borderWidth: 1, borderColor: "#222", borderRadius: 10,
+    padding: 15, color: "#fff", marginBottom: 14, fontSize: 14,
+  },
+  btn: {
+    backgroundColor: "#ff6b00", paddingVertical: 15, borderRadius: 10,
+    alignItems: "center", marginTop: 8,
+  },
+  btnText: { color: "#000", fontWeight: "700", fontSize: 15 },
+  link: { color: "#666", textAlign: "center", marginTop: 20, fontSize: 14 },
+  linkHighlight: { color: "#ff6b00", fontWeight: "600" },
 });
 
 export default LoginScreen;
