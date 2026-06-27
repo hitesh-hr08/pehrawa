@@ -769,6 +769,9 @@
         if (!data.success) {
           orderTableStatus.textContent = data.message || "Unable to load orders";
           return;
+        } else if (!res.ok) {
+          orderTableStatus.textContent = "Error " + res.status + ": " + (data.message || "Failed to load");
+          return;
         }
 
         orders = data.orders;
@@ -907,6 +910,10 @@
 
         if (!data.success) {
           orderMessage.textContent = data.message || "Delete failed";
+          orderMessage.className = "form-message error-text";
+          return;
+        } else if (!res.ok) {
+          orderMessage.textContent = "Error " + res.status + ": " + (data.message || "Request failed");
           orderMessage.className = "form-message error-text";
           return;
         }

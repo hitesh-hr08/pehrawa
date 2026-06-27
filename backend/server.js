@@ -597,6 +597,66 @@ var HOST = process.env.HOST || "0.0.0.0";
 
 (async function () {
   try {
+    await pool.query(`CREATE TABLE IF NOT EXISTS admins (
+      id SERIAL PRIMARY KEY, name VARCHAR(100) NOT NULL,
+      email VARCHAR(150) UNIQUE NOT NULL, password VARCHAR(255) NOT NULL,
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )`);
+    await pool.query(`CREATE TABLE IF NOT EXISTS products (
+      id SERIAL PRIMARY KEY, name VARCHAR(255) NOT NULL, description TEXT,
+      price NUMERIC(10,2) NOT NULL, original_price NUMERIC(10,2),
+      image_url TEXT, stock INTEGER DEFAULT 0, category VARCHAR(100),
+      stock_status VARCHAR(20) DEFAULT 'in_stock',
+      is_new_arrival BOOLEAN DEFAULT FALSE, is_trending BOOLEAN DEFAULT FALSE,
+      is_hot_seller BOOLEAN DEFAULT FALSE,
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )`);
+    await pool.query(`CREATE TABLE IF NOT EXISTS customers (
+      id SERIAL PRIMARY KEY, name VARCHAR(150), email VARCHAR(255) UNIQUE,
+      password VARCHAR(255), phone VARCHAR(30) UNIQUE, address TEXT,
+      google_id VARCHAR(255), image_url TEXT,
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )`);
+    await pool.query(`CREATE TABLE IF NOT EXISTS orders (
+      id SERIAL PRIMARY KEY, customer_id INTEGER REFERENCES customers(id),
+      customer_name VARCHAR(255), phone VARCHAR(20), address TEXT,
+      total_amount NUMERIC(10,2), status VARCHAR(50) DEFAULT 'Pending',
+      items TEXT, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )`);
+    await pool.query(`CREATE TABLE IF NOT EXISTS custom_requests (
+      id SERIAL PRIMARY KEY, customer_name VARCHAR(255), phone VARCHAR(20),
+      note TEXT, image_url TEXT, status VARCHAR(50) DEFAULT 'Pending',
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )`);
+    await pool.query(`CREATE TABLE IF NOT EXISTS store_settings (
+      id SERIAL PRIMARY KEY, store_name VARCHAR(255) NOT NULL DEFAULT 'Pehrawa',
+      store_tagline VARCHAR(500) DEFAULT 'Premium Menswear',
+      currency VARCHAR(10) DEFAULT 'INR', delivery_charge NUMERIC(10,2) DEFAULT 0,
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )`);
+    console.log("Database tables created/verified");
+  } catch (err) {
+    console.error("Table creation error (non-fatal):", err.message);
+  }
+
+  try {
+    const adminCount = await pool.query("SELECT COUNT(*)::int AS cnt FROM admins");
+    if (adminCount.rows[0].cnt === 0 && process.env.ADMIN_EMAIL && process.env.ADMIN_PASSWORD) {
+      const bcrypt = require("bcryptjs");
+      const hash = await bcrypt.hash(process.env.ADMIN_PASSWORD, 10);
+      await pool.query(
+        "INSERT INTO admins (name, email, password) VALUES ($1, $2, $3)",
+        [process.env.ADMIN_NAME || "Admin", process.env.ADMIN_EMAIL, hash]
+      );
+      console.log("Default admin seeded from env vars");
+    }
+  } catch (err) {
+    console.error("Admin seed error (non-fatal):", err.message);
+  }
+
+  try {
     await pool.query(`
       ALTER TABLE custom_requests
         ADD COLUMN IF NOT EXISTS address TEXT,
