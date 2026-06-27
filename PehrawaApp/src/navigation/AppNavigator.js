@@ -37,7 +37,7 @@ const MainTabs = () => (
       tabBarLabelStyle: { fontSize: 11 },
     })}
   >
-    <Tab.Screen name="Home" component={HomeScreen} />
+    <Tab.Screen name="Home" component={HomeScreen} options={{ headerShown: false }} />
     <Tab.Screen name="Shop" component={ShopScreen} />
     <Tab.Screen name="Cart" component={CartScreen} />
     <Tab.Screen name="Wishlist" component={WishlistScreen} />
