@@ -11,17 +11,7 @@
       "supportsTablet": true,
       "bundleIdentifier": "com.pehrawa.menswear"
     },
-    "plugins": [
-      [
-        "expo-build-properties",
-        {
-          "android": {
-            "kotlinVersion": "2.0.21",
-            "gradleVersion": "8.11"
-          }
-        }
-      ]
-    ],
+    "plugins": [],
     "android": {
       "package": "com.pehrawa.menswear",
       "adaptiveIcon": {
