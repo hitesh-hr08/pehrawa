@@ -228,6 +228,7 @@ async function placeOrderAfterPayment(paymentId) {
         phone: customerPhone,
         address: customerAddress + ", " + (document.getElementById("customerCity")?.value || "") + ", " + (document.getElementById("customerState")?.value || "") + ", Pincode: " + (document.getElementById("customerPincode")?.value || ""),
         total_amount: total,
+        status: paymentId ? "Processing" : "Pending",
         payment_id: paymentId || null,
         items: cart.map(function (item) {
           return { id: item.id, name: item.name, price: item.price, quantity: item.quantity, size: item.size };
@@ -248,6 +249,31 @@ async function placeOrderAfterPayment(paymentId) {
     if (typeof showToast === "function") showToast("Error placing order");
   }
 }
+
+// Razorpay checkout handler
+document.getElementById("razorpayCheckoutBtn").addEventListener("click", function () {
+  window.requireAuth(function (loggedIn) {
+    if (!loggedIn) return;
+    if (cart.length === 0) { alert("Cart is empty"); return; }
+    var name = document.getElementById("customerName").value.trim();
+    var phone = document.getElementById("customerPhone").value.trim();
+    var addr = document.getElementById("customerAddress").value.trim();
+    if (!name || !phone || !addr) { alert("Please fill name, phone, and address"); return; }
+    var total = cart.reduce(function (s, item) { return s + (Number(item.price) * Number(item.quantity || 1)); }, 0);
+    if (total < 1) { alert("Invalid total"); return; }
+    var btn = document.getElementById("razorpayCheckoutBtn");
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Opening...';
+    razorpayCheckout(total, async function (paymentId) {
+      await placeOrderAfterPayment(paymentId);
+      btn.disabled = false;
+      btn.innerHTML = '<i class="fa-solid fa-credit-card"></i> PAY WITH RAZORPAY';
+    }, function () {
+      btn.disabled = false;
+      btn.innerHTML = '<i class="fa-solid fa-credit-card"></i> PAY WITH RAZORPAY';
+    });
+  });
+});
 
 // UPI Payment handlers
 document.getElementById("upiCheckoutBtn").addEventListener("click", function () {

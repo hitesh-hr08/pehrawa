@@ -394,6 +394,66 @@ function generateBuyQrCode() {
   }
 }
 
+async function buyWithRazorpay() {
+  var btn = document.getElementById("razorpayBuyBtn");
+  btn.disabled = true;
+  btn.textContent = "Opening...";
+  var qty = parseInt(document.getElementById("buyQty").value) || 1;
+  var price = getProductPrice();
+  var total = price * qty;
+  if (total < 1) {
+    if (typeof showToast === "function") showToast("Invalid amount");
+    btn.disabled = false;
+    btn.textContent = "Pay with Razorpay";
+    return;
+  }
+  await razorpayCheckout(total, async function (paymentId) {
+    var name = document.getElementById("buyName").value;
+    var phone = document.getElementById("buyPhone").value;
+    var address = document.getElementById("buyAddress").value;
+    var pincode = document.getElementById("buyPincode").value;
+    var city = document.getElementById("buyCity").value;
+    var state = document.getElementById("buyState").value;
+    var size = document.getElementById("buySize").value;
+    var productName = document.getElementById("productName").innerText;
+    var district = document.getElementById("buyDistrict")?.value || "";
+    var fullAddress = address + (district ? ", " + district : "") + ", " + city + ", " + state + " - " + pincode;
+    var api = window.PEHRAWA_API_BASE || "http://localhost:5000";
+    var cust = window.getCustomer ? window.getCustomer() : null;
+    try {
+      var res = await fetch(api + "/api/public/orders", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          customer_name: name,
+          phone: phone,
+          address: fullAddress,
+          total_amount: total,
+          status: "Processing",
+          payment_id: paymentId,
+          customer_id: cust ? cust.id : (localStorage.getItem("customerId") || null),
+          items: [{ name: productName, size: size, quantity: qty, price: price }]
+        })
+      });
+      var data = await res.json();
+      if (data.success) {
+        if (typeof showToast === "function") showToast("✅ Payment successful! Order placed.");
+        document.getElementById("buyCheckoutOverlay").classList.remove("active");
+        setTimeout(function () { window.location.href = "my-orders.html"; }, 1500);
+      } else {
+        if (typeof showToast === "function") showToast(data.message || "Failed to place order");
+      }
+    } catch (err) {
+      if (typeof showToast === "function") showToast("Error placing order");
+    }
+    btn.disabled = false;
+    btn.textContent = "Pay with Razorpay";
+  }, function () {
+    btn.disabled = false;
+    btn.textContent = "Pay with Razorpay";
+  });
+}
+
 async function confirmBuyPayment() {
   var txnId = document.getElementById("buyTxnId").value.trim();
   var btn = document.querySelector("#buyStep3 .checkout-submit");
