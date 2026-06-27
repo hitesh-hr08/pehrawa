@@ -498,15 +498,6 @@ app.get("/api", (req, res) => {
   res.json({ success: true, message: "Pehrawa API Running" });
 });
 
-app.get("/api/admin/check", async (req, res) => {
-  try {
-    const r = await pool.query("SELECT COUNT(*)::int AS cnt FROM admins");
-    res.json({ adminCount: r.rows[0].cnt, adminEmail: process.env.ADMIN_EMAIL || "not_set" });
-  } catch (e) {
-    res.json({ error: e.message });
-  }
-});
-
 app.get("/api/admin/seed", async (req, res) => {
   try {
     const bcrypt = require("bcryptjs");
