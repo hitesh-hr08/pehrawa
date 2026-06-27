@@ -414,9 +414,13 @@ app.get("/api/public/orders/:id", async (req, res) => {
       return res.status(400).json({ success: false, message: "Phone number is required" });
     }
 
+    const orderId = req.params.id.startsWith("PHR-") ? parseInt(req.params.id.replace("PHR-", ""), 10) : parseInt(req.params.id, 10);
+    if (!orderId) {
+      return res.status(400).json({ success: false, message: "Invalid order ID" });
+    }
     const result = await pool.query(
       "SELECT id, customer_name, phone, address, total_amount, status, items, created_at FROM orders WHERE id = $1 AND phone = $2",
-      [req.params.id, phone]
+      [orderId, phone]
     );
 
     if (result.rows.length === 0) {

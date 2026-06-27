@@ -1,11 +1,12 @@
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { API_BASE } from "../constants/config";
 
-const getToken = () => localStorage.getItem("pehrawa_customer_token");
-
 const request = async (endpoint, options = {}) => {
-  const token = getToken();
   const headers = { "Content-Type": "application/json", ...options.headers };
-  if (token) headers["Authorization"] = "Bearer " + token;
+  try {
+    const token = await AsyncStorage.getItem("pehrawa_customer_token");
+    if (token) headers["Authorization"] = "Bearer " + token;
+  } catch (e) {}
   const res = await fetch(API_BASE + endpoint, { ...options, headers });
   return res.json();
 };
@@ -24,7 +25,7 @@ export const api = {
 
   // Auth
   login: (email, password) =>
-    request("/api/auth/login", {
+    request("/api/customers/login", {
       method: "POST",
       body: JSON.stringify({ email, password }),
     }),
@@ -52,7 +53,7 @@ export const api = {
     request("/api/customers/" + customerId + "/orders"),
 
   getOrderByTracking: (trackingId, phone) =>
-    request("/api/public/orders/track?tracking_id=" + encodeURIComponent(trackingId) + "&phone=" + encodeURIComponent(phone)),
+    request("/api/public/orders/" + encodeURIComponent(trackingId) + "?phone=" + encodeURIComponent(phone)),
 
   // Razorpay
   createRazorpayOrder: (amount) =>
