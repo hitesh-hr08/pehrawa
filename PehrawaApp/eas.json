@@ -11,9 +11,7 @@
       "android": {
         "buildType": "apk"
       },
-      "hooks": {
-        "post-install": "node scripts/fix-gradle.js"
-      }
+
     },
     "production": {
       "android": {
