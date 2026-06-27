@@ -11,6 +11,72 @@ if (customer) {
   localStorage.setItem("customerId", customer.id);
 }
 
+// Load saved addresses
+async function loadSavedAddresses() {
+  var cust = window.getCustomer ? window.getCustomer() : null;
+  if (!cust || !cust.id) return;
+  var token = window.getCustomerToken ? window.getCustomerToken() : "";
+  if (!token) return;
+  var api = window.PEHRAWA_API_BASE || "http://localhost:5000";
+  try {
+    var res = await fetch(api + "/api/customers/" + cust.id + "/addresses", {
+      headers: { "Authorization": "Bearer " + token }
+    });
+    var data = await res.json();
+    if (data.success && data.addresses && data.addresses.length > 0) {
+      var section = document.getElementById("savedAddressesSection");
+      var select = document.getElementById("savedAddressSelect");
+      if (section) section.style.display = "block";
+      if (select) {
+        select.innerHTML = '<option value="">-- Select a saved address --</option>';
+        data.addresses.forEach(function (addr) {
+          var opt = document.createElement("option");
+          opt.value = addr.id;
+          opt.textContent = addr.label + ": " + addr.address + (addr.city ? ", " + addr.city : "");
+          if (addr.is_default) opt.selected = true;
+          select.appendChild(opt);
+        });
+        // Auto-fill default
+        var defaultAddr = data.addresses.find(function (a) { return a.is_default; }) || data.addresses[0];
+        if (defaultAddr) fillAddressFields(defaultAddr);
+      }
+    }
+  } catch (e) {}
+}
+
+function fillAddressFields(addr) {
+  if (document.getElementById("customerName") && addr.label) {
+    // Don't overwrite name from customer profile
+  }
+  if (document.getElementById("customerAddress")) document.getElementById("customerAddress").value = addr.address || "";
+  if (document.getElementById("customerPincode")) document.getElementById("customerPincode").value = addr.pincode || "";
+  if (document.getElementById("customerCity")) document.getElementById("customerCity").value = addr.city || "";
+  if (document.getElementById("customerState")) document.getElementById("customerState").value = addr.state || "";
+}
+
+window.selectSavedAddress = function (addressId) {
+  if (!addressId) return;
+  var cust = window.getCustomer ? window.getCustomer() : null;
+  if (!cust || !cust.id) return;
+  var token = window.getCustomerToken ? window.getCustomerToken() : "";
+  var api = window.PEHRAWA_API_BASE || "http://localhost:5000";
+  fetch(api + "/api/customers/" + cust.id + "/addresses", {
+    headers: { "Authorization": "Bearer " + token }
+  })
+  .then(function (r) { return r.json(); })
+  .then(function (data) {
+    if (data.success && data.addresses) {
+      var addr = data.addresses.find(function (a) { return a.id == addressId; });
+      if (addr) fillAddressFields(addr);
+    }
+  });
+};
+
+// Load saved addresses on page load
+if (document.getElementById("savedAddressesSection")) {
+  loadSavedAddresses();
+}
+
 function normalizeCart() {
   cart = cart.map(function (item) {
     return {
@@ -159,6 +225,9 @@ async function checkoutWithPayment() {
         customer_id: savedCustomerId,
         phone: customerPhone,
         address: customerAddress + ", " + (document.getElementById("customerCity")?.value || "") + ", " + (document.getElementById("customerState")?.value || "") + ", Pincode: " + (document.getElementById("customerPincode")?.value || ""),
+        pincode: document.getElementById("customerPincode")?.value || "",
+        city: document.getElementById("customerCity")?.value || "",
+        state: document.getElementById("customerState")?.value || "",
         total_amount: total,
         items: cart.map(function (item) {
           return {
@@ -227,6 +296,9 @@ async function placeOrderAfterPayment(paymentId) {
         customer_id: savedCustomerId,
         phone: customerPhone,
         address: customerAddress + ", " + (document.getElementById("customerCity")?.value || "") + ", " + (document.getElementById("customerState")?.value || "") + ", Pincode: " + (document.getElementById("customerPincode")?.value || ""),
+        pincode: document.getElementById("customerPincode")?.value || "",
+        city: document.getElementById("customerCity")?.value || "",
+        state: document.getElementById("customerState")?.value || "",
         total_amount: total,
         status: paymentId ? "Processing" : "Pending",
         payment_id: paymentId || null,

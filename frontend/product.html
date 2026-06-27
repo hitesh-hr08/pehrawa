@@ -116,6 +116,12 @@
     <!-- Step 1: Address -->
     <div class="buy-step" id="buyStep1">
       <h3>Shipping Details</h3>
+      <div id="buySavedAddressesSection" style="display:none;margin-bottom:12px;">
+        <label style="color:#ff6b00;font-weight:600;font-size:13px;">Saved Addresses</label>
+        <select id="buySavedAddressSelect" style="width:100%;padding:12px;background:#0b0b0b;border:1px solid #333;color:#fff;border-radius:6px;font-size:14px;margin-bottom:8px;" onchange="selectBuySavedAddress(this.value)">
+          <option value="">-- Select a saved address --</option>
+        </select>
+      </div>
       <form id="buyAddressForm">
         <input type="text" id="buyName" placeholder="Full Name" required>
         <input type="tel" id="buyPhone" placeholder="Phone Number" required>

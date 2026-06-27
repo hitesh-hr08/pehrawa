@@ -69,4 +69,19 @@ export const api = {
     }),
 
   getRazorpayKey: () => request("/api/razorpay-key"),
+
+  // Addresses
+  getAddresses: (customerId) =>
+    request("/api/customers/" + customerId + "/addresses"),
+
+  saveAddress: (customerId, data) =>
+    request("/api/customers/" + customerId + "/addresses", {
+      method: "POST",
+      body: JSON.stringify(data),
+    }),
+
+  deleteAddress: (customerId, addressId) =>
+    request("/api/customers/" + customerId + "/addresses/" + addressId, {
+      method: "DELETE",
+    }),
 };

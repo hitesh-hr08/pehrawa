@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, Modal, ActivityIndicator } from "react-native";
 import { WebView } from "react-native-webview";
 import { useAuth } from "../context/AuthContext";
@@ -21,6 +21,27 @@ const CheckoutScreen = ({ route, navigation }) => {
   const [paymentUrl, setPaymentUrl] = useState(null);
   const [showPayment, setShowPayment] = useState(false);
   const [payerror, setPayError] = useState(null);
+  const [savedAddresses, setSavedAddresses] = useState([]);
+  const [showAddressPicker, setShowAddressPicker] = useState(false);
+
+  useEffect(() => {
+    if (user?.id) {
+      api.getAddresses(user.id).then((data) => {
+        if (data.success && data.addresses) {
+          setSavedAddresses(data.addresses);
+          const def = data.addresses.find((a) => a.is_default) || data.addresses[0];
+          if (def) applyAddress(def);
+        }
+      }).catch(() => {});
+    }
+  }, [user]);
+
+  const applyAddress = (addr) => {
+    setAddress(addr.address || "");
+    setPincode(addr.pincode || "");
+    setCity(addr.city || "");
+    setState(addr.state || "");
+  };
 
   const items = product ? [product] : cartItems || cart;
   const total = product ? Number(product.price) * Number(product.quantity || 1) : getCartTotal();
@@ -32,6 +53,9 @@ const CheckoutScreen = ({ route, navigation }) => {
       customer_id: user?.id || null,
       phone,
       address: addr,
+      pincode,
+      city,
+      state,
       total_amount: total,
       status: paymentId ? "Processing" : "Pending",
       payment_id: paymentId || null,
@@ -139,6 +163,31 @@ const CheckoutScreen = ({ route, navigation }) => {
   return (
     <ScrollView style={styles.container}>
       <Text style={styles.title}>Shipping Details</Text>
+
+      {savedAddresses.length > 0 && (
+        <>
+          <TouchableOpacity style={styles.savedAddrBtn} onPress={() => setShowAddressPicker(true)}>
+            <Text style={styles.savedAddrBtnText}>📌 Saved Addresses ({savedAddresses.length})</Text>
+          </TouchableOpacity>
+          <Modal visible={showAddressPicker} transparent animationType="slide" onRequestClose={() => setShowAddressPicker(false)}>
+            <View style={styles.addrModalOverlay}>
+              <View style={styles.addrModal}>
+                <Text style={styles.addrModalTitle}>Select Address</Text>
+                {savedAddresses.map((a) => (
+                  <TouchableOpacity key={a.id} style={styles.addrOption} onPress={() => { applyAddress(a); setShowAddressPicker(false); }}>
+                    <Text style={styles.addrLabel}>{a.label}</Text>
+                    <Text style={styles.addrText}>{a.address}, {a.city}, {a.state} - {a.pincode}</Text>
+                  </TouchableOpacity>
+                ))}
+                <TouchableOpacity style={styles.addrCancel} onPress={() => setShowAddressPicker(false)}>
+                  <Text style={{ color: "#ff6b00", fontWeight: "600" }}>Cancel</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </Modal>
+        </>
+      )}
+
       <TextInput style={styles.input} placeholder="Full Name" placeholderTextColor="#666" value={name} onChangeText={setName} />
       <TextInput style={styles.input} placeholder="Phone Number" placeholderTextColor="#666" value={phone} onChangeText={setPhone} keyboardType="phone-pad" />
       <TextInput style={styles.input} placeholder="Pincode" placeholderTextColor="#666" value={pincode} onChangeText={setPincode} keyboardType="number-pad" maxLength={6} />
@@ -179,6 +228,15 @@ const CheckoutScreen = ({ route, navigation }) => {
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: "#050505", padding: 16 },
   title: { color: "#fff", fontSize: 20, fontWeight: "700", marginBottom: 16 },
+  savedAddrBtn: { backgroundColor: "#0a0a0a", borderWidth: 1, borderColor: "#ff6b0033", borderRadius: 8, padding: 14, marginBottom: 10 },
+  savedAddrBtnText: { color: "#ff6b00", fontWeight: "600", fontSize: 14 },
+  addrModalOverlay: { flex: 1, justifyContent: "flex-end", backgroundColor: "rgba(0,0,0,0.7)" },
+  addrModal: { backgroundColor: "#111", borderTopLeftRadius: 16, borderTopRightRadius: 16, padding: 20, maxHeight: "70%" },
+  addrModalTitle: { color: "#fff", fontSize: 18, fontWeight: "700", marginBottom: 16 },
+  addrOption: { backgroundColor: "#0a0a0a", borderRadius: 8, padding: 14, marginBottom: 8, borderWidth: 1, borderColor: "#222" },
+  addrLabel: { color: "#ff6b00", fontSize: 13, fontWeight: "700", marginBottom: 2 },
+  addrText: { color: "#ccc", fontSize: 13 },
+  addrCancel: { alignItems: "center", padding: 12, marginTop: 4 },
   input: { backgroundColor: "#0a0a0a", borderWidth: 1, borderColor: "#222", borderRadius: 8, padding: 14, color: "#fff", marginBottom: 10, fontSize: 14 },
   textArea: { height: 80, textAlignVertical: "top" },
   summary: { backgroundColor: "#0a0a0a", borderRadius: 12, padding: 16, marginTop: 12, borderWidth: 1, borderColor: "#1a1a1a" },

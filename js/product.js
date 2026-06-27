@@ -269,7 +269,7 @@ document.getElementById("addCartBtn").addEventListener("click", () => {
 document.getElementById("buyBtn").addEventListener("click", () => {
   if (!currentProduct) return;
 
-  window.requireAuth(function (loggedIn) {
+    window.requireAuth(function (loggedIn) {
     if (!loggedIn) return;
 
     var qty = document.getElementById("quantity").value;
@@ -284,6 +284,7 @@ document.getElementById("buyBtn").addEventListener("click", () => {
       if (pEl && cust.phone) pEl.value = cust.phone;
     }
 
+    loadBuySavedAddresses();
     showBuyStep(1);
     document.getElementById("buyCheckoutOverlay").classList.add("active");
   });
@@ -296,13 +297,70 @@ document.getElementById("buyCheckoutOverlay").addEventListener("click", function
   if (e.target === this) this.classList.remove("active");
 });
 
+// ---- Saved Address for Buy Flow ----
+async function loadBuySavedAddresses() {
+  var cust = window.getCustomer ? window.getCustomer() : null;
+  if (!cust || !cust.id) return;
+  var token = window.getCustomerToken ? window.getCustomerToken() : "";
+  if (!token) return;
+  var api = window.PEHRAWA_API_BASE || "http://localhost:5000";
+  try {
+    var res = await fetch(api + "/api/customers/" + cust.id + "/addresses", {
+      headers: { "Authorization": "Bearer " + token }
+    });
+    var data = await res.json();
+    if (data.success && data.addresses && data.addresses.length > 0) {
+      var section = document.getElementById("buySavedAddressesSection");
+      var select = document.getElementById("buySavedAddressSelect");
+      if (section) section.style.display = "block";
+      if (select) {
+        select.innerHTML = '<option value="">-- Select a saved address --</option>';
+        data.addresses.forEach(function (addr) {
+          var opt = document.createElement("option");
+          opt.value = addr.id;
+          opt.textContent = addr.label + ": " + addr.address + (addr.city ? ", " + addr.city : "");
+          if (addr.is_default) opt.selected = true;
+          select.appendChild(opt);
+        });
+        var defaultAddr = data.addresses.find(function (a) { return a.is_default; }) || data.addresses[0];
+        if (defaultAddr) fillBuyAddressFields(defaultAddr);
+      }
+    }
+  } catch (e) {}
+}
+
+function fillBuyAddressFields(addr) {
+  if (document.getElementById("buyAddress")) document.getElementById("buyAddress").value = addr.address || "";
+  if (document.getElementById("buyPincode")) document.getElementById("buyPincode").value = addr.pincode || "";
+  if (document.getElementById("buyCity")) document.getElementById("buyCity").value = addr.city || "";
+  if (document.getElementById("buyState")) document.getElementById("buyState").value = addr.state || "";
+}
+
+window.selectBuySavedAddress = function (addressId) {
+  if (!addressId) return;
+  var cust = window.getCustomer ? window.getCustomer() : null;
+  if (!cust || !cust.id) return;
+  var token = window.getCustomerToken ? window.getCustomerToken() : "";
+  var api = window.PEHRAWA_API_BASE || "http://localhost:5000";
+  fetch(api + "/api/customers/" + cust.id + "/addresses", {
+    headers: { "Authorization": "Bearer " + token }
+  })
+  .then(function (r) { return r.json(); })
+  .then(function (data) {
+    if (data.success && data.addresses) {
+      var addr = data.addresses.find(function (a) { return a.id == addressId; });
+      if (addr) fillBuyAddressFields(addr);
+    }
+  });
+};
+
 // Step navigation
 function showBuyStep(step) {
   document.getElementById("buyStep1").style.display = step === 1 ? "block" : "none";
   document.getElementById("buyStep2").style.display = step === 2 ? "block" : "none";
   document.getElementById("buyStep3").style.display = step === 3 ? "block" : "none";
   if (step === 2) populateBuyConfirmation();
-  if (step === 3) 
+  if (step === 3) {}
 }
 
 // Step 1 — Address form submit
@@ -395,6 +453,9 @@ async function buyWithRazorpay() {
           customer_name: name,
           phone: phone,
           address: fullAddress,
+          pincode: pincode,
+          city: city,
+          state: state,
           total_amount: total,
           status: "Processing",
           payment_id: paymentId,

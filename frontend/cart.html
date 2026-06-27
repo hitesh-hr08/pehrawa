@@ -73,6 +73,12 @@
 <div class="cart-summary">
 <h2>Order Summary</h2>
 <div class="checkout-form">
+<div id="savedAddressesSection" style="display:none;margin-bottom:16px;">
+<label style="color:#ff6b00;font-weight:600;">Saved Addresses</label>
+<select id="savedAddressSelect" style="width:100%;padding:12px;background:#0b0b0b;border:1px solid #333;color:#fff;border-radius:6px;font-size:14px;margin-bottom:8px;" onchange="selectSavedAddress(this.value)">
+<option value="">-- Select a saved address --</option>
+</select>
+</div>
 <label>Full Name</label>
 <input type="text" id="customerName" placeholder="Your name">
 <label>Phone Number</label>

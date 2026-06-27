@@ -43,12 +43,28 @@ router.post("/", async (req, res) => {
       [customer_name, phone, address]
     );
 
+    const custId = customerResult.rows[0].id;
     const result = await pool.query(
       `INSERT INTO orders (customer_id, customer_name, phone, address, total_amount, status)
        VALUES ($1, $2, $3, $4, $5, $6)
        RETURNING *`,
-      [customerResult.rows[0].id, customer_name, phone, address, total_amount, status || "Pending"]
+      [custId, customer_name, phone, address, total_amount, status || "Pending"]
     );
+
+    // Auto-save address if customer is logged in
+    if (req.body.customer_id) {
+      const existing = await pool.query(
+        "SELECT id FROM addresses WHERE customer_id = $1 AND address = $2 AND city = $3",
+        [custId, address, req.body.city || ""]
+      );
+      if (existing.rows.length === 0) {
+        await pool.query(
+          `INSERT INTO addresses (customer_id, label, address, pincode, city, state)
+           VALUES ($1, 'Home', $2, $3, $4, $5)`,
+          [custId, address, req.body.pincode || "", req.body.city || "", req.body.state || ""]
+        );
+      }
+    }
 
     res.status(201).json({ success: true, order: result.rows[0] });
   } catch (err) {

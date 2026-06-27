@@ -703,6 +703,25 @@ var HOST = process.env.HOST || "0.0.0.0";
     console.error("Reviews migration error (non-fatal):", err.message);
   }
 
+  try {
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS addresses (
+        id SERIAL PRIMARY KEY,
+        customer_id INTEGER REFERENCES customers(id) ON DELETE CASCADE,
+        label VARCHAR(50) DEFAULT 'Home',
+        address TEXT NOT NULL,
+        pincode VARCHAR(10) DEFAULT '',
+        city VARCHAR(100) DEFAULT '',
+        state VARCHAR(100) DEFAULT '',
+        is_default BOOLEAN DEFAULT FALSE,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      )
+    `);
+    console.log("Database migration: addresses table created/verified");
+  } catch (err) {
+    console.error("Addresses migration error (non-fatal):", err.message);
+  }
+
   // Back-fill customer_id on old orders where customer_id is NULL
   try {
     await pool.query(`

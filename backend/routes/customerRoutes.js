@@ -363,4 +363,81 @@ router.patch("/:id/orders/:orderId/cancel", verifyCustomer, async (req, res) => 
   }
 });
 
+// ---- Address Routes ----
+router.get("/:id/addresses", verifyCustomer, async (req, res) => {
+  try {
+    if (Number(req.params.id) !== req.customer.id) {
+      return res.status(403).json({ success: false, message: "Access denied" });
+    }
+    const result = await pool.query(
+      "SELECT id, label, address, pincode, city, state, is_default FROM addresses WHERE customer_id = $1 ORDER BY is_default DESC, created_at DESC",
+      [req.params.id]
+    );
+    res.json({ success: true, addresses: result.rows });
+  } catch (err) {
+    res.status(500).json({ success: false, message: "Failed to load addresses" });
+  }
+});
+
+router.post("/:id/addresses", verifyCustomer, async (req, res) => {
+  try {
+    if (Number(req.params.id) !== req.customer.id) {
+      return res.status(403).json({ success: false, message: "Access denied" });
+    }
+    const { label, address, pincode, city, state, is_default } = req.body;
+    if (!address) {
+      return res.status(400).json({ success: false, message: "Address is required" });
+    }
+    if (is_default) {
+      await pool.query("UPDATE addresses SET is_default = FALSE WHERE customer_id = $1", [req.params.id]);
+    }
+    const result = await pool.query(
+      `INSERT INTO addresses (customer_id, label, address, pincode, city, state, is_default)
+       VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id, label, address, pincode, city, state, is_default`,
+      [req.params.id, label || "Home", address, pincode || "", city || "", state || "", is_default || false]
+    );
+    res.status(201).json({ success: true, address: result.rows[0] });
+  } catch (err) {
+    res.status(500).json({ success: false, message: "Failed to save address" });
+  }
+});
+
+router.put("/:id/addresses/:addressId", verifyCustomer, async (req, res) => {
+  try {
+    if (Number(req.params.id) !== req.customer.id) {
+      return res.status(403).json({ success: false, message: "Access denied" });
+    }
+    const { label, address, pincode, city, state, is_default } = req.body;
+    if (is_default) {
+      await pool.query("UPDATE addresses SET is_default = FALSE WHERE customer_id = $1", [req.params.id]);
+    }
+    const result = await pool.query(
+      `UPDATE addresses SET label = COALESCE($1, label), address = COALESCE($2, address),
+       pincode = COALESCE($3, pincode), city = COALESCE($4, city), state = COALESCE($5, state),
+       is_default = COALESCE($6, is_default) WHERE id = $7 AND customer_id = $8
+       RETURNING id, label, address, pincode, city, state, is_default`,
+      [label, address, pincode, city, state, is_default, req.params.addressId, req.params.id]
+    );
+    if (result.rows.length === 0) {
+      return res.status(404).json({ success: false, message: "Address not found" });
+    }
+    res.json({ success: true, address: result.rows[0] });
+  } catch (err) {
+    res.status(500).json({ success: false, message: "Failed to update address" });
+  }
+});
+
+router.delete("/:id/addresses/:addressId", verifyCustomer, async (req, res) => {
+  try {
+    if (Number(req.params.id) !== req.customer.id) {
+      return res.status(403).json({ success: false, message: "Access denied" });
+    }
+    await pool.query("DELETE FROM addresses WHERE id = $1 AND customer_id = $2", [req.params.addressId, req.params.id]);
+    res.json({ success: true, message: "Address deleted" });
+  } catch (err) {
+    res.status(500).json({ success: false, message: "Failed to delete address" });
+  }
+});
+// ---- End Address Routes ----
+
 module.exports = router;
