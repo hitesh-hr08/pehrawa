@@ -158,7 +158,7 @@ function getCategoryConfig(cat) {
 
 function renderProduct(product, images) {
   document.getElementById("productDetail").classList.add("visible");
-  document.title = `${product.name} | Pehrawa Menswear`;
+  document.title = `${product.name} | Pehrawa`;
   var allImages = images && images.length ? images.map(function(i){ return i.image_url; }) : [];
   if (product.image_url && allImages.indexOf(product.image_url) === -1) allImages.unshift(product.image_url);
   if (!allImages.length) allImages = ["../images/product1.png"];
@@ -297,6 +297,31 @@ document.getElementById("buyCheckoutOverlay").addEventListener("click", function
   if (e.target === this) this.classList.remove("active");
 });
 
+// ---- Save Address for Buy Flow ----
+async function saveBuyAddress() {
+  var cust = window.getCustomer ? window.getCustomer() : null;
+  if (!cust || !cust.id) return;
+  var token = window.getCustomerToken ? window.getCustomerToken() : "";
+  if (!token) return;
+  var addr = document.getElementById("buyAddress")?.value?.trim();
+  if (!addr) return;
+  var api = window.PEHRAWA_API_BASE || "http://localhost:5000";
+  try {
+    await fetch(api + "/api/customers/" + cust.id + "/addresses", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "Authorization": "Bearer " + token },
+      body: JSON.stringify({
+        label: "Home",
+        address: addr,
+        pincode: document.getElementById("buyPincode")?.value || "",
+        city: document.getElementById("buyCity")?.value || "",
+        state: document.getElementById("buyState")?.value || "",
+        is_default: true
+      })
+    });
+  } catch (e) {}
+}
+
 // ---- Saved Address for Buy Flow ----
 async function loadBuySavedAddresses() {
   var cust = window.getCustomer ? window.getCustomer() : null;
@@ -430,6 +455,12 @@ async function buyWithRazorpay() {
     btn.textContent = "Pay with Razorpay";
     return;
   }
+  // Save address first if checkbox is checked
+  var buySaveCb = document.getElementById("buySaveAddressCheck");
+  if (buySaveCb && buySaveCb.checked) {
+    await saveBuyAddress();
+  }
+
   await razorpayCheckout(total, async function (paymentId) {
     var name = document.getElementById("buyName").value;
     var phone = document.getElementById("buyPhone").value;

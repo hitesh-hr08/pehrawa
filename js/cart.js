@@ -72,6 +72,31 @@ window.selectSavedAddress = function (addressId) {
   });
 };
 
+// Save address via API
+async function saveCurrentAddress() {
+  var cust = window.getCustomer ? window.getCustomer() : null;
+  if (!cust || !cust.id) return;
+  var token = window.getCustomerToken ? window.getCustomerToken() : "";
+  if (!token) return;
+  var addr = document.getElementById("customerAddress")?.value?.trim();
+  if (!addr) return;
+  var api = window.PEHRAWA_API_BASE || "http://localhost:5000";
+  try {
+    await fetch(api + "/api/customers/" + cust.id + "/addresses", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "Authorization": "Bearer " + token },
+      body: JSON.stringify({
+        label: "Home",
+        address: addr,
+        pincode: document.getElementById("customerPincode")?.value || "",
+        city: document.getElementById("customerCity")?.value || "",
+        state: document.getElementById("customerState")?.value || "",
+        is_default: true
+      })
+    });
+  } catch (e) {}
+}
+
 // Load saved addresses on page load
 if (document.getElementById("savedAddressesSection")) {
   loadSavedAddresses();
@@ -324,28 +349,38 @@ async function placeOrderAfterPayment(paymentId) {
   }
 }
 
+function startRazorpayCheckout(btn) {
+  if (cart.length === 0) { alert("Cart is empty"); return; }
+  var name = document.getElementById("customerName").value.trim();
+  var phone = document.getElementById("customerPhone").value.trim();
+  var addr = document.getElementById("customerAddress").value.trim();
+  if (!name || !phone || !addr) { alert("Please fill name, phone, and address"); return; }
+  var total = cart.reduce(function (s, item) { return s + (Number(item.price) * Number(item.quantity || 1)); }, 0);
+  if (total < 1) { alert("Invalid total"); return; }
+  btn.disabled = true;
+  btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Opening...';
+
+  // Save address first if checkbox is checked
+  var saveCb = document.getElementById("saveAddressCheck");
+  if (saveCb && saveCb.checked) {
+    saveCurrentAddress();
+  }
+
+  razorpayCheckout(total, async function (paymentId) {
+    await placeOrderAfterPayment(paymentId);
+    btn.disabled = false;
+    btn.innerHTML = '<i class="fa-solid fa-credit-card"></i> PAY WITH RAZORPAY';
+  }, function () {
+    btn.disabled = false;
+    btn.innerHTML = '<i class="fa-solid fa-credit-card"></i> PAY WITH RAZORPAY';
+  });
+}
+
 // Razorpay checkout handler
 document.getElementById("razorpayCheckoutBtn").addEventListener("click", function () {
   window.requireAuth(function (loggedIn) {
     if (!loggedIn) return;
-    if (cart.length === 0) { alert("Cart is empty"); return; }
-    var name = document.getElementById("customerName").value.trim();
-    var phone = document.getElementById("customerPhone").value.trim();
-    var addr = document.getElementById("customerAddress").value.trim();
-    if (!name || !phone || !addr) { alert("Please fill name, phone, and address"); return; }
-    var total = cart.reduce(function (s, item) { return s + (Number(item.price) * Number(item.quantity || 1)); }, 0);
-    if (total < 1) { alert("Invalid total"); return; }
-    var btn = document.getElementById("razorpayCheckoutBtn");
-    btn.disabled = true;
-    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Opening...';
-    razorpayCheckout(total, async function (paymentId) {
-      await placeOrderAfterPayment(paymentId);
-      btn.disabled = false;
-      btn.innerHTML = '<i class="fa-solid fa-credit-card"></i> PAY WITH RAZORPAY';
-    }, function () {
-      btn.disabled = false;
-      btn.innerHTML = '<i class="fa-solid fa-credit-card"></i> PAY WITH RAZORPAY';
-    });
+    startRazorpayCheckout(document.getElementById("razorpayCheckoutBtn"));
   });
 });
 

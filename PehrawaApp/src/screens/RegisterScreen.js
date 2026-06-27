@@ -32,7 +32,7 @@ const RegisterScreen = ({ navigation }) => {
       </TouchableOpacity>
       <View style={styles.form}>
         <Text style={styles.title}>Create Account</Text>
-        <Text style={styles.subtitle}>Join Pehrawa Menswear</Text>
+        <Text style={styles.subtitle}>Join Pehrawa</Text>
         <TextInput style={styles.input} placeholder="Full Name" placeholderTextColor="#555" value={name} onChangeText={setName} />
         <TextInput style={styles.input} placeholder="Email" placeholderTextColor="#555" value={email} onChangeText={setEmail} autoCapitalize="none" keyboardType="email-address" />
         <TextInput style={styles.input} placeholder="Phone Number" placeholderTextColor="#555" value={phone} onChangeText={setPhone} keyboardType="phone-pad" maxLength={10} />

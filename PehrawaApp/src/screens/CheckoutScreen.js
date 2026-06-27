@@ -84,35 +84,41 @@ const CheckoutScreen = ({ route, navigation }) => {
       const key = keyData.key;
 
       const html = `
-        <html><body>
+        <html>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <body style="margin:0;background:transparent;">
         <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
         <script>
-          var options = {
-            key: "${key}",
-            amount: ${orderData.amount},
-            currency: "${orderData.currency}",
-            name: "Pehrawa Menswear",
-            order_id: "${orderData.order_id}",
-            handler: function(r) {
-              window.ReactNativeWebView.postMessage(JSON.stringify({
-                type: "success",
-                razorpay_payment_id: r.razorpay_payment_id,
-                razorpay_order_id: r.razorpay_order_id,
-                razorpay_signature: r.razorpay_signature
-              }));
-            },
-            modal: {
-              ondismiss: function() {
-                window.ReactNativeWebView.postMessage(JSON.stringify({ type: "cancelled" }));
-              }
-            },
-            theme: { color: "#ff6b00" }
-          };
-          var rzp = new Razorpay(options);
-          rzp.on("payment.failed", function(r) {
-            window.ReactNativeWebView.postMessage(JSON.stringify({ type: "failed", error: r.error.description }));
-          });
-          rzp.open();
+          try {
+            var options = {
+              key: "${key}",
+              amount: ${Number(orderData.amount)},
+              currency: "${orderData.currency}",
+              name: "Pehrawa",
+              order_id: "${orderData.order_id}",
+              handler: function(r) {
+                window.ReactNativeWebView.postMessage(JSON.stringify({
+                  type: "success",
+                  razorpay_payment_id: r.razorpay_payment_id,
+                  razorpay_order_id: r.razorpay_order_id,
+                  razorpay_signature: r.razorpay_signature
+                }));
+              },
+              modal: {
+                ondismiss: function() {
+                  window.ReactNativeWebView.postMessage(JSON.stringify({ type: "cancelled" }));
+                }
+              },
+              theme: { color: "#ff6b00" }
+            };
+            var rzp = new Razorpay(options);
+            rzp.on("payment.failed", function(r) {
+              window.ReactNativeWebView.postMessage(JSON.stringify({ type: "failed", error: (r.error && r.error.description) || "Payment failed" }));
+            });
+            rzp.open();
+          } catch(e) {
+            window.ReactNativeWebView.postMessage(JSON.stringify({ type: "failed", error: e.message }));
+          }
         </script>
         </body></html>
       `;
@@ -214,11 +220,22 @@ const CheckoutScreen = ({ route, navigation }) => {
       </TouchableOpacity>
 
       <Modal visible={showPayment} animationType="slide" onRequestClose={() => setShowPayment(false)}>
-        <View style={{ flex: 1, marginTop: 40 }}>
+        <View style={{ flex: 1, marginTop: 40, backgroundColor: "#050505" }}>
           <TouchableOpacity onPress={() => setShowPayment(false)} style={{ padding: 12 }}>
             <Text style={{ color: "#ff6b00", fontSize: 16 }}>✕ Close</Text>
           </TouchableOpacity>
-          <WebView source={{ html: paymentUrl }} onMessage={handleWebViewMessage} style={{ flex: 1 }} />
+          {paymentUrl && (
+            <WebView
+              source={{ html: paymentUrl }}
+              onMessage={handleWebViewMessage}
+              style={{ flex: 1, backgroundColor: "transparent" }}
+              originWhitelist={["*"]}
+              javaScriptEnabled={true}
+              domStorageEnabled={true}
+              startInLoadingState
+              onError={(e) => { showToast("WebView error: " + e.nativeEvent.description); setShowPayment(false); }}
+            />
+          )}
         </View>
       </Modal>
     </ScrollView>

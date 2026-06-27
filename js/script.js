@@ -182,7 +182,7 @@ whatsappButtons.forEach((button) => {
       card.querySelector(".price")?.innerText || "₹0";
 
     const message =
-`Hello Pehrawa Menswear,
+`Hello Pehrawa,
 
 I want to order:
 
@@ -291,7 +291,7 @@ if (copyright) {
     new Date().getFullYear();
 
   copyright.innerHTML =
-    `© ${year} Pehrawa Menswear. All Rights Reserved.`;
+    `© ${year} Pehrawa. All Rights Reserved.`;
 
 }
 
@@ -307,7 +307,7 @@ if (copyright) {
 // MongoDB Integration
 
 console.log(
-  "Pehrawa Menswear Loaded Successfully 🚀"
+  "Pehrawa Loaded Successfully 🚀"
 );
 
 // ===============================

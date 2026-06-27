@@ -22,10 +22,10 @@ const categories = [
 ];
 
 const benefits = [
-  { icon: "🏆", title: "PREMIUM QUALITY", desc: "Finest Fabrics" },
-  { icon: "📦", title: "SECURE PACKAGING", desc: "Packed with care" },
-  { icon: "🚚", title: "FAST DELIVERY", desc: "Pan India" },
-  { icon: "🔄", title: "EASY RETURNS", desc: "Hassle Free" },
+  { icon: "✓", title: "PREMIUM QUALITY", desc: "Finest Fabrics" },
+  { icon: "✓", title: "SECURE PACKAGING", desc: "Packed with care" },
+  { icon: "✓", title: "FAST DELIVERY", desc: "Pan India" },
+  { icon: "✓", title: "EASY RETURNS", desc: "Hassle Free" },
 ];
 
 const HomeScreen = () => {
@@ -124,11 +124,14 @@ const HomeScreen = () => {
 
   const BenefitsSection = () => (
     <View style={styles.benefitsSection}>
+      <Text style={styles.sectionTitle}>WHY PEHRAWA</Text>
       <View style={styles.benefitsGrid}>
         {benefits.map((b, i) => (
           <View key={i} style={styles.benefitCard}>
-            <Text style={styles.benefitIcon}>{b.icon}</Text>
-            <View>
+            <View style={styles.benefitIconWrap}>
+              <Text style={styles.benefitIcon}>{b.icon}</Text>
+            </View>
+            <View style={styles.benefitTextWrap}>
               <Text style={styles.benefitTitle}>{b.title}</Text>
               <Text style={styles.benefitDesc}>{b.desc}</Text>
             </View>
@@ -149,6 +152,7 @@ const HomeScreen = () => {
             <TouchableOpacity style={styles.socialIcon}><Text style={styles.socialIconText}>ig</Text></TouchableOpacity>
             <TouchableOpacity style={styles.socialIcon}><Text style={styles.socialIconText}>yt</Text></TouchableOpacity>
           </View>
+          <Text style={styles.footerRights}>© 2026 Pehrawa. All Rights Reserved.</Text>
         </View>
         <View style={styles.footerCol}>
           <Text style={styles.footerHeading}>SHOP</Text>
@@ -170,9 +174,6 @@ const HomeScreen = () => {
           <Text style={styles.footerContact}><Text style={styles.footerContactLabel}>✉️ </Text>pehrawamenswear@gmail.com</Text>
           <Text style={styles.footerContact}><Text style={styles.footerContactLabel}>📍 </Text>Punjab, India</Text>
         </View>
-      </View>
-      <View style={styles.copyright}>
-        <Text style={styles.copyrightText}>© 2026 Pehrawa Menswear. All Rights Reserved.</Text>
       </View>
     </View>
   );
@@ -291,14 +292,24 @@ const styles = StyleSheet.create({
   catDesc: { color: "#888", fontSize: 11, marginTop: 4 },
 
   benefitsSection: {
-    paddingVertical: 24, borderTopWidth: 1, borderTopColor: "#121212",
+    paddingVertical: 30, paddingHorizontal: 16,
+    borderTopWidth: 1, borderTopColor: "#121212",
     borderBottomWidth: 1, borderBottomColor: "#121212",
   },
-  benefitsGrid: { paddingHorizontal: 16, gap: 16 },
-  benefitCard: { flexDirection: "row", alignItems: "center", gap: 14 },
-  benefitIcon: { fontSize: 28, width: 40, textAlign: "center" },
-  benefitTitle: { color: "#fff", fontSize: 13, fontWeight: "600", marginBottom: 2 },
-  benefitDesc: { color: "#888", fontSize: 12 },
+  benefitsGrid: { gap: 14 },
+  benefitCard: {
+    flexDirection: "row", alignItems: "center", gap: 14,
+    backgroundColor: "#0a0a0a", borderRadius: 8, padding: 14,
+    borderWidth: 1, borderColor: "#181818",
+  },
+  benefitIconWrap: {
+    width: 40, height: 40, borderRadius: 20, backgroundColor: "#ff6b0015",
+    alignItems: "center", justifyContent: "center",
+  },
+  benefitIcon: { fontSize: 16, color: "#ff6b00", fontWeight: "700" },
+  benefitTextWrap: { flex: 1 },
+  benefitTitle: { color: "#fff", fontSize: 12, fontWeight: "700", letterSpacing: 1, marginBottom: 2 },
+  benefitDesc: { color: "#777", fontSize: 12 },
 
   sectionHeader: {
     flexDirection: "row", justifyContent: "space-between", alignItems: "center",
@@ -321,11 +332,7 @@ const styles = StyleSheet.create({
   footerLink: { color: "#999", fontSize: 13, marginBottom: 8 },
   footerContact: { color: "#aaa", fontSize: 13, marginBottom: 6 },
   footerContactLabel: { fontSize: 12 },
-  copyright: {
-    alignItems: "center", paddingVertical: 16, marginTop: 24,
-    borderTopWidth: 1, borderTopColor: "rgba(255,255,255,0.08)",
-  },
-  copyrightText: { color: "#777", fontSize: 11 },
+  footerRights: { color: "#555", fontSize: 11, marginTop: 16 },
 });
 
 export default HomeScreen;

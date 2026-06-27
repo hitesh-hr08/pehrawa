@@ -23,7 +23,7 @@ async function razorpayCheckout(amount, onSuccess, onError) {
       key: keyData.key,
       amount: orderData.amount,
       currency: orderData.currency || "INR",
-      name: "Pehrawa Menswear",
+      name: "Pehrawa",
       description: "Order Payment",
       order_id: orderData.order_id,
       handler: async function (response) {

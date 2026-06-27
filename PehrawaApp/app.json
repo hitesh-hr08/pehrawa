@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "Pehrawa Menswear",
-    "slug": "pehrawa-menswear",
+    "name": "Pehrawa",
+    "slug": "pehrawa",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -9,11 +9,11 @@
     "backgroundColor": "#050505",
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.pehrawa.menswear"
+      "bundleIdentifier": "com.pehrawa.app"
     },
     "plugins": [],
     "android": {
-      "package": "com.pehrawa.menswear",
+      "package": "com.pehrawa.app",
       "adaptiveIcon": {
         "foregroundImage": "./assets/android-icon-foreground.png",
         "backgroundImage": "./assets/android-icon-background.png",
