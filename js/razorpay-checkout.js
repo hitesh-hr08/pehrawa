@@ -64,7 +64,7 @@ async function razorpayCheckout(amount, onSuccess, onError) {
     });
     rzp.open();
   } catch (err) {
-    if (typeof showToast === "function") showToast("Payment error. Please try UPI.");
+    if (typeof showToast === "function") showToast("Payment error. Please try again.");
     if (onError) onError(err);
   }
 }

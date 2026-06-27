@@ -100,48 +100,16 @@
 <span>Total</span>
 <strong>&#8377;<span id="cartTotal">0.00</span></strong>
 </div>
-<button class="checkout-btn" id="checkoutBtn" style="margin-bottom:8px;"><i class="fa-solid fa-bag-shopping"></i> PLACE ORDER</button>
 <button class="checkout-btn" id="razorpayCheckoutBtn" style="background:#ff6b00;margin-bottom:8px;"><i class="fa-solid fa-credit-card"></i> PAY WITH RAZORPAY</button>
-<button class="checkout-btn" id="upiCheckoutBtn" style="background:#10b981;margin-bottom:8px;"><i class="fa-solid fa-qrcode"></i> PAY VIA UPI</button>
 <a href="shop.html" class="continue-shopping">Continue Shopping</a>
 </div>
 </div>
 </div>
 </section>
 
-<!-- UPI PAYMENT MODAL -->
-<div class="checkout-overlay" id="upiPaymentOverlay">
-  <div class="checkout-modal" style="max-width:420px;">
-    <span class="checkout-close" id="upiPaymentClose">&times;</span>
-    <h3>Pay via UPI</h3>
-    <p style="color:#ff6b00;font-size:14px;text-align:center;font-weight:600;margin:4px 0 12px;">UPI ID: hrandhan-1@okicici</p>
-    <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;">
-      <button class="upi-app-btn" data-upi-app="gpay" style="display:flex;flex-direction:column;align-items:center;gap:6px;padding:14px 20px;background:#0d0d0d;border:1px solid #222;border-radius:12px;cursor:pointer;min-width:90px;transition:.2s;" onmouseover="this.style.borderColor='#4285F4'" onmouseout="this.style.borderColor='#222'">
-        <svg viewBox="0 0 40 40" width="36" height="36"><rect width="40" height="40" rx="8" fill="#4285F4"/><text x="20" y="27" text-anchor="middle" fill="white" font-size="22" font-weight="700" font-family="sans-serif">G</text></svg>
-        <span style="font-size:11px;color:#aaa;">GPay</span>
-      </button>
-      <button class="upi-app-btn" data-upi-app="phonepay" style="display:flex;flex-direction:column;align-items:center;gap:6px;padding:14px 20px;background:#0d0d0d;border:1px solid #222;border-radius:12px;cursor:pointer;min-width:90px;transition:.2s;" onmouseover="this.style.borderColor='#5F259F'" onmouseout="this.style.borderColor='#222'">
-        <svg viewBox="0 0 40 40" width="36" height="36"><rect width="40" height="40" rx="8" fill="#5F259F"/><text x="20" y="27" text-anchor="middle" fill="white" font-size="22" font-weight="700" font-family="sans-serif">P</text></svg>
-        <span style="font-size:11px;color:#aaa;">PhonePe</span>
-      </button>
-      <button class="upi-app-btn" data-upi-app="paytm" style="display:flex;flex-direction:column;align-items:center;gap:6px;padding:14px 20px;background:#0d0d0d;border:1px solid #222;border-radius:12px;cursor:pointer;min-width:90px;transition:.2s;" onmouseover="this.style.borderColor='#00BAF2'" onmouseout="this.style.borderColor='#222'">
-        <svg viewBox="0 0 40 40" width="36" height="36"><rect width="40" height="40" rx="8" fill="#00BAF2"/><text x="20" y="27" text-anchor="middle" fill="white" font-size="22" font-weight="700" font-family="sans-serif">P</text></svg>
-        <span style="font-size:11px;color:#aaa;">Paytm</span>
-      </button>
-    </div>
-    <div id="cartUpiQrWrap" style="text-align:center;margin-top:10px;display:none;">
-      <img id="cartUpiQr" src="" alt="UPI QR" style="width:140px;height:140px;border-radius:8px;background:#fff;padding:6px;">
-      <p style="color:#555;font-size:11px;margin-top:4px;">Scan QR from another phone</p>
-    </div>
-    <p style="color:#666;font-size:12px;text-align:center;margin:10px 0 8px;">After paying, enter Transaction ID below</p>
-    <input type="text" id="cartUpiTxnId" placeholder="Enter UPI Transaction ID (required)" style="width:100%;padding:12px;background:#0b0b0b;border:1px solid #333;color:#fff;border-radius:6px;font-size:14px;outline:none;box-sizing:border-box;">
-    <button class="checkout-submit" id="cartUpiConfirm" style="margin-top:8px;">I've Paid — Place Order</button>
-  </div>
-</div>
-
 <footer>
 <div class="container foot">
-<div><img src="../images/logo.png" alt="Pehrawa Logo"><p>HOME OF HM — Premium printed and custom printed t-shirts for men who love to stand out.</p><div class="socials"><a href="#"><i class="fab fa-facebook-f"></i></a><a href="#"><i class="fab fa-instagram"></i></a><a href="#"><i class="fab fa-youtube"></i></a></div></div>
+<div><img src="../images/logo.png" alt="Pehrawa Logo"><p>HOME OF HM ï¿½ Premium printed and custom printed t-shirts for men who love to stand out.</p><div class="socials"><a href="#"><i class="fab fa-facebook-f"></i></a><a href="#"><i class="fab fa-instagram"></i></a><a href="#"><i class="fab fa-youtube"></i></a></div></div>
 <div><h4>SHOP</h4><a href="shop.html">All Products</a><a href="shop.html">T-Shirts</a><a href="collections.html">Collections</a></div>
 <div><h4>HELP</h4><a href="size-guide.html">Size Guide</a><a href="shipping-policy.html">Shipping Policy</a><a href="track-order.html">Track Order</a></div>
 <div><h4>CONTACT</h4><p><i class="fa-solid fa-phone"></i> +91 9855707708</p><p><i class="fa-solid fa-envelope"></i> pehrawamenswear@gmail.com</p><p><i class="fa-solid fa-location-dot"></i> Punjab, India</p></div>
