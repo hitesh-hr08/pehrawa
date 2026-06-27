@@ -146,22 +146,13 @@
       </form>
     </div>
 
-    <!-- Step 2: Confirmation -->
+    <!-- Step 2: Confirmation + Payment -->
     <div class="buy-step" id="buyStep2" style="display:none">
       <h3>Confirm Order</h3>
       <div class="buy-summary"></div>
       <div class="checkout-row" style="margin-top:16px;gap:10px;">
         <button class="checkout-submit" style="background:#333;color:#fff;flex:1;" onclick="showBuyStep(1)">Back</button>
-        <button class="checkout-submit" style="flex:1;" onclick="showBuyStep(3)">Proceed to Payment</button>
-      </div>
-    </div>
-
-    <!-- Step 3: Payment -->
-    <div class="buy-step" id="buyStep3" style="display:none">
-      <h3>Payment</h3>
-      <div style="padding:12px 0;">
-        <p style="color:#fff;font-size:14px;text-align:center;margin:8px 0;font-weight:600;">Secure Payment via Razorpay</p>
-        <button class="checkout-submit" onclick="buyWithRazorpay()" id="razorpayBuyBtn" style="font-size:16px;padding:16px;">Pay with Razorpay</button>
+        <button class="checkout-submit" style="flex:1;" onclick="buyWithRazorpay()" id="razorpayBuyBtn">Pay with Razorpay</button>
       </div>
     </div>
   </div>

@@ -262,11 +262,13 @@ async function checkoutWithPayment() {
   checkoutBtn.innerHTML = '<i class="fa-solid fa-bag-shopping"></i> BUY NOW';
 }
 
-checkoutBtn.addEventListener("click", function () {
-  window.requireAuth(function (loggedIn) {
-    if (loggedIn) checkoutWithPayment();
+if (checkoutBtn) {
+  checkoutBtn.addEventListener("click", function () {
+    window.requireAuth(function (loggedIn) {
+      if (loggedIn) checkoutWithPayment();
+    });
   });
-});
+}
 
 async function placeOrderAfterPayment(paymentId) {
   var customerName = document.getElementById("customerName").value.trim();

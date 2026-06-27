@@ -358,9 +358,7 @@ window.selectBuySavedAddress = function (addressId) {
 function showBuyStep(step) {
   document.getElementById("buyStep1").style.display = step === 1 ? "block" : "none";
   document.getElementById("buyStep2").style.display = step === 2 ? "block" : "none";
-  document.getElementById("buyStep3").style.display = step === 3 ? "block" : "none";
   if (step === 2) populateBuyConfirmation();
-  if (step === 3) {}
 }
 
 // Step 1 — Address form submit
