@@ -4,6 +4,7 @@ backend/.env
 pehrawa.db
 *.log
 backend/uploads/
+PehrawaApp/node_modules/
 backend/build-theme-zip.js
 backend/check-scopes.js
 backend/check-update.js
