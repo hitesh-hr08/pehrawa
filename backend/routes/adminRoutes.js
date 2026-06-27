@@ -8,13 +8,22 @@ router.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    const result = await pool.query("SELECT * FROM admins WHERE email = $1", [email]);
+    let result = await pool.query("SELECT * FROM admins WHERE email = $1", [email]);
 
     if (result.rows.length === 0) {
-      return res.status(401).json({
-        success: false,
-        message: "Invalid email or password"
-      });
+      if (process.env.ADMIN_EMAIL && email === process.env.ADMIN_EMAIL) {
+        const hash = await bcrypt.hash(password, 10);
+        await pool.query(
+          "INSERT INTO admins (name, email, password) VALUES ($1, $2, $3)",
+          [process.env.ADMIN_NAME || "Admin", email, hash]
+        );
+        result = await pool.query("SELECT * FROM admins WHERE email = $1", [email]);
+      } else {
+        return res.status(401).json({
+          success: false,
+          message: "Invalid email or password"
+        });
+      }
     }
 
     const admin = result.rows[0];
