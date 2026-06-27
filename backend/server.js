@@ -592,6 +592,22 @@ app.get("/api/products/:id/reviews", async (req, res) => {
   }
 });
 
+app.post("/api/admin/seed", async (req, res) => {
+  try {
+    const { email, password, name } = req.body;
+    if (!email || !password) return res.status(400).json({ success: false, message: "Email and password required" });
+    const bcrypt = require("bcryptjs");
+    const hash = await bcrypt.hash(password, 10);
+    await pool.query(
+      "INSERT INTO admins (name, email, password) VALUES ($1, $2, $3) ON CONFLICT (email) DO UPDATE SET password = $3, name = $1",
+      [name || "Admin", email, hash]
+    );
+    res.json({ success: true, message: "Admin created/updated" });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
+
 var PORT = process.env.PORT || 5000;
 var HOST = process.env.HOST || "0.0.0.0";
 
