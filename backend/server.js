@@ -498,6 +498,29 @@ app.get("/api", (req, res) => {
   res.json({ success: true, message: "Pehrawa API Running" });
 });
 
+app.get("/api/admin/check", async (req, res) => {
+  try {
+    const r = await pool.query("SELECT COUNT(*)::int AS cnt FROM admins");
+    res.json({ adminCount: r.rows[0].cnt, adminEmail: process.env.ADMIN_EMAIL || "not_set" });
+  } catch (e) {
+    res.json({ error: e.message });
+  }
+});
+
+app.get("/api/admin/seed", async (req, res) => {
+  try {
+    const bcrypt = require("bcryptjs");
+    const hash = await bcrypt.hash(process.env.ADMIN_PASSWORD || "admin123", 10);
+    await pool.query(
+      "INSERT INTO admins (name, email, password) VALUES ($1, $2, $3) ON CONFLICT (email) DO UPDATE SET password = $3, name = $1",
+      [process.env.ADMIN_NAME || "Admin", process.env.ADMIN_EMAIL || "admin@pehrawa.in", hash]
+    );
+    res.json({ success: true, message: "Admin seeded" });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
+
 app.use((err, req, res, next) => {
   console.error("SERVER ERROR:", err);
   res.status(500).json({ success: false, message: "Internal server error" });
