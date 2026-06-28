@@ -1012,27 +1012,17 @@ var HOST = process.env.HOST || "0.0.0.0";
     console.error("Coupons migration error (non-fatal):", err.message);
   }
 
-  // Fix product prices for all T-Shirt products
+  // Force correct prices on all T-Shirt products
   try {
-    await pool.query(`
-      UPDATE products SET price = CASE
-        WHEN name ILIKE '%black%printed%tees%' THEN 799
-        WHEN name ILIKE '%fearless%oversized%tee%' THEN 799
-        WHEN name ILIKE '%shadow%anime%tee%' THEN 749
-        WHEN name ILIKE '%abstract%vision%tee%' THEN 749
-        WHEN name ILIKE '%minimal%logo%tee%' THEN 699
-        WHEN name ILIKE '%street%graphic%tee%' THEN 849
-        WHEN name ILIKE '%urban%anime%tee%' THEN 799
-        ELSE price
-      END,
-      original_price = CASE
-        WHEN name ILIKE '%urban%anime%tee%' THEN 999
-        ELSE NULL
-      END
-      WHERE category = 'T-Shirts'
-    `);
+    await pool.query(`UPDATE products SET price = 799, original_price = NULL WHERE name = 'Black Printed Tees'`);
+    await pool.query(`UPDATE products SET price = 799, original_price = NULL WHERE name = 'Fearless Oversized Tee'`);
+    await pool.query(`UPDATE products SET price = 749, original_price = NULL WHERE name = 'Shadow Anime Tee'`);
+    await pool.query(`UPDATE products SET price = 749, original_price = NULL WHERE name = 'Abstract Vision Tee'`);
+    await pool.query(`UPDATE products SET price = 699, original_price = NULL WHERE name = 'Minimal Logo Tee'`);
+    await pool.query(`UPDATE products SET price = 849, original_price = NULL WHERE name = 'Street Graphic Tee'`);
+    await pool.query(`UPDATE products SET price = 799, original_price = 999 WHERE name = 'Urban Anime Tee'`);
     var c = await pool.query('SELECT COUNT(*) as cnt FROM products WHERE category = $1', ['T-Shirts']);
-    console.log("Database migration: product prices fixed for", c.rows[0].cnt, "T-Shirt products");
+    console.log("Database migration: prices forced for", c.rows[0].cnt, "T-Shirt products");
   } catch (err) {
     console.error("Price fix migration error (non-fatal):", err.message);
   }
@@ -1048,6 +1038,17 @@ var HOST = process.env.HOST || "0.0.0.0";
   } catch (err) {
     console.error("Black Printed Tees migration error (non-fatal):", err.message);
   }
+
+  // Run price fix again after server starts to override any startup overrides
+  setTimeout(async function() {
+    try {
+      await pool.query(`UPDATE products SET price = 799, original_price = NULL WHERE name = 'Fearless Oversized Tee'`);
+      await pool.query(`UPDATE products SET price = 749, original_price = NULL WHERE name = 'Shadow Anime Tee'`);
+      console.log("Delayed price fix applied");
+    } catch (e) {
+      console.error("Delayed price fix error:", e.message);
+    }
+  }, 5000);
 })();
 
 app.listen(PORT, HOST, function () {
