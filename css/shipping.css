@@ -10,7 +10,7 @@ background:#050505;
 
 .policy-hero h1{
 font-size:60px;
-color:#ff7a00;
+color:#ffffff;
 margin-bottom:15px;
 }
 
@@ -31,13 +31,13 @@ transition:.3s;
 }
 
 .policy-card:hover{
-border-color:#ff7a00;
+border-color:#ffffff;
 transform:translateY(-5px);
 }
 
 .policy-card h2{
 margin-bottom:15px;
-color:#ff7a00;
+color:#ffffff;
 font-size:24px;
 }
 

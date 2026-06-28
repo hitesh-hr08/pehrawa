@@ -6,7 +6,7 @@ background:#050505;
 
 .track-hero h1{
 font-size:60px;
-color:#ff7a00;
+color:#ffffff;
 margin-bottom:15px;
 }
 
@@ -48,12 +48,12 @@ outline:none;
 }
 
 .track-box input:focus{
-border-color:#ff7a00;
+border-color:#ffffff;
 }
 
 .track-btn{
 padding:15px;
-background:#ff7a00;
+background:#ffffff;
 border:none;
 color:#fff;
 font-weight:600;
@@ -62,15 +62,15 @@ transition:.3s;
 }
 
 .track-btn:hover{
-background:#ff9333;
+background:#e0e0e0;
 }
 
 .track-result { margin-top: 30px; }
-.track-loading { text-align: center; padding: 30px; color: #ff7a00; font-size: 18px; }
+.track-loading { text-align: center; padding: 30px; color: #ffffff; font-size: 18px; }
 .track-error { text-align: center; padding: 20px; color: #ff4444; background: #1a0000; border: 1px solid #ff4444; border-radius: 8px; }
 .track-card { background: #111; border: 1px solid #333; border-radius: 12px; padding: 30px; }
 .track-status-bar { text-align: center; margin-bottom: 20px; }
-.track-status-badge { display: inline-block; padding: 8px 24px; border-radius: 20px; font-weight: 600; font-size: 14px; text-transform: uppercase; background: #ff7a00; color: #000; }
+.track-status-badge { display: inline-block; padding: 8px 24px; border-radius: 20px; font-weight: 600; font-size: 14px; text-transform: uppercase; background: #ffffff; color: #000; }
 .status-pending .track-status-badge { background: #f59e0b; }
 .status-processing .track-status-badge { background: #3b82f6; }
 .status-shipped .track-status-badge { background: #8b5cf6; }
@@ -85,12 +85,12 @@ background:#ff9333;
 .track-timeline::before { content: ""; position: absolute; top: 14px; left: 10%; right: 10%; height: 3px; background: #333; z-index: 0; }
 .tl-step { display: flex; flex-direction: column; align-items: center; position: relative; z-index: 1; }
 .tl-step span { display: flex; align-items: center; justify-content: center; width: 30px; height: 30px; border-radius: 50%; background: #222; border: 3px solid #333; color: #666; font-size: 0; margin-bottom: 8px; }
-.tl-step.completed span { background: #ff7a00; border-color: #ff7a00; }
+.tl-step.completed span { background: #ffffff; border-color: #ffffff; }
 .tl-step.completed span::after { content: "\\2713"; font-size: 14px; color: #000; }
 .tl-step span + span { font-size: 12px; color: #666; }
 .tl-step.completed::after { content: ""; }
 .track-help { text-align: center; margin-top: 20px; padding-top: 20px; border-top: 1px solid #333; color: #888; }
-.track-help a { color: #ff7a00; text-decoration: none; }
+.track-help a { color: #ffffff; text-decoration: none; }
 
 @media(max-width:768px){
 

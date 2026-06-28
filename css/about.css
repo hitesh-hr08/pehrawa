@@ -6,7 +6,7 @@ background:#050505;
 
 .about-hero h1{
 font-size:60px;
-color:#ff7a00;
+color:#ffffff;
 margin-bottom:15px;
 }
 
@@ -50,7 +50,7 @@ justify-content:center;
 
 .story-image i{
 font-size:120px;
-color:#ff7a00;
+color:#ffffff;
 }
 
 .why-pehrawa{
@@ -74,12 +74,12 @@ transition:.3s;
 
 .why-card:hover{
 transform:translateY(-8px);
-border-color:#ff7a00;
+border-color:#ffffff;
 }
 
 .why-card i{
 font-size:40px;
-color:#ff7a00;
+color:#ffffff;
 margin-bottom:15px;
 }
 

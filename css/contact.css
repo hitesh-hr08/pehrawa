@@ -11,7 +11,7 @@ background:#050505;
 .contact-hero h1{
 font-size:60px;
 font-weight:800;
-color:#ff7a00;
+color:#ffffff;
 margin-bottom:15px;
 }
 
@@ -52,7 +52,7 @@ border:1px solid rgba(255,255,255,.08);
 
 .info-box i{
 font-size:24px;
-color:#ff7a00;
+color:#ffffff;
 margin-top:4px;
 }
 
@@ -97,12 +97,12 @@ outline:none;
 
 .contact-form-box input:focus,
 .contact-form-box textarea:focus{
-border-color:#ff7a00;
+border-color:#ffffff;
 }
 
 .contact-btn{
 padding:15px;
-background:#ff7a00;
+background:#ffffff;
 border:none;
 color:#fff;
 font-size:15px;
@@ -112,7 +112,7 @@ transition:.3s;
 }
 
 .contact-btn:hover{
-background:#ff9333;
+background:#e0e0e0;
 }
 
 /* CTA */
@@ -139,7 +139,7 @@ margin-bottom:30px;
 /* ACTIVE NAV LINK */
 
 .nav-links a.active{
-color:#ff7a00;
+color:#ffffff;
 }
 
 /* RESPONSIVE */

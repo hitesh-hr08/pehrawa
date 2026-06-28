@@ -6,7 +6,7 @@ background:#050505;
 
 .wishlist-hero h1{
 font-size:60px;
-color:#ff7a00;
+color:#ffffff;
 margin-bottom:15px;
 }
 
@@ -33,7 +33,7 @@ margin-bottom:8px;
 }
 
 .wishlist-item p{
-color:#ff7a00;
+color:#ffffff;
 font-weight:600;
 }
 
@@ -43,7 +43,7 @@ gap:10px;
 }
 
 .move-btn{
-background:#ff7a00;
+background:#ffffff;
 border:none;
 padding:10px 15px;
 color:#fff;
