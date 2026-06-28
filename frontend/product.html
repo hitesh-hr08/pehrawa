@@ -121,27 +121,18 @@
         <label style="color:#ff6b00;font-weight:600;font-size:13px;margin-bottom:8px;display:block;">SAVED ADDRESSES</label>
         <div id="buySavedAddressList"></div>
         <button id="buyToggleNewAddrBtn" type="button" style="width:100%;padding:10px;margin-bottom:12px;background:transparent;border:2px dashed #333;border-radius:8px;color:#ff6b00;font-weight:600;cursor:pointer;font-size:13px;transition:.3s;" onmouseover="this.style.borderColor='#ff6b00'" onmouseout="this.style.borderColor='#333'"><i class="fa-solid fa-plus"></i> Add New Address</button>
+        <button id="buySavedAddrContinue" type="button" class="checkout-submit" style="display:none;">Deliver Here</button>
       </div>
-      <div id="buyNewAddressForm">
+      <div id="buyNewAddressForm" style="display:none;">
         <form id="buyAddressForm">
           <input type="text" id="buyName" placeholder="Full Name" required>
           <input type="tel" id="buyPhone" placeholder="Phone Number" required>
           <textarea id="buyAddress" placeholder="Full Address (House, Street, Area)" required></textarea>
           <input type="text" id="buyPincode" placeholder="Pincode" required oninput="window.fetchPincode && window.fetchPincode(this.value, 'buy')">
+          <input type="text" id="buyCity" placeholder="City" required>
           <div class="checkout-row">
-            <input type="text" id="buyCity" placeholder="City" required>
             <input type="text" id="buyDistrict" placeholder="District (auto-fetched)" readonly>
             <input type="text" id="buyState" placeholder="State (auto-fetched)" readonly>
-          </div>
-          <div class="checkout-row">
-            <select id="buySize">
-              <option value="S">S</option>
-              <option value="M">M</option>
-              <option value="L">L</option>
-              <option value="XL">XL</option>
-              <option value="XXL">XXL</option>
-            </select>
-            <input type="number" id="buyQty" value="1" min="1">
           </div>
           <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
             <input type="checkbox" id="buySaveAddressCheck" checked style="accent-color:#ff6b00;width:18px;height:18px;">
@@ -151,6 +142,10 @@
         </form>
       </div>
     </div>
+
+    <!-- Hidden fields for size/qty (set from product page) -->
+    <input type="hidden" id="buySize" value="M">
+    <input type="hidden" id="buyQty" value="1">
 
     <!-- Step 2: Confirmation -->
     <div class="buy-step" id="buyStep2" style="display:none">

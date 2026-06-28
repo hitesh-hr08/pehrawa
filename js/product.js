@@ -356,15 +356,19 @@ async function loadBuySavedAddresses() {
 function renderBuyAddressCards() {
   var list = document.getElementById("buySavedAddressList");
   var section = document.getElementById("buySavedAddressesSection");
+  var form = document.getElementById("buyNewAddressForm");
+  var contBtn = document.getElementById("buySavedAddrContinue");
   if (!list || !section) return;
   if (buySavedAddresses.length === 0) {
     section.style.display = "none";
+    if (form) form.style.display = "block";
     return;
   }
   section.style.display = "block";
+  if (form) form.style.display = "none";
   var html = "";
-  buySavedAddresses.forEach(function(addr, idx) {
-    var isSelected = buySelectedAddressId === addr.id || (!buySelectedAddressId && addr.is_default);
+  buySavedAddresses.forEach(function(addr) {
+    var isSelected = buySelectedAddressId == addr.id || (!buySelectedAddressId && addr.is_default);
     var label = addr.label || "Home";
     html += '<div class="addr-card' + (isSelected ? ' addr-selected' : '') + '" data-id="' + addr.id + '" onclick="selectBuyAddrCard(' + addr.id + ')">' +
       '<div class="addr-radio"><span class="addr-radio-dot' + (isSelected ? ' active' : '') + '"></span></div>' +
@@ -381,27 +385,19 @@ function renderBuyAddressCards() {
   var defaultAddr = buySavedAddresses.find(function(a) { return a.is_default; }) || buySavedAddresses[0];
   if (defaultAddr && !buySelectedAddressId) {
     buySelectedAddressId = defaultAddr.id;
-    fillBuyAddressFromSelected();
   }
+  if (contBtn) contBtn.style.display = buySelectedAddressId ? "block" : "none";
 }
 
 window.selectBuyAddrCard = function(id) {
   buySelectedAddressId = id;
   buyUseNewAddress = false;
-  document.getElementById("buyNewAddressForm").style.display = "block";
-  fillBuyAddressFromSelected();
+  var form = document.getElementById("buyNewAddressForm");
+  if (form) form.style.display = "none";
+  var contBtn = document.getElementById("buySavedAddrContinue");
+  if (contBtn) contBtn.style.display = "block";
   renderBuyAddressCards();
 };
-
-function fillBuyAddressFromSelected() {
-  var addr = buySavedAddresses.find(function(a) { return a.id === buySelectedAddressId; });
-  if (!addr) return;
-  if (document.getElementById("buyAddress")) document.getElementById("buyAddress").value = addr.address || "";
-  if (document.getElementById("buyPincode")) document.getElementById("buyPincode").value = addr.pincode || "";
-  if (document.getElementById("buyCity")) document.getElementById("buyCity").value = addr.city || "";
-  if (document.getElementById("buyState")) document.getElementById("buyState").value = addr.state || "";
-  if (document.getElementById("buyDistrict")) document.getElementById("buyDistrict").value = "";
-}
 
 window.deleteBuyAddr = async function(id) {
   if (!confirm("Remove this address?")) return;
@@ -416,6 +412,8 @@ window.deleteBuyAddr = async function(id) {
     });
     buySavedAddresses = buySavedAddresses.filter(function(a) { return a.id !== id; });
     if (buySelectedAddressId === id) buySelectedAddressId = null;
+    var contBtn = document.getElementById("buySavedAddrContinue");
+    if (contBtn) contBtn.style.display = "none";
     renderBuyAddressCards();
   } catch (e) {}
 };
@@ -429,7 +427,7 @@ async function saveBuyAddress() {
   if (!addr) return;
   var api = window.PEHRAWA_API_BASE || "http://localhost:5000";
   try {
-    await fetch(api + "/api/customers/" + cust.id + "/addresses", {
+    var res = await fetch(api + "/api/customers/" + cust.id + "/addresses", {
       method: "POST",
       headers: { "Content-Type": "application/json", "Authorization": "Bearer " + token },
       body: JSON.stringify({
@@ -441,8 +439,19 @@ async function saveBuyAddress() {
         is_default: buySavedAddresses.length === 0
       })
     });
+    var data = await res.json();
+    if (data.success && data.address) {
+      buySavedAddresses.push(data.address);
+      buySelectedAddressId = data.address.id;
+    }
   } catch (e) {}
 }
+
+// "Deliver Here" button for saved address
+document.getElementById("buySavedAddrContinue")?.addEventListener("click", function() {
+  if (!buySelectedAddressId) return;
+  showBuyStep(2);
+});
 
 // "Add New Address" toggle for buy flow
 document.addEventListener("click", function(e) {
@@ -451,7 +460,12 @@ document.addEventListener("click", function(e) {
     e.preventDefault();
     buyUseNewAddress = true;
     buySelectedAddressId = null;
-    document.getElementById("buyNewAddressForm").style.display = "block";
+    var section = document.getElementById("buySavedAddressesSection");
+    var form = document.getElementById("buyNewAddressForm");
+    var contBtn = document.getElementById("buySavedAddrContinue");
+    if (section) section.style.display = "none";
+    if (form) form.style.display = "block";
+    if (contBtn) contBtn.style.display = "none";
     var cust = window.getCustomer ? window.getCustomer() : null;
     if (cust) {
       if (document.getElementById("buyName")) document.getElementById("buyName").value = cust.name || "";
@@ -474,7 +488,7 @@ function showBuyStep(step) {
 }
 
 // Step 1 — Address form submit
-document.getElementById("buyAddressForm").addEventListener("submit", function (e) {
+document.getElementById("buyAddressForm").addEventListener("submit", async function (e) {
   e.preventDefault();
   var name = document.getElementById("buyName").value.trim();
   var phone = document.getElementById("buyPhone").value.trim();
@@ -490,6 +504,14 @@ document.getElementById("buyAddressForm").addEventListener("submit", function (e
   if (phone.length < 10) {
     if (typeof showToast === "function") showToast("Enter valid phone number");
     return;
+  }
+
+  // Save address if checkbox checked
+  var saveCb = document.getElementById("buySaveAddressCheck");
+  if (saveCb && saveCb.checked) {
+    await saveBuyAddress();
+    // Reload addresses so next time they show as saved
+    loadBuySavedAddresses();
   }
 
   showBuyStep(2);
