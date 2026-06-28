@@ -649,6 +649,22 @@ app.get("/api/admin/seed", async (req, res) => {
   }
 });
 
+// Debug: fix prices by ID
+app.get("/api/debug/fix-prices", async (req, res) => {
+  try {
+    await pool.query("UPDATE products SET price = 799, original_price = NULL WHERE id = 2");
+    await pool.query("UPDATE products SET price = 749, original_price = NULL WHERE id = 3");
+    await pool.query("UPDATE products SET price = 749, original_price = NULL WHERE id = 4");
+    await pool.query("UPDATE products SET price = 699, original_price = NULL WHERE id = 5");
+    await pool.query("UPDATE products SET price = 849, original_price = NULL WHERE id = 6");
+    await pool.query("UPDATE products SET price = 799, original_price = 999 WHERE id = 7");
+    var rows = (await pool.query("SELECT id, name, price, original_price FROM products ORDER BY id")).rows;
+    res.json({ success: true, products: rows });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
+
 app.use((err, req, res, next) => {
   console.error("SERVER ERROR:", err);
   res.status(500).json({ success: false, message: "Internal server error" });
