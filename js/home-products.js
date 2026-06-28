@@ -1,11 +1,11 @@
 (function () {
   var localProducts = [
-    { id: 2, name: "Fearless Oversized Tee", price: 799, original_price: 1199, image: "../images/product1.png", is_hot_seller: true },
-    { id: 3, name: "Shadow Anime Tee", price: 749, original_price: 999, image: "../images/product2.png", is_trending: true },
-    { id: 4, name: "Abstract Vision Tee", price: 749, original_price: 1099, image: "../images/product3.png" },
-    { id: 5, name: "Minimal Logo Tee", price: 699, original_price: 999, image: "../images/product4.png" },
-    { id: 6, name: "Street Graphic Tee", price: 849, original_price: 1299, image: "../images/product5.png", is_hot_seller: true },
-    { id: 7, name: "Urban Anime Tee", price: 799, original_price: 1199, image: "../images/product6.png", is_new_arrival: true }
+    { id: 2, name: "Fearless Oversized Tee", price: 399, original_price: null, image: "../images/product1.png", is_hot_seller: true },
+    { id: 3, name: "Shadow Anime Tee", price: 399, original_price: null, image: "../images/product2.png", is_trending: true },
+    { id: 4, name: "Abstract Vision Tee", price: 399, original_price: null, image: "../images/product3.png" },
+    { id: 5, name: "Minimal Logo Tee", price: 399, original_price: null, image: "../images/product4.png" },
+    { id: 6, name: "Street Graphic Tee", price: 399, original_price: null, image: "../images/product5.png", is_hot_seller: true },
+    { id: 7, name: "Urban Anime Tee", price: 399, original_price: null, image: "../images/product6.png", is_new_arrival: true }
   ];
 
   function renderCard(p) {
