@@ -7,6 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/cart.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 <script src="../js/config.js"></script>
 <script src="../js/tracking.js"></script>
@@ -117,37 +118,38 @@
     <div class="buy-step" id="buyStep1">
       <h3>Shipping Details</h3>
       <div id="buySavedAddressesSection" style="display:none;margin-bottom:12px;">
-        <label style="color:#ff6b00;font-weight:600;font-size:13px;">Saved Addresses</label>
-        <select id="buySavedAddressSelect" style="width:100%;padding:12px;background:#0b0b0b;border:1px solid #333;color:#fff;border-radius:6px;font-size:14px;margin-bottom:8px;" onchange="selectBuySavedAddress(this.value)">
-          <option value="">-- Select a saved address --</option>
-        </select>
+        <label style="color:#ff6b00;font-weight:600;font-size:13px;margin-bottom:8px;display:block;">SAVED ADDRESSES</label>
+        <div id="buySavedAddressList"></div>
+        <button id="buyToggleNewAddrBtn" type="button" style="width:100%;padding:10px;margin-bottom:12px;background:transparent;border:2px dashed #333;border-radius:8px;color:#ff6b00;font-weight:600;cursor:pointer;font-size:13px;transition:.3s;" onmouseover="this.style.borderColor='#ff6b00'" onmouseout="this.style.borderColor='#333'"><i class="fa-solid fa-plus"></i> Add New Address</button>
       </div>
-      <form id="buyAddressForm">
-        <input type="text" id="buyName" placeholder="Full Name" required>
-        <input type="tel" id="buyPhone" placeholder="Phone Number" required>
-        <textarea id="buyAddress" placeholder="Full Address (House, Street, Area)" required></textarea>
-        <input type="text" id="buyPincode" placeholder="Pincode" required oninput="window.fetchPincode && window.fetchPincode(this.value, 'buy')">
-        <div class="checkout-row">
-          <input type="text" id="buyCity" placeholder="City" required>
-          <input type="text" id="buyDistrict" placeholder="District (auto-fetched)" readonly>
-          <input type="text" id="buyState" placeholder="State (auto-fetched)" readonly>
-        </div>
-        <div class="checkout-row">
-          <select id="buySize">
-            <option value="S">S</option>
-            <option value="M">M</option>
-            <option value="L">L</option>
-            <option value="XL">XL</option>
-            <option value="XXL">XXL</option>
-          </select>
-          <input type="number" id="buyQty" value="1" min="1">
-        </div>
-        <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
-          <input type="checkbox" id="buySaveAddressCheck" checked style="accent-color:#ff6b00;width:18px;height:18px;">
-          <label for="buySaveAddressCheck" style="color:#aaa;font-size:13px;cursor:pointer;">Save this address for future orders</label>
-        </div>
-        <button type="submit" class="checkout-submit">Continue</button>
-      </form>
+      <div id="buyNewAddressForm">
+        <form id="buyAddressForm">
+          <input type="text" id="buyName" placeholder="Full Name" required>
+          <input type="tel" id="buyPhone" placeholder="Phone Number" required>
+          <textarea id="buyAddress" placeholder="Full Address (House, Street, Area)" required></textarea>
+          <input type="text" id="buyPincode" placeholder="Pincode" required oninput="window.fetchPincode && window.fetchPincode(this.value, 'buy')">
+          <div class="checkout-row">
+            <input type="text" id="buyCity" placeholder="City" required>
+            <input type="text" id="buyDistrict" placeholder="District (auto-fetched)" readonly>
+            <input type="text" id="buyState" placeholder="State (auto-fetched)" readonly>
+          </div>
+          <div class="checkout-row">
+            <select id="buySize">
+              <option value="S">S</option>
+              <option value="M">M</option>
+              <option value="L">L</option>
+              <option value="XL">XL</option>
+              <option value="XXL">XXL</option>
+            </select>
+            <input type="number" id="buyQty" value="1" min="1">
+          </div>
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
+            <input type="checkbox" id="buySaveAddressCheck" checked style="accent-color:#ff6b00;width:18px;height:18px;">
+            <label for="buySaveAddressCheck" style="color:#aaa;font-size:13px;cursor:pointer;">Save this address for future orders</label>
+          </div>
+          <button type="submit" class="checkout-submit">Continue</button>
+        </form>
+      </div>
     </div>
 
     <!-- Step 2: Confirmation -->

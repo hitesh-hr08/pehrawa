@@ -4,75 +4,103 @@ const cartSubtotal = document.getElementById("cartSubtotal");
 const cartTotal = document.getElementById("cartTotal");
 const checkoutBtn = document.getElementById("checkoutBtn");
 const clearCartBtn = document.getElementById("clearCartBtn");
-var customer = window.getCustomer ? window.getCustomer() : null;
-if (customer) {
-  if (document.getElementById("customerName")) document.getElementById("customerName").value = customer.name || "";
-  if (document.getElementById("customerPhone")) document.getElementById("customerPhone").value = customer.phone || "";
-  localStorage.setItem("customerId", customer.id);
-}
 
-// Load saved addresses
+// ===============================
+// FLIPKART-STYLE ADDRESS SYSTEM
+// ===============================
+var selectedAddressId = null;
+var savedAddresses = [];
+var useNewAddress = false;
+
 async function loadSavedAddresses() {
   var cust = window.getCustomer ? window.getCustomer() : null;
   if (!cust || !cust.id) return;
   var token = window.getCustomerToken ? window.getCustomerToken() : "";
   if (!token) return;
   var api = window.PEHRAWA_API_BASE || "http://localhost:5000";
+  document.getElementById("savedAddressesSection").style.display = "none";
   try {
     var res = await fetch(api + "/api/customers/" + cust.id + "/addresses", {
       headers: { "Authorization": "Bearer " + token }
     });
     var data = await res.json();
-    if (data.success && data.addresses && data.addresses.length > 0) {
-      var section = document.getElementById("savedAddressesSection");
-      var select = document.getElementById("savedAddressSelect");
-      if (section) section.style.display = "block";
-      if (select) {
-        select.innerHTML = '<option value="">-- Select a saved address --</option>';
-        data.addresses.forEach(function (addr) {
-          var opt = document.createElement("option");
-          opt.value = addr.id;
-          opt.textContent = addr.label + ": " + addr.address + (addr.city ? ", " + addr.city : "");
-          if (addr.is_default) opt.selected = true;
-          select.appendChild(opt);
-        });
-        // Auto-fill default
-        var defaultAddr = data.addresses.find(function (a) { return a.is_default; }) || data.addresses[0];
-        if (defaultAddr) fillAddressFields(defaultAddr);
-      }
+    if (data.success && data.addresses) {
+      savedAddresses = data.addresses;
+      renderAddressCards();
     }
   } catch (e) {}
 }
 
-function fillAddressFields(addr) {
-  if (document.getElementById("customerName") && addr.label) {
-    // Don't overwrite name from customer profile
+function renderAddressCards() {
+  var list = document.getElementById("savedAddressList");
+  if (!list) return;
+  if (savedAddresses.length === 0) {
+    document.getElementById("savedAddressesSection").style.display = "none";
+    return;
   }
+  document.getElementById("savedAddressesSection").style.display = "block";
+  var html = "";
+  savedAddresses.forEach(function(addr, idx) {
+    var isSelected = selectedAddressId === addr.id || (!selectedAddressId && addr.is_default);
+    var label = addr.label || "Home";
+    html += '<div class="addr-card' + (isSelected ? ' addr-selected' : '') + '" data-id="' + addr.id + '" onclick="selectAddressCard(' + addr.id + ')">' +
+      '<div class="addr-radio"><span class="addr-radio-dot' + (isSelected ? ' active' : '') + '"></span></div>' +
+      '<div class="addr-info">' +
+        '<div class="addr-label"><span class="addr-badge">' + label + '</span>' + (addr.is_default ? '<span class="addr-default-badge">DEFAULT</span>' : '') + '</div>' +
+        '<div class="addr-detail"><strong>' + (addr.address || "") + '</strong></div>' +
+        '<div class="addr-detail">' + (addr.city || "") + (addr.city && addr.state ? ", " : "") + (addr.state || "") + ' - ' + (addr.pincode || "") + '</div>' +
+      '</div>' +
+      '<button class="addr-del-btn" onclick="event.stopPropagation();deleteAddress(' + addr.id + ')" title="Remove"><i class="fa-solid fa-trash-can"></i></button>' +
+    '</div>';
+  });
+  list.innerHTML = html;
+
+  // Auto-select default
+  var defaultAddr = savedAddresses.find(function(a) { return a.is_default; }) || savedAddresses[0];
+  if (defaultAddr && !selectedAddressId) {
+    selectedAddressId = defaultAddr.id;
+    fillAddressFromSelected();
+  }
+}
+
+window.selectAddressCard = function(id) {
+  selectedAddressId = id;
+  useNewAddress = false;
+  document.getElementById("newAddressForm").style.display = "none";
+  document.getElementById("toggleNewAddressWrap").style.display = "block";
+  fillAddressFromSelected();
+  renderAddressCards();
+};
+
+function fillAddressFromSelected() {
+  var addr = savedAddresses.find(function(a) { return a.id === selectedAddressId; });
+  if (!addr) return;
+  if (document.getElementById("customerName")) document.getElementById("customerName").value = addr.label || "";
   if (document.getElementById("customerAddress")) document.getElementById("customerAddress").value = addr.address || "";
   if (document.getElementById("customerPincode")) document.getElementById("customerPincode").value = addr.pincode || "";
   if (document.getElementById("customerCity")) document.getElementById("customerCity").value = addr.city || "";
   if (document.getElementById("customerState")) document.getElementById("customerState").value = addr.state || "";
+  if (document.getElementById("customerDistrict")) document.getElementById("customerDistrict").value = "";
 }
 
-window.selectSavedAddress = function (addressId) {
-  if (!addressId) return;
+window.deleteAddress = async function(id) {
+  if (!confirm("Remove this address?")) return;
   var cust = window.getCustomer ? window.getCustomer() : null;
   if (!cust || !cust.id) return;
   var token = window.getCustomerToken ? window.getCustomerToken() : "";
   var api = window.PEHRAWA_API_BASE || "http://localhost:5000";
-  fetch(api + "/api/customers/" + cust.id + "/addresses", {
-    headers: { "Authorization": "Bearer " + token }
-  })
-  .then(function (r) { return r.json(); })
-  .then(function (data) {
-    if (data.success && data.addresses) {
-      var addr = data.addresses.find(function (a) { return a.id == addressId; });
-      if (addr) fillAddressFields(addr);
-    }
-  });
+  try {
+    await fetch(api + "/api/customers/" + cust.id + "/addresses/" + id, {
+      method: "DELETE",
+      headers: { "Authorization": "Bearer " + token }
+    });
+    savedAddresses = savedAddresses.filter(function(a) { return a.id !== id; });
+    if (selectedAddressId === id) selectedAddressId = null;
+    renderAddressCards();
+    if (savedAddresses.length === 0) showNewAddressForm();
+  } catch (e) {}
 };
 
-// Save address via API
 async function saveCurrentAddress() {
   var cust = window.getCustomer ? window.getCustomer() : null;
   if (!cust || !cust.id) return;
@@ -86,25 +114,50 @@ async function saveCurrentAddress() {
       method: "POST",
       headers: { "Content-Type": "application/json", "Authorization": "Bearer " + token },
       body: JSON.stringify({
-        label: "Home",
+        label: document.getElementById("customerName")?.value?.trim() || "Home",
         address: addr,
         pincode: document.getElementById("customerPincode")?.value || "",
         city: document.getElementById("customerCity")?.value || "",
         state: document.getElementById("customerState")?.value || "",
-        is_default: true
+        is_default: savedAddresses.length === 0
       })
     });
   } catch (e) {}
 }
 
+function showNewAddressForm() {
+  useNewAddress = true;
+  selectedAddressId = null;
+  document.getElementById("newAddressForm").style.display = "block";
+  document.getElementById("toggleNewAddressWrap").style.display = "none";
+  renderAddressCards();
+  var cust = window.getCustomer ? window.getCustomer() : null;
+  if (cust) {
+    if (document.getElementById("customerName")) document.getElementById("customerName").value = cust.name || "";
+    if (document.getElementById("customerPhone")) document.getElementById("customerPhone").value = cust.phone || "";
+  }
+}
+
+document.addEventListener("click", function(e) {
+  var btn = e.target.closest("#toggleNewAddressBtn");
+  if (btn) {
+    e.preventDefault();
+    showNewAddressForm();
+  }
+});
+
+// ===============================
+// INIT
+// ===============================
+var customer = window.getCustomer ? window.getCustomer() : null;
+if (customer) {
+  localStorage.setItem("customerId", customer.id);
+}
+loadSavedAddresses();
+
 // Coupon state
 var appliedCoupon = null;
 var couponDiscount = 0;
-
-// Load saved addresses on page load
-if (document.getElementById("savedAddressesSection")) {
-  loadSavedAddresses();
-}
 
 function normalizeCart() {
   cart = cart.map(function (item) {
@@ -216,9 +269,27 @@ async function placeOrder() {
     alert("Cart is empty");
     return;
   }
-  var customerName = document.getElementById("customerName").value.trim();
-  var customerPhone = document.getElementById("customerPhone").value.trim();
-  var customerAddress = document.getElementById("customerAddress").value.trim();
+
+  // If a saved address is selected, use it directly
+  var customerName, customerPhone, customerAddress, customerPincode, customerCity, customerState;
+  if (selectedAddressId && !useNewAddress) {
+    var selAddr = savedAddresses.find(function(a) { return a.id === selectedAddressId; });
+    if (selAddr) {
+      var custData = window.getCustomer ? window.getCustomer() : null;
+      customerName = custData ? (custData.name || "") : "";
+      customerPhone = custData ? (custData.phone || "") : "";
+      customerAddress = selAddr.address || "";
+      customerPincode = selAddr.pincode || "";
+      customerCity = selAddr.city || "";
+      customerState = selAddr.state || "";
+    }
+  }
+  if (!customerName) customerName = document.getElementById("customerName").value.trim();
+  if (!customerPhone) customerPhone = document.getElementById("customerPhone").value.trim();
+  if (!customerAddress) customerAddress = document.getElementById("customerAddress").value.trim();
+  customerPincode = customerPincode || document.getElementById("customerPincode")?.value || "";
+  customerCity = customerCity || document.getElementById("customerCity")?.value || "";
+  customerState = customerState || document.getElementById("customerState")?.value || "";
 
   if (!customerName || !customerPhone || !customerAddress) {
     alert("Please fill name, phone, and address");
@@ -244,7 +315,7 @@ async function placeOrder() {
   checkoutBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Processing...';
 
   var saveCb = document.getElementById("saveAddressCheck");
-  if (saveCb && saveCb.checked) {
+  if (saveCb && saveCb.checked && !selectedAddressId) {
     await saveCurrentAddress();
   }
 
@@ -273,7 +344,7 @@ async function placeOrder() {
   }
 
   // Step 2: Open Razorpay checkout
-  var fullAddress = customerAddress + ", " + (document.getElementById("customerCity")?.value || "") + ", " + (document.getElementById("customerState")?.value || "") + ", Pincode: " + (document.getElementById("customerPincode")?.value || "");
+  var fullAddress = customerAddress + ", " + customerCity + ", " + customerState + " - " + customerPincode;
   var options = {
     key: "rzp_live_T6aA0kd4BdVC3q",
     amount: rzpData.amount,

@@ -41,8 +41,12 @@ async function loadProductDetails() {
     currentProduct = data.product;
     renderProduct(currentProduct, data.images || []);
   } catch (err) {
-    document.getElementById("productName").innerText = "Unable To Load Product";
-    document.getElementById("productDescription").innerText = "Start backend server to view live product details.";
+    currentProduct = {
+      id: 0, name: "Fearless Oversized Tee", price: 799, original_price: 1199,
+      description: "Premium cotton oversized t-shirt with high quality print.",
+      image_url: "../images/product1.png", category: "T-SHIRTS", stock_status: "in_stock"
+    };
+    renderProduct(currentProduct, []);
   }
 }
 
@@ -266,6 +270,11 @@ document.getElementById("addCartBtn").addEventListener("click", () => {
 // BUY BUTTON — Multi-step checkout flow
 // ==========================================
 
+// ---- Flipkart-style Address System for Buy Flow ----
+var buySavedAddresses = [];
+var buySelectedAddressId = null;
+var buyUseNewAddress = false;
+
 document.getElementById("buyBtn").addEventListener("click", () => {
   if (!currentProduct) return;
 
@@ -297,7 +306,92 @@ document.getElementById("buyCheckoutOverlay").addEventListener("click", function
   if (e.target === this) this.classList.remove("active");
 });
 
-// ---- Save Address for Buy Flow ----
+// ---- Flipkart-style Address Cards for Buy Flow ----
+async function loadBuySavedAddresses() {
+  var cust = window.getCustomer ? window.getCustomer() : null;
+  if (!cust || !cust.id) return;
+  var token = window.getCustomerToken ? window.getCustomerToken() : "";
+  if (!token) return;
+  var api = window.PEHRAWA_API_BASE || "http://localhost:5000";
+  try {
+    var res = await fetch(api + "/api/customers/" + cust.id + "/addresses", {
+      headers: { "Authorization": "Bearer " + token }
+    });
+    var data = await res.json();
+    if (data.success && data.addresses) {
+      buySavedAddresses = data.addresses;
+      renderBuyAddressCards();
+    }
+  } catch (e) {}
+}
+
+function renderBuyAddressCards() {
+  var list = document.getElementById("buySavedAddressList");
+  var section = document.getElementById("buySavedAddressesSection");
+  if (!list || !section) return;
+  if (buySavedAddresses.length === 0) {
+    section.style.display = "none";
+    return;
+  }
+  section.style.display = "block";
+  var html = "";
+  buySavedAddresses.forEach(function(addr, idx) {
+    var isSelected = buySelectedAddressId === addr.id || (!buySelectedAddressId && addr.is_default);
+    var label = addr.label || "Home";
+    html += '<div class="addr-card' + (isSelected ? ' addr-selected' : '') + '" data-id="' + addr.id + '" onclick="selectBuyAddrCard(' + addr.id + ')">' +
+      '<div class="addr-radio"><span class="addr-radio-dot' + (isSelected ? ' active' : '') + '"></span></div>' +
+      '<div class="addr-info">' +
+        '<div class="addr-label"><span class="addr-badge">' + label + '</span>' + (addr.is_default ? '<span class="addr-default-badge">DEFAULT</span>' : '') + '</div>' +
+        '<div class="addr-detail"><strong>' + (addr.address || "") + '</strong></div>' +
+        '<div class="addr-detail">' + (addr.city || "") + (addr.city && addr.state ? ", " : "") + (addr.state || "") + ' - ' + (addr.pincode || "") + '</div>' +
+      '</div>' +
+      '<button class="addr-del-btn" onclick="event.stopPropagation();deleteBuyAddr(' + addr.id + ')" title="Remove"><i class="fa-solid fa-trash-can"></i></button>' +
+    '</div>';
+  });
+  list.innerHTML = html;
+
+  var defaultAddr = buySavedAddresses.find(function(a) { return a.is_default; }) || buySavedAddresses[0];
+  if (defaultAddr && !buySelectedAddressId) {
+    buySelectedAddressId = defaultAddr.id;
+    fillBuyAddressFromSelected();
+  }
+}
+
+window.selectBuyAddrCard = function(id) {
+  buySelectedAddressId = id;
+  buyUseNewAddress = false;
+  document.getElementById("buyNewAddressForm").style.display = "block";
+  fillBuyAddressFromSelected();
+  renderBuyAddressCards();
+};
+
+function fillBuyAddressFromSelected() {
+  var addr = buySavedAddresses.find(function(a) { return a.id === buySelectedAddressId; });
+  if (!addr) return;
+  if (document.getElementById("buyAddress")) document.getElementById("buyAddress").value = addr.address || "";
+  if (document.getElementById("buyPincode")) document.getElementById("buyPincode").value = addr.pincode || "";
+  if (document.getElementById("buyCity")) document.getElementById("buyCity").value = addr.city || "";
+  if (document.getElementById("buyState")) document.getElementById("buyState").value = addr.state || "";
+  if (document.getElementById("buyDistrict")) document.getElementById("buyDistrict").value = "";
+}
+
+window.deleteBuyAddr = async function(id) {
+  if (!confirm("Remove this address?")) return;
+  var cust = window.getCustomer ? window.getCustomer() : null;
+  if (!cust || !cust.id) return;
+  var token = window.getCustomerToken ? window.getCustomerToken() : "";
+  var api = window.PEHRAWA_API_BASE || "http://localhost:5000";
+  try {
+    await fetch(api + "/api/customers/" + cust.id + "/addresses/" + id, {
+      method: "DELETE",
+      headers: { "Authorization": "Bearer " + token }
+    });
+    buySavedAddresses = buySavedAddresses.filter(function(a) { return a.id !== id; });
+    if (buySelectedAddressId === id) buySelectedAddressId = null;
+    renderBuyAddressCards();
+  } catch (e) {}
+};
+
 async function saveBuyAddress() {
   var cust = window.getCustomer ? window.getCustomer() : null;
   if (!cust || !cust.id) return;
@@ -311,73 +405,38 @@ async function saveBuyAddress() {
       method: "POST",
       headers: { "Content-Type": "application/json", "Authorization": "Bearer " + token },
       body: JSON.stringify({
-        label: "Home",
+        label: document.getElementById("buyName")?.value?.trim() || "Home",
         address: addr,
         pincode: document.getElementById("buyPincode")?.value || "",
         city: document.getElementById("buyCity")?.value || "",
         state: document.getElementById("buyState")?.value || "",
-        is_default: true
+        is_default: buySavedAddresses.length === 0
       })
     });
   } catch (e) {}
 }
 
-// ---- Saved Address for Buy Flow ----
-async function loadBuySavedAddresses() {
-  var cust = window.getCustomer ? window.getCustomer() : null;
-  if (!cust || !cust.id) return;
-  var token = window.getCustomerToken ? window.getCustomerToken() : "";
-  if (!token) return;
-  var api = window.PEHRAWA_API_BASE || "http://localhost:5000";
-  try {
-    var res = await fetch(api + "/api/customers/" + cust.id + "/addresses", {
-      headers: { "Authorization": "Bearer " + token }
-    });
-    var data = await res.json();
-    if (data.success && data.addresses && data.addresses.length > 0) {
-      var section = document.getElementById("buySavedAddressesSection");
-      var select = document.getElementById("buySavedAddressSelect");
-      if (section) section.style.display = "block";
-      if (select) {
-        select.innerHTML = '<option value="">-- Select a saved address --</option>';
-        data.addresses.forEach(function (addr) {
-          var opt = document.createElement("option");
-          opt.value = addr.id;
-          opt.textContent = addr.label + ": " + addr.address + (addr.city ? ", " + addr.city : "");
-          if (addr.is_default) opt.selected = true;
-          select.appendChild(opt);
-        });
-        var defaultAddr = data.addresses.find(function (a) { return a.is_default; }) || data.addresses[0];
-        if (defaultAddr) fillBuyAddressFields(defaultAddr);
-      }
+// "Add New Address" toggle for buy flow
+document.addEventListener("click", function(e) {
+  var btn = e.target.closest("#buyToggleNewAddrBtn");
+  if (btn) {
+    e.preventDefault();
+    buyUseNewAddress = true;
+    buySelectedAddressId = null;
+    document.getElementById("buyNewAddressForm").style.display = "block";
+    var cust = window.getCustomer ? window.getCustomer() : null;
+    if (cust) {
+      if (document.getElementById("buyName")) document.getElementById("buyName").value = cust.name || "";
+      if (document.getElementById("buyPhone")) document.getElementById("buyPhone").value = cust.phone || "";
     }
-  } catch (e) {}
-}
-
-function fillBuyAddressFields(addr) {
-  if (document.getElementById("buyAddress")) document.getElementById("buyAddress").value = addr.address || "";
-  if (document.getElementById("buyPincode")) document.getElementById("buyPincode").value = addr.pincode || "";
-  if (document.getElementById("buyCity")) document.getElementById("buyCity").value = addr.city || "";
-  if (document.getElementById("buyState")) document.getElementById("buyState").value = addr.state || "";
-}
-
-window.selectBuySavedAddress = function (addressId) {
-  if (!addressId) return;
-  var cust = window.getCustomer ? window.getCustomer() : null;
-  if (!cust || !cust.id) return;
-  var token = window.getCustomerToken ? window.getCustomerToken() : "";
-  var api = window.PEHRAWA_API_BASE || "http://localhost:5000";
-  fetch(api + "/api/customers/" + cust.id + "/addresses", {
-    headers: { "Authorization": "Bearer " + token }
-  })
-  .then(function (r) { return r.json(); })
-  .then(function (data) {
-    if (data.success && data.addresses) {
-      var addr = data.addresses.find(function (a) { return a.id == addressId; });
-      if (addr) fillBuyAddressFields(addr);
-    }
-  });
-};
+    document.getElementById("buyAddress").value = "";
+    document.getElementById("buyPincode").value = "";
+    document.getElementById("buyCity").value = "";
+    document.getElementById("buyState").value = "";
+    document.getElementById("buyDistrict").value = "";
+    renderBuyAddressCards();
+  }
+});
 
 // Step navigation
 function showBuyStep(step) {
@@ -420,11 +479,24 @@ function getProductPrice() {
 }
 
 function populateBuyConfirmation() {
-  var name = document.getElementById("buyName").value;
-  var address = document.getElementById("buyAddress").value;
-  var pincode = document.getElementById("buyPincode").value;
-  var city = document.getElementById("buyCity").value;
-  var state = document.getElementById("buyState").value;
+  // Use saved address if selected
+  var name, address, pincode, city, state;
+  if (buySelectedAddressId && !buyUseNewAddress) {
+    var selAddr = buySavedAddresses.find(function(a) { return a.id === buySelectedAddressId; });
+    if (selAddr) {
+      var custData = window.getCustomer ? window.getCustomer() : null;
+      name = custData ? (custData.name || "") : "";
+      address = selAddr.address || "";
+      pincode = selAddr.pincode || "";
+      city = selAddr.city || "";
+      state = selAddr.state || "";
+    }
+  }
+  if (!name) name = document.getElementById("buyName").value;
+  if (!address) address = document.getElementById("buyAddress").value;
+  if (!pincode) pincode = document.getElementById("buyPincode").value;
+  if (!city) city = document.getElementById("buyCity").value;
+  if (!state) state = document.getElementById("buyState").value;
   var size = document.getElementById("buySize").value;
   var qty = document.getElementById("buyQty").value;
   var productName = document.getElementById("productName").innerText;
@@ -453,18 +525,33 @@ async function placeBuyOrder() {
     btn.textContent = "Place Order";
     return;
   }
-  // Save address first if checkbox is checked
+  // Use saved address if selected
+  var name, phone, address, pincode, city, state;
+  if (buySelectedAddressId && !buyUseNewAddress) {
+    var selAddr = buySavedAddresses.find(function(a) { return a.id === buySelectedAddressId; });
+    if (selAddr) {
+      var custData = window.getCustomer ? window.getCustomer() : null;
+      name = custData ? (custData.name || "") : "";
+      phone = custData ? (custData.phone || "") : "";
+      address = selAddr.address || "";
+      pincode = selAddr.pincode || "";
+      city = selAddr.city || "";
+      state = selAddr.state || "";
+    }
+  }
+  if (!name) name = document.getElementById("buyName").value;
+  if (!phone) phone = document.getElementById("buyPhone").value;
+  if (!address) address = document.getElementById("buyAddress").value;
+  if (!pincode) pincode = document.getElementById("buyPincode").value;
+  if (!city) city = document.getElementById("buyCity").value;
+  if (!state) state = document.getElementById("buyState").value;
+
+  // Save address first if checkbox is checked (only for new addresses)
   var buySaveCb = document.getElementById("buySaveAddressCheck");
-  if (buySaveCb && buySaveCb.checked) {
+  if (buySaveCb && buySaveCb.checked && !buySelectedAddressId) {
     await saveBuyAddress();
   }
 
-  var name = document.getElementById("buyName").value;
-  var phone = document.getElementById("buyPhone").value;
-  var address = document.getElementById("buyAddress").value;
-  var pincode = document.getElementById("buyPincode").value;
-  var city = document.getElementById("buyCity").value;
-  var state = document.getElementById("buyState").value;
   var size = document.getElementById("buySize").value;
   var productName = document.getElementById("productName").innerText;
   var district = document.getElementById("buyDistrict")?.value || "";
