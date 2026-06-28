@@ -1464,7 +1464,9 @@ CHECKOUT MODAL
     max-width:420px;
     max-height:90vh;
     overflow-y:auto;
+    overflow-x:hidden;
     position:relative;
+    box-sizing:border-box;
 }
 .checkout-close{
     position:absolute;
@@ -1501,6 +1503,9 @@ CHECKOUT MODAL
     border-radius:6px;
     font-size:14px;
     outline:none;
+    box-sizing:border-box;
+    width:100%;
+    max-width:100%;
 }
 .checkout-modal textarea{
     min-height:70px;
@@ -1527,6 +1532,11 @@ CHECKOUT MODAL
     transition:.3s;
 }
 .checkout-submit:hover{background:#e06d00;}
+
+@media(max-width:480px){
+  .checkout-modal{padding:20px 16px;}
+  .checkout-row{flex-direction:column;gap:8px;}
+}
 
 /* =======================
 BUY CHECKOUT STEPS
