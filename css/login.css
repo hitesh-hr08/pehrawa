@@ -59,7 +59,7 @@ body{
 }
 
 h2{
-  color:#ff6a00;
+  color:#ffffff;
   letter-spacing:4px;
   margin-bottom:5px;
 }
@@ -82,7 +82,7 @@ input{
 }
 
 input:focus{
-  border-color:#ff6a00;
+  border-color:#ffffff;
   box-shadow:0 0 10px rgba(255,106,0,0.3);
 }
 
@@ -92,7 +92,7 @@ button{
   margin-top:10px;
   border:none;
   border-radius:8px;
-  background:#ff6a00;
+  background:#ffffff;
   color:#000;
   font-weight:700;
   cursor:pointer;
@@ -114,7 +114,7 @@ button:hover{
 }
 
 .auth-switch a{
-  color:#ff6a00;
+  color:#ffffff;
   font-weight:700;
 }
 
@@ -123,7 +123,7 @@ button:hover{
 .divider span{color:#666;font-size:12px;}
 
 .google-btn,.google-btn-inline{width:100%;padding:12px;border:1px solid #444;border-radius:8px;background:#1a1a1a;color:#fff;font-weight:600;cursor:pointer;transition:0.3s;display:flex;align-items:center;justify-content:center;gap:10px;font-family:inherit;font-size:14px;}
-.google-btn:hover,.google-btn-inline:hover{background:#2a2a2a;border-color:#ff6a00;}
-.google-btn i,.google-btn-inline i{color:#ff6a00;font-size:18px;}
+.google-btn:hover,.google-btn-inline:hover{background:#2a2a2a;border-color:#ffffff;}
+.google-btn i,.google-btn-inline i{color:#ffffff;font-size:18px;}
 .google-btn-inline{margin-top:10px;}
 .set-pw-box{margin-top:8px;}

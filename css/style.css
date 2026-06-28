@@ -728,7 +728,7 @@ cursor:pointer;
 transition:.3s;
 text-transform:uppercase;
 }
-.shop-btn-group .add-cart-btn:hover{background:#ffffff;}
+.shop-btn-group .add-cart-btn:hover{background:#e8e8e8;transform:translateY(-2px);}
 
 /* =======================
 FOOTER
@@ -1441,7 +1441,7 @@ cursor:pointer;
 transition:.35s;
 }
 
-.contact-right button:hover{background:#ffffff;}
+.contact-right button:hover{background:#e8e8e8;transform:translateY(-2px);}
 
 /* =======================
 CHECKOUT MODAL

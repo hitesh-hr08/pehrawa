@@ -44,8 +44,8 @@ input {
   grid-template-columns: minmax(420px, 0.9fr) 1.1fr;
   overflow: hidden;
   background:
-    radial-gradient(circle at 14% 18%, rgba(255, 107, 0, 0.18), transparent 28%),
-    radial-gradient(circle at 80% 76%, rgba(255, 107, 0, 0.12), transparent 30%),
+    radial-gradient(circle at 14% 18%, rgba(255,255,255, 0.18), transparent 28%),
+    radial-gradient(circle at 80% 76%, rgba(255,255,255, 0.12), transparent 30%),
     #050505;
 }
 
@@ -116,7 +116,7 @@ input {
 }
 
 .brand-stat {
-  border: 1px solid rgba(255, 107, 0, 0.25);
+  border: 1px solid rgba(255,255,255, 0.25);
   background: rgba(255, 255, 255, 0.035);
   padding: 16px;
   border-radius: 8px;
@@ -163,10 +163,10 @@ input {
   position: relative;
   z-index: 1;
   padding: 34px;
-  border: 1px solid rgba(255, 107, 0, 0.28);
+  border: 1px solid rgba(255,255,255, 0.28);
   border-radius: 10px;
   background: rgba(17, 17, 17, 0.88);
-  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.42), 0 0 35px rgba(255, 107, 0, 0.08);
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.42), 0 0 35px rgba(255,255,255, 0.08);
   backdrop-filter: blur(12px);
 }
 
@@ -200,7 +200,7 @@ input {
 
 .form-group input:focus {
   border-color: var(--orange);
-  box-shadow: 0 0 0 3px rgba(255, 107, 0, 0.13);
+  box-shadow: 0 0 0 3px rgba(255,255,255, 0.13);
 }
 
 .primary-btn {
@@ -311,9 +311,9 @@ input {
 .sidebar-card {
   margin-top: 28px;
   padding: 16px;
-  border: 1px solid rgba(255, 107, 0, 0.22);
+  border: 1px solid rgba(255,255,255, 0.22);
   border-radius: 8px;
-  background: rgba(255, 107, 0, 0.08);
+  background: rgba(255,255,255, 0.08);
 }
 
 .sidebar-card strong {
@@ -333,7 +333,7 @@ input {
   min-width: 0;
   padding: 26px;
   background:
-    radial-gradient(circle at 78% 4%, rgba(255, 107, 0, 0.13), transparent 24%),
+    radial-gradient(circle at 78% 4%, rgba(255,255,255, 0.13), transparent 24%),
     #050505;
 }
 
@@ -367,7 +367,7 @@ input {
 }
 
 .logout-btn {
-  border: 1px solid rgba(255, 107, 0, 0.4);
+  border: 1px solid rgba(255,255,255, 0.4);
   background: var(--orange);
   color: #090909;
   padding: 11px 16px;
@@ -408,7 +408,7 @@ input {
   width: 110px;
   height: 110px;
   border-radius: 50%;
-  border: 22px solid rgba(255, 107, 0, 0.08);
+  border: 22px solid rgba(255,255,255, 0.08);
 }
 
 .metric-icon {
@@ -537,7 +537,7 @@ input {
 
 .small-btn,
 .ghost-btn {
-  border: 1px solid rgba(255, 107, 0, 0.35);
+  border: 1px solid rgba(255,255,255, 0.35);
   border-radius: 7px;
   min-height: 40px;
   padding: 0 14px;
@@ -599,7 +599,7 @@ textarea {
 
 textarea:focus {
   border-color: var(--orange);
-  box-shadow: 0 0 0 3px rgba(255, 107, 0, 0.13);
+  box-shadow: 0 0 0 3px rgba(255,255,255, 0.13);
 }
 
 select {
@@ -614,7 +614,7 @@ select {
 
 select:focus {
   border-color: var(--orange);
-  box-shadow: 0 0 0 3px rgba(255, 107, 0, 0.13);
+  box-shadow: 0 0 0 3px rgba(255,255,255, 0.13);
 }
 
 .form-actions {
@@ -691,7 +691,7 @@ select:focus {
 .product-cell img {
   width: 54px;
   height: 54px;
-  border: 1px solid rgba(255, 107, 0, 0.18);
+  border: 1px solid rgba(255,255,255, 0.18);
   border-radius: 8px;
   object-fit: cover;
   background: #090909;
@@ -744,8 +744,8 @@ select:focus {
 .status-select {
   min-width: 135px;
   color: var(--orange);
-  border-color: rgba(255, 107, 0, 0.25);
-  background: rgba(255, 107, 0, 0.08);
+  border-color: rgba(255,255,255, 0.25);
+  background: rgba(255,255,255, 0.08);
   font-weight: 800;
 }
 
@@ -755,9 +755,9 @@ select:focus {
   justify-content: center;
   min-height: 34px;
   padding: 0 12px;
-  border: 1px solid rgba(255, 107, 0, 0.28);
+  border: 1px solid rgba(255,255,255, 0.28);
   border-radius: 7px;
-  background: rgba(255, 107, 0, 0.08);
+  background: rgba(255,255,255, 0.08);
   color: var(--orange);
   font-size: 12px;
   font-weight: 800;
@@ -771,9 +771,9 @@ select:focus {
 .table-actions button {
   width: 36px;
   height: 36px;
-  border: 1px solid rgba(255, 107, 0, 0.28);
+  border: 1px solid rgba(255,255,255, 0.28);
   border-radius: 7px;
-  background: rgba(255, 107, 0, 0.1);
+  background: rgba(255,255,255, 0.1);
   color: var(--orange);
   cursor: pointer;
 }
@@ -901,7 +901,7 @@ select:focus {
 .tag-checkbox.checked .tag-hot { color: var(--danger); }
 
 .tag-checkbox.checked {
-  box-shadow: 0 0 12px rgba(255, 107, 0, 0.15);
+  box-shadow: 0 0 12px rgba(255,255,255, 0.15);
 }
 
 .tag-checkbox.checked.tag-new-bg {
@@ -910,8 +910,8 @@ select:focus {
 }
 
 .tag-checkbox.checked.tag-trending-bg {
-  background: rgba(255, 107, 0, 0.12);
-  border-color: rgba(255, 107, 0, 0.4);
+  background: rgba(255,255,255, 0.12);
+  border-color: rgba(255,255,255, 0.4);
 }
 
 .tag-checkbox.checked.tag-hot-bg {
@@ -947,7 +947,7 @@ select:focus {
 }
 
 .tag-badge-new { background: rgba(56, 210, 122, 0.15); color: #38d27a; }
-.tag-badge-trending { background: rgba(255, 107, 0, 0.15); color: var(--orange); }
+.tag-badge-trending { background: rgba(255,255,255, 0.15); color: var(--orange); }
 .tag-badge-hot { background: rgba(255, 63, 63, 0.15); color: var(--danger); }
 
 .admin-section {
