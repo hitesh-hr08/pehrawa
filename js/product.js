@@ -378,8 +378,22 @@ function renderBuyAddressCards() {
 window.selectBuyAddrCard = function(id) {
   buySelectedAddressId = id;
   buyUseNewAddress = false;
+  var addr = buySavedAddresses.find(function(a) { return a.id == id; });
+  if (addr) {
+    var cust = window.getCustomer ? window.getCustomer() : null;
+    if (document.getElementById("buyName")) document.getElementById("buyName").value = cust ? (cust.name || "") : "";
+    if (document.getElementById("buyPhone")) document.getElementById("buyPhone").value = cust ? (cust.phone || "") : "";
+    if (document.getElementById("buyAddress")) document.getElementById("buyAddress").value = addr.address || "";
+    if (document.getElementById("buyPincode")) document.getElementById("buyPincode").value = addr.pincode || "";
+    if (document.getElementById("buyCity")) document.getElementById("buyCity").value = addr.city || "";
+    if (document.getElementById("buyDistrict")) document.getElementById("buyDistrict").value = "";
+    if (document.getElementById("buyState")) document.getElementById("buyState").value = addr.state || "";
+  }
+  var list = document.getElementById("buySavedAddressList");
+  var form = document.getElementById("buyNewAddressForm");
+  if (list) list.style.display = "none";
+  if (form) form.style.display = "block";
   renderBuyAddressCards();
-  showBuyStep(2);
 };
 
 window.deleteBuyAddr = async function(id) {
@@ -495,11 +509,10 @@ document.getElementById("buyAddressForm").addEventListener("submit", async funct
     return;
   }
 
-  // Save address if checkbox checked
+  // Save address only if it's a new address (not a saved one)
   var saveCb = document.getElementById("buySaveAddressCheck");
-  if (saveCb && saveCb.checked) {
+  if (saveCb && saveCb.checked && !buySelectedAddressId) {
     await saveBuyAddress();
-    // Reload addresses so next time they show as saved
     loadBuySavedAddresses();
   }
 
