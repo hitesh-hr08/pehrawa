@@ -29,18 +29,12 @@ const orderRoutes = require("./routes/orderRoutes");
 const requestRoutes = require("./routes/requestRoutes");
 const verifyAdmin = require("./middleware/auth");
 const authRoutes = require("./routes/authRoutes");
-const Razorpay = require("razorpay");
 
 const app = express();
 
 app.use(cors({ origin: true, credentials: true }));
 
 app.use(express.json());
-
-const razorpay = new Razorpay({
-  key_id: process.env.RAZORPAY_KEY_ID || "rzp_live_T6aA0kd4BdVC3q",
-  key_secret: process.env.RAZORPAY_KEY_SECRET || "ebNPElLiEVqyDLmlNOZvESWS"
-});
 
 app.use(express.static(path.join(__dirname, "..", "frontend")));
 app.use(express.static(path.join(__dirname, "..")));
@@ -250,7 +244,7 @@ app.get("/api/public/settings", async (req, res) => {
 
 app.post("/api/public/orders", async (req, res) => {
   try {
-    let { customer_id, customer_name, phone, address, total_amount, items, status, payment_status, razorpay_payment_id } = req.body;
+    let { customer_id, customer_name, phone, address, total_amount, items, status } = req.body;
 
     if (!customer_name || !phone || !address || !items || items.length === 0) {
       return res.status(400).json({
@@ -322,10 +316,10 @@ app.post("/api/public/orders", async (req, res) => {
     }
 
     const result = await pool.query(
-      `INSERT INTO orders (customer_id, customer_name, phone, address, total_amount, status, items, payment_status, razorpay_payment_id)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+      `INSERT INTO orders (customer_id, customer_name, phone, address, total_amount, status, items)
+       VALUES ($1, $2, $3, $4, $5, $6, $7)
        RETURNING *`,
-      [customerId, customer_name, phone, address, total_amount, status || "Pending", itemSummary, payment_status || "unpaid", razorpay_payment_id || null]
+      [customerId, customer_name, phone, address, total_amount, status || "Pending", itemSummary]
     );
 
     for (const item of items) {
@@ -440,50 +434,6 @@ app.get("/api/health", async (req, res) => {
 
 app.get("/api", (req, res) => {
   res.json({ success: true, message: "Pehrawa API Running" });
-});
-
-// ===========================
-// RAZORPAY PAYMENT API
-// ===========================
-
-app.post("/api/public/create-razorpay-order", async (req, res) => {
-  try {
-    const { amount } = req.body;
-    if (!amount || amount < 1) {
-      return res.status(400).json({ success: false, message: "Invalid amount" });
-    }
-    const options = {
-      amount: Math.round(amount * 100),
-      currency: "INR",
-      receipt: "rcpt_" + Date.now()
-    };
-    const order = await razorpay.orders.create(options);
-    res.json({ success: true, order_id: order.id, amount: order.amount });
-  } catch (err) {
-    console.error("Razorpay order error:", err.message);
-    res.status(500).json({ success: false, message: "Failed to create payment order" });
-  }
-});
-
-app.post("/api/public/verify-payment", async (req, res) => {
-  try {
-    const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = req.body;
-    if (!razorpay_order_id || !razorpay_payment_id || !razorpay_signature) {
-      return res.status(400).json({ success: false, message: "Missing payment details" });
-    }
-    const crypto = require("crypto");
-    const expectedSig = crypto
-      .createHmac("sha256", razorpay.key_secret)
-      .update(razorpay_order_id + "|" + razorpay_payment_id)
-      .digest("hex");
-    if (expectedSig !== razorpay_signature) {
-      return res.status(400).json({ success: false, message: "Payment verification failed" });
-    }
-    res.json({ success: true, message: "Payment verified", payment_id: razorpay_payment_id });
-  } catch (err) {
-    console.error("Payment verification error:", err.message);
-    res.status(500).json({ success: false, message: "Payment verification failed" });
-  }
 });
 
 app.get("/api/admin/seed", async (req, res) => {
@@ -624,9 +574,7 @@ var HOST = process.env.HOST || "0.0.0.0";
       id SERIAL PRIMARY KEY, customer_id INTEGER REFERENCES customers(id),
       customer_name VARCHAR(255), phone VARCHAR(20), address TEXT,
       total_amount NUMERIC(10,2), status VARCHAR(50) DEFAULT 'Pending',
-      items TEXT, payment_status VARCHAR(50) DEFAULT 'unpaid',
-      razorpay_payment_id TEXT, razorpay_order_id TEXT,
-      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      items TEXT, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     )`);
     await pool.query(`CREATE TABLE IF NOT EXISTS custom_requests (
       id SERIAL PRIMARY KEY, customer_name VARCHAR(255), phone VARCHAR(20),
@@ -695,19 +643,6 @@ var HOST = process.env.HOST || "0.0.0.0";
     console.log("Database migration: addresses table created/verified");
   } catch (err) {
     console.error("Addresses migration error (non-fatal):", err.message);
-  }
-
-  // Add payment columns to orders table
-  try {
-    await pool.query(`
-      ALTER TABLE orders
-        ADD COLUMN IF NOT EXISTS payment_status VARCHAR(50) DEFAULT 'unpaid',
-        ADD COLUMN IF NOT EXISTS razorpay_payment_id TEXT,
-        ADD COLUMN IF NOT EXISTS razorpay_order_id TEXT
-    `);
-    console.log("Database migration: payment columns added to orders");
-  } catch (err) {
-    console.error("Payment columns migration error (non-fatal):", err.message);
   }
 
   // Back-fill customer_id on old orders where customer_id is NULL

@@ -445,7 +445,7 @@ function populateBuyConfirmation() {
 async function placeBuyOrder() {
   var btn = document.getElementById("placeBuyOrderBtn");
   btn.disabled = true;
-  btn.textContent = "Processing...";
+  btn.textContent = "Placing...";
   var qty = parseInt(document.getElementById("buyQty").value) || 1;
   var price = getProductPrice();
   var total = price * qty;
@@ -461,95 +461,51 @@ async function placeBuyOrder() {
     await saveBuyAddress();
   }
 
-  var name = document.getElementById("buyName").value;
-  var phone = document.getElementById("buyPhone").value;
-  var address = document.getElementById("buyAddress").value;
-  var pincode = document.getElementById("buyPincode").value;
-  var city = document.getElementById("buyCity").value;
-  var state = document.getElementById("buyState").value;
-  var size = document.getElementById("buySize").value;
-  var productName = document.getElementById("productName").innerText;
-  var district = document.getElementById("buyDistrict")?.value || "";
-  var fullAddress = address + (district ? ", " + district : "") + ", " + city + ", " + state + " - " + pincode;
-  var api = window.PEHRAWA_API_BASE || "http://localhost:5000";
-  var cust = window.getCustomer ? window.getCustomer() : null;
-
-  // Step 1: Create Razorpay order
-  var rzpRes;
   try {
-    rzpRes = await fetch(api + "/api/public/create-razorpay-order", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ amount: total })
-    });
-  } catch (e) {
-    if (typeof showToast === "function") showToast("Payment service unavailable");
-    btn.disabled = false;
-    btn.textContent = "Place Order";
-    return;
-  }
-  var rzpData = await rzpRes.json();
-  if (!rzpData.success) {
-    if (typeof showToast === "function") showToast(rzpData.message || "Payment initiation failed");
-    btn.disabled = false;
-    btn.textContent = "Place Order";
-    return;
-  }
-
-  // Step 2: Open Razorpay checkout
-  var options = {
-    key: "rzp_live_T6aA0kd4BdVC3q",
-    amount: rzpData.amount,
-    currency: "INR",
-    name: "Pehrawa",
-    description: "Order Payment",
-    order_id: rzpData.order_id,
-    prefill: {
-      name: name,
-      contact: phone
-    },
-    theme: { color: "#ff6b00" },
-    handler: async function (response) {
-      try {
-        var res = await fetch(api + "/api/public/orders", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            customer_name: name,
-            phone: phone,
-            address: fullAddress,
-            total_amount: total,
-            status: "Pending",
-            payment_status: "paid",
-            razorpay_payment_id: response.razorpay_payment_id,
-            customer_id: cust ? cust.id : (localStorage.getItem("customerId") || null),
-            items: [{ name: productName, size: size, quantity: qty, price: price }]
-          })
-        });
-        var data = await res.json();
-        if (data.success) {
-          if (typeof showToast === "function") showToast("✅ Payment successful! Order placed.");
-          document.getElementById("buyCheckoutOverlay").classList.remove("active");
-          setTimeout(function () { window.location.href = "my-orders.html"; }, 1500);
-        } else {
-          if (typeof showToast === "function") showToast(data.message || "Failed to place order");
-        }
-      } catch (err) {
-        if (typeof showToast === "function") showToast("Error placing order");
+    var name = document.getElementById("buyName").value;
+    var phone = document.getElementById("buyPhone").value;
+    var address = document.getElementById("buyAddress").value;
+    var pincode = document.getElementById("buyPincode").value;
+    var city = document.getElementById("buyCity").value;
+    var state = document.getElementById("buyState").value;
+    var size = document.getElementById("buySize").value;
+    var productName = document.getElementById("productName").innerText;
+    var district = document.getElementById("buyDistrict")?.value || "";
+    var fullAddress = address + (district ? ", " + district : "") + ", " + city + ", " + state + " - " + pincode;
+    var api = window.PEHRAWA_API_BASE || "http://localhost:5000";
+    var cust = window.getCustomer ? window.getCustomer() : null;
+    try {
+      var res = await fetch(api + "/api/public/orders", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          customer_name: name,
+          phone: phone,
+          address: fullAddress,
+          pincode: pincode,
+          city: city,
+          state: state,
+          total_amount: total,
+          status: "Pending",
+          customer_id: cust ? cust.id : (localStorage.getItem("customerId") || null),
+          items: [{ name: productName, size: size, quantity: qty, price: price }]
+        })
+      });
+      var data = await res.json();
+      if (data.success) {
+        if (typeof showToast === "function") showToast("✅ Order submitted successfully!");
+        document.getElementById("buyCheckoutOverlay").classList.remove("active");
+        setTimeout(function () { window.location.href = "my-orders.html"; }, 1500);
+      } else {
+        if (typeof showToast === "function") showToast(data.message || "Failed to place order");
       }
-      btn.disabled = false;
-      btn.textContent = "Place Order";
-    },
-    modal: {
-      ondismiss: function () {
-        if (typeof showToast === "function") showToast("Payment cancelled");
-        btn.disabled = false;
-        btn.textContent = "Place Order";
-      }
+    } catch (err) {
+      if (typeof showToast === "function") showToast("Error placing order");
     }
-  };
-  var rzp = new Razorpay(options);
-  rzp.open();
+  } finally {
+    btn.disabled = false;
+    btn.textContent = "Place Order";
+  }
 }
 
 loadProductDetails();
