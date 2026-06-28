@@ -687,7 +687,7 @@ font-size:16px;
 .product-actions button:hover{background:#ff6b00;}
 
 .buy-now-btn{
-width:100%;
+flex:1;
 display:flex;
 align-items:center;
 justify-content:center;
@@ -709,6 +709,26 @@ background:#ff6b00;
 color:#000;
 border-color:#ff6b00;
 }
+
+.shop-btn-group{display:flex;gap:6px;margin-top:6px;}
+.shop-btn-group .add-cart-btn{
+flex:1;
+display:flex;
+align-items:center;
+justify-content:center;
+gap:6px;
+background:#ff6b00;
+color:#000;
+padding:11px;
+font-size:11px;
+font-weight:700;
+border:none;
+letter-spacing:1px;
+cursor:pointer;
+transition:.3s;
+text-transform:uppercase;
+}
+.shop-btn-group .add-cart-btn:hover{background:#ff7a1a;}
 
 /* =======================
 FOOTER

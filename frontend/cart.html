@@ -98,13 +98,29 @@
   <input type="checkbox" id="saveAddressCheck" checked style="accent-color:#ff6b00;width:18px;height:18px;">
   <label for="saveAddressCheck" style="color:#aaa;font-size:13px;cursor:pointer;">Save this address for future orders</label>
 </div>
-<div class="summary-row">
+  <div class="summary-row">
 <span>Items</span>
 <strong id="summaryItemCount">0</strong>
 </div>
 <div class="summary-row">
 <span>Subtotal</span>
 <strong>&#8377;<span id="cartSubtotal">0.00</span></strong>
+</div>
+<div class="coupon-row" style="margin:12px 0;padding:12px 0;border-top:1px solid #222;border-bottom:1px solid #222;">
+  <div style="display:flex;gap:8px;">
+    <input type="text" id="couponInput" placeholder="Enter coupon code" style="flex:1;padding:10px;background:#0b0b0b;border:1px solid #333;border-radius:6px;color:#fff;font-size:13px;text-transform:uppercase;">
+    <button id="applyCouponBtn" style="padding:10px 16px;background:#222;border:1px solid #333;border-radius:6px;color:#fff;font-weight:600;cursor:pointer;font-size:13px;">Apply</button>
+  </div>
+  <div id="couponMessage" style="font-size:12px;margin-top:6px;min-height:18px;"></div>
+  <div id="appliedCoupon" style="display:none;margin-top:6px;padding:6px 10px;background:#0d2b0d;border:1px solid #2e7d32;border-radius:6px;font-size:13px;color:#81c784;justify-content:space-between;align-items:center;">
+    <span id="couponCodeDisplay"></span>
+    <span id="couponDiscountDisplay" style="font-weight:700;"></span>
+    <button id="removeCouponBtn" style="background:none;border:none;color:#ff6b00;cursor:pointer;font-size:13px;font-weight:600;">Remove</button>
+  </div>
+</div>
+<div class="summary-row">
+<span>Shipping</span>
+<strong style="color:#81c784;">FREE</strong>
 </div>
 <div class="summary-total">
 <span>Total</span>

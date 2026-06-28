@@ -486,6 +486,155 @@ app.post("/api/public/verify-payment", async (req, res) => {
   }
 });
 
+// ===========================
+// COUPON API
+// ===========================
+app.post("/api/public/validate-coupon", async (req, res) => {
+  try {
+    var { code, order_amount } = req.body;
+    if (!code) {
+      return res.json({ success: false, message: "Coupon code is required" });
+    }
+    var result = await pool.query("SELECT * FROM coupons WHERE LOWER(code) = LOWER($1)", [code.trim()]);
+    if (result.rows.length === 0) {
+      return res.json({ success: false, message: "Invalid coupon code" });
+    }
+    var coupon = result.rows[0];
+    if (!coupon.is_active) {
+      return res.json({ success: false, message: "This coupon is no longer active" });
+    }
+    if (coupon.expires_at && new Date(coupon.expires_at) < new Date()) {
+      return res.json({ success: false, message: "This coupon has expired" });
+    }
+    if (coupon.usage_limit > 0 && coupon.used_count >= coupon.usage_limit) {
+      return res.json({ success: false, message: "This coupon has reached its usage limit" });
+    }
+    if (Number(order_amount) < Number(coupon.min_order_amount)) {
+      return res.json({ success: false, message: "Minimum order amount of Rs. " + Number(coupon.min_order_amount).toFixed(0) + " required" });
+    }
+    var discount = 0;
+    if (coupon.discount_type === "percentage") {
+      discount = (Number(order_amount) * Number(coupon.discount_value)) / 100;
+      if (coupon.max_discount_amount && discount > Number(coupon.max_discount_amount)) {
+        discount = Number(coupon.max_discount_amount);
+      }
+    } else {
+      discount = Number(coupon.discount_value);
+    }
+    res.json({
+      success: true,
+      coupon: {
+        id: coupon.id,
+        code: coupon.code,
+        discount_type: coupon.discount_type,
+        discount_value: Number(coupon.discount_value),
+        max_discount_amount: coupon.max_discount_amount ? Number(coupon.max_discount_amount) : null
+      },
+      discount: Math.round(discount * 100) / 100
+    });
+  } catch (err) {
+    res.status(500).json({ success: false, message: "Failed to validate coupon" });
+  }
+});
+
+app.post("/api/admin/coupons", verifyAdmin, async (req, res) => {
+  try {
+    var { code, discount_type, discount_value, min_order_amount, max_discount_amount, usage_limit, expires_at } = req.body;
+    if (!code || !discount_type || !discount_value) {
+      return res.status(400).json({ success: false, message: "Code, discount type, and discount value are required" });
+    }
+    var result = await pool.query(
+      `INSERT INTO coupons (code, discount_type, discount_value, min_order_amount, max_discount_amount, usage_limit, expires_at)
+       VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *`,
+      [code.toUpperCase(), discount_type, discount_value, min_order_amount || 0, max_discount_amount || null, usage_limit || 0, expires_at || null]
+    );
+    res.status(201).json({ success: true, coupon: result.rows[0] });
+  } catch (err) {
+    if (err.code === "23505") {
+      return res.status(409).json({ success: false, message: "Coupon code already exists" });
+    }
+    res.status(500).json({ success: false, message: "Failed to create coupon" });
+  }
+});
+
+app.get("/api/admin/coupons", verifyAdmin, async (req, res) => {
+  try {
+    var result = await pool.query("SELECT * FROM coupons ORDER BY id DESC");
+    res.json({ success: true, coupons: result.rows });
+  } catch (err) {
+    res.status(500).json({ success: false, message: "Failed to load coupons" });
+  }
+});
+
+app.delete("/api/admin/coupons/:id", verifyAdmin, async (req, res) => {
+  try {
+    await pool.query("DELETE FROM coupons WHERE id = $1", [req.params.id]);
+    res.json({ success: true, message: "Coupon deleted" });
+  } catch (err) {
+    res.status(500).json({ success: false, message: "Failed to delete coupon" });
+  }
+});
+
+// ===========================
+// FORGOT PASSWORD
+// ===========================
+app.post("/api/public/forgot-password", async (req, res) => {
+  try {
+    var email = String(req.body.email || "").trim().toLowerCase();
+    if (!email) {
+      return res.status(400).json({ success: false, message: "Email is required" });
+    }
+    var result = await pool.query("SELECT id, name, email FROM customers WHERE email = $1", [email]);
+    if (result.rows.length === 0) {
+      return res.json({ success: true, message: "If this email exists, a reset link will be sent." });
+    }
+    var customer = result.rows[0];
+    if (!customer.email) {
+      return res.json({ success: true, message: "If this email exists, a reset link will be sent." });
+    }
+    var crypto = require("crypto");
+    var resetToken = crypto.randomBytes(32).toString("hex");
+    var resetExpiry = new Date(Date.now() + 3600000);
+    await pool.query(
+      "UPDATE customers SET reset_token = $1, reset_expiry = $2 WHERE id = $3",
+      [resetToken, resetExpiry, customer.id]
+    );
+    var resetLink = req.protocol + "://" + req.get("host") + "/reset-password.html?token=" + resetToken + "&email=" + encodeURIComponent(customer.email);
+    console.log("Password reset link for " + customer.email + ": " + resetLink);
+    res.json({ success: true, message: "Password reset link sent to your email. Check server console for the link (dev mode)." });
+  } catch (err) {
+    res.status(500).json({ success: false, message: "Failed to process request" });
+  }
+});
+
+app.post("/api/public/reset-password", async (req, res) => {
+  try {
+    var { token, email, password } = req.body;
+    if (!token || !email || !password) {
+      return res.status(400).json({ success: false, message: "Token, email, and password are required" });
+    }
+    if (password.length < 6) {
+      return res.status(400).json({ success: false, message: "Password must be at least 6 characters" });
+    }
+    var result = await pool.query(
+      "SELECT id FROM customers WHERE email = $1 AND reset_token = $2 AND reset_expiry > NOW()",
+      [email.toLowerCase().trim(), token]
+    );
+    if (result.rows.length === 0) {
+      return res.status(400).json({ success: false, message: "Invalid or expired reset token" });
+    }
+    var bcrypt = require("bcryptjs");
+    var hashed = await bcrypt.hash(password, 10);
+    await pool.query(
+      "UPDATE customers SET password = $1, reset_token = NULL, reset_expiry = NULL WHERE id = $2",
+      [hashed, result.rows[0].id]
+    );
+    res.json({ success: true, message: "Password reset successfully. You can now login." });
+  } catch (err) {
+    res.status(500).json({ success: false, message: "Failed to reset password" });
+  }
+});
+
 app.get("/api/admin/seed", async (req, res) => {
   try {
     const bcrypt = require("bcryptjs");
@@ -816,6 +965,51 @@ var HOST = process.env.HOST || "0.0.0.0";
     console.log("Database migration: product_images table created/verified");
   } catch (err) {
     console.error("Product images table migration error (non-fatal):", err.message);
+  }
+
+  // Add reset_password fields to customers
+  try {
+    await pool.query(`
+      ALTER TABLE customers
+        ADD COLUMN IF NOT EXISTS reset_token TEXT DEFAULT NULL,
+        ADD COLUMN IF NOT EXISTS reset_expiry TIMESTAMP DEFAULT NULL
+    `);
+    console.log("Database migration: reset_token/reset_expiry columns added");
+  } catch (err) {
+    console.error("Reset password migration error (non-fatal):", err.message);
+  }
+
+  // Create coupons table
+  try {
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS coupons (
+        id SERIAL PRIMARY KEY,
+        code VARCHAR(50) UNIQUE NOT NULL,
+        discount_type VARCHAR(10) NOT NULL DEFAULT 'percentage',
+        discount_value NUMERIC(10,2) NOT NULL DEFAULT 0,
+        min_order_amount NUMERIC(10,2) DEFAULT 0,
+        max_discount_amount NUMERIC(10,2) DEFAULT NULL,
+        usage_limit INTEGER DEFAULT 0,
+        used_count INTEGER DEFAULT 0,
+        is_active BOOLEAN DEFAULT TRUE,
+        expires_at TIMESTAMP DEFAULT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      )
+    `);
+    // Seed default coupon
+    await pool.query(`
+      INSERT INTO coupons (code, discount_type, discount_value, min_order_amount, max_discount_amount, is_active)
+      VALUES ('PEHRAWA10', 'percentage', 10, 999, 200, TRUE)
+      ON CONFLICT (code) DO NOTHING
+    `);
+    await pool.query(`
+      INSERT INTO coupons (code, discount_type, discount_value, min_order_amount, is_active)
+      VALUES ('WELCOME20', 'percentage', 20, 499, NULL, TRUE)
+      ON CONFLICT (code) DO NOTHING
+    `);
+    console.log("Database migration: coupons table created/verified");
+  } catch (err) {
+    console.error("Coupons migration error (non-fatal):", err.message);
   }
 })();
 

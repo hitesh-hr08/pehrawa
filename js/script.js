@@ -140,21 +140,29 @@ function addToWishlist(productId) {
 updateWishlistCount();
 
 function findProductInDOM(productId) {
-  var cards = document.querySelectorAll(".product-card");
-  for (var i = 0; i < cards.length; i++) {
-    var card = cards[i];
-    var h3 = card.querySelector("h3");
-    var priceEl = card.querySelector(".price");
-    var img = card.querySelector(".product-image img");
-    if (h3 && priceEl) {
-      var name = h3.innerText || h3.textContent;
-      var priceText = (priceEl.innerText || priceEl.textContent).replace(/[^0-9.]/g, "");
-      return {
-        name: name.trim(),
-        price: parseFloat(priceText) || 0,
-        image: img ? img.src : "../images/product1.png"
-      };
+  var card = document.querySelector('.product-card .buy-now-btn[data-id="' + productId + '"]');
+  if (card) {
+    card = card.closest(".product-card");
+  } else {
+    var cards = document.querySelectorAll(".product-card");
+    for (var i = 0; i < cards.length; i++) {
+      var btn = cards[i].querySelector('.buy-now-btn[data-id="' + productId + '"]');
+      if (btn) { card = cards[i]; break; }
     }
+    if (!card) card = cards[0];
+  }
+  if (!card) return null;
+  var h3 = card.querySelector("h3");
+  var priceEl = card.querySelector(".price");
+  var img = card.querySelector(".product-image img");
+  if (h3 && priceEl) {
+    var name = h3.innerText || h3.textContent;
+    var priceText = (priceEl.innerText || priceEl.textContent).replace(/[^0-9.]/g, "");
+    return {
+      name: name.trim(),
+      price: parseFloat(priceText) || 0,
+      image: img ? img.src : "../images/product1.png"
+    };
   }
   return null;
 }
@@ -354,51 +362,113 @@ if (checkoutForm) {
     btn.disabled = true;
     btn.textContent = "Processing...";
 
-    const productId = document.getElementById("checkoutProductId").value;
-    const productNameEl = document.querySelector("#checkoutProduct span");
-    const price = document.getElementById("checkoutPrice").value;
+    const price = Number(document.getElementById("checkoutPrice").value);
+    const qty = Number(document.getElementById("checkoutQty").value) || 1;
+    const total = price * qty;
+
+    if (total < 1) {
+      showToast("Invalid amount");
+      btn.disabled = false;
+      btn.textContent = "Place Order";
+      return;
+    }
 
     var cust = window.getCustomer ? window.getCustomer() : null;
-    var name = document.getElementById("checkoutName").value;
-    var phone = document.getElementById("checkoutPhone").value;
-    var address = document.getElementById("checkoutAddress").value + ", " + (document.getElementById("checkoutCity").value || "") + ", " + (document.getElementById("checkoutDistrict").value || "") + ", " + (document.getElementById("checkoutState").value || "") + ", Pincode: " + document.getElementById("checkoutPincode").value;
+    var name = document.getElementById("checkoutName").value.trim();
+    var phone = document.getElementById("checkoutPhone").value.trim();
+    var address = document.getElementById("checkoutAddress").value.trim();
+    var pincode = document.getElementById("checkoutPincode").value.trim();
+    var city = document.getElementById("checkoutCity").value.trim();
+    var district = document.getElementById("checkoutDistrict").value.trim();
+    var state = document.getElementById("checkoutState").value.trim();
 
+    if (!name || !phone || !address || !pincode) {
+      showToast("Please fill all required fields");
+      btn.disabled = false;
+      btn.textContent = "Place Order";
+      return;
+    }
+
+    var fullAddress = address + (district ? ", " + district : "") + ", " + city + ", " + state + " - " + pincode;
     var api = window.PEHRAWA_API_BASE || "http://localhost:5000";
+    var productName = (document.querySelector("#checkoutProduct span")?.textContent?.split(" - ")[0]) || "Product";
+    var size = document.getElementById("checkoutSize").value;
 
+    // Step 1: Create Razorpay order
+    var rzpRes;
     try {
-      var payload = {
-        customer_name: name,
-        phone: phone,
-        address: address,
-        total_amount: Number(price),
-        customer_id: cust ? cust.id : (localStorage.getItem("customerId") || null),
-        items: [{
-          name: productNameEl ? productNameEl.textContent.split(" - ")[0] : "Product",
-          size: document.getElementById("checkoutSize").value,
-          quantity: Number(document.getElementById("checkoutQty").value),
-          price: Number(price)
-        }]
-      };
-
-      const res = await fetch(api + "/api/public/orders", {
+      rzpRes = await fetch(api + "/api/public/create-razorpay-order", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload)
+        body: JSON.stringify({ amount: total })
       });
-      const data = await res.json();
-      if (data.success) {
-        showToast("✅ Order submitted successfully!");
-        checkoutOverlay.classList.remove("active");
-        checkoutForm.reset();
-        setTimeout(function () { window.location.href = "my-orders.html"; }, 1500);
-      } else {
-        showToast(data.message || "Failed to place order");
-      }
-    } catch (err) {
-      showToast("Error placing order. Try again.");
+    } catch (e) {
+      showToast("Payment service unavailable");
+      btn.disabled = false;
+      btn.textContent = "Place Order";
+      return;
     }
-    btn.disabled = false;
-    btn.textContent = "Place Order";
+    var rzpData = await rzpRes.json();
+    if (!rzpData.success) {
+      showToast(rzpData.message || "Payment initiation failed");
+      btn.disabled = false;
+      btn.textContent = "Place Order";
+      return;
+    }
+
+    // Step 2: Open Razorpay checkout
+    var options = {
+      key: "rzp_live_T6aA0kd4BdVC3q",
+      amount: rzpData.amount,
+      currency: "INR",
+      name: "Pehrawa",
+      order_id: rzpData.order_id,
+      theme: { color: "#ff6b00" },
+      handler: async function (response) {
+        try {
+          var res = await fetch(api + "/api/public/orders", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "Authorization": "Bearer " + (window.getCustomerToken ? window.getCustomerToken() : "")
+            },
+            body: JSON.stringify({
+              customer_name: name,
+              phone: phone,
+              address: fullAddress,
+              total_amount: total,
+              status: "Pending",
+              payment_status: "paid",
+              razorpay_payment_id: response.razorpay_payment_id,
+              customer_id: cust ? cust.id : (localStorage.getItem("customerId") || null),
+              items: [{ name: productName, size: size, quantity: qty, price: price }]
+            })
+          });
+          var data = await res.json();
+          if (data.success) {
+            showToast("✅ Payment successful! Order placed.");
+            checkoutOverlay.classList.remove("active");
+            checkoutForm.reset();
+            setTimeout(function () { window.location.href = "my-orders.html"; }, 1500);
+          } else {
+            showToast(data.message || "Failed to place order");
+          }
+        } catch (err) {
+          showToast("Error placing order");
+        }
+        btn.disabled = false;
+        btn.textContent = "Place Order";
+      },
+      modal: {
+        ondismiss: function () {
+          showToast("Payment cancelled");
+          btn.disabled = false;
+          btn.textContent = "Place Order";
+        }
+      }
+    };
+    var rzp = new Razorpay(options);
+    rzp.open();
   });
 }
 

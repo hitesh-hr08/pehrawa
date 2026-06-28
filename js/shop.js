@@ -61,9 +61,14 @@
           '<span class="orig">&#8377;' + origPrice + '</span>' +
           '<span class="discount">' + discount + '% off</span>' +
         '</div>' +
-        '<button class="buy-now-btn" data-id="' + product.id + '" data-name="' + product.name.replace(/'/g, "\\'") + '" data-price="' + price + '" data-image="' + imageUrl + '">' +
-          '<i class="fa-solid fa-bag-shopping"></i>ADD TO CART' +
+        '<div class="shop-btn-group">' +
+        '<button class="add-cart-btn" data-id="' + product.id + '">' +
+          '<i class="fa-solid fa-cart-plus"></i> ADD TO CART' +
         '</button>' +
+        '<button class="buy-now-btn" data-id="' + product.id + '" data-name="' + product.name.replace(/'/g, "\\'") + '" data-price="' + price + '" data-image="' + imageUrl + '">' +
+          '<i class="fa-solid fa-bag-shopping"></i> BUY NOW' +
+        '</button>' +
+        '</div>' +
       '</div>' +
     '</div>';
   }
@@ -104,7 +109,9 @@
       id: product.id,
       name: product.name,
       price: Number(product.price),
-      image: product.image_url || "../images/product1.png"
+      image: product.image_url || "../images/product1.png",
+      size: "M",
+      quantity: 1
     });
     localStorage.setItem(key, JSON.stringify(currentItems));
     var selector = key === "cart" ? ".fa-cart-shopping" : ".fa-heart";
@@ -116,6 +123,15 @@
 
   window.addToCart = function (productId) { saveItem("cart", productId); };
   window.addToWishlist = function (productId) { saveItem("wishlist", productId); };
+
+  // Add to Cart button handler
+  productGrid.addEventListener("click", function(e) {
+    var btn = e.target.closest(".add-cart-btn");
+    if (!btn) return;
+    e.preventDefault();
+    var id = parseInt(btn.getAttribute("data-id"));
+    if (id) window.addToCart(id);
+  });
 
   filterButtons.forEach(function(button) {
     button.addEventListener("click", function() {

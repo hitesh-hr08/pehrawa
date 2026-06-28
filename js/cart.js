@@ -97,6 +97,10 @@ async function saveCurrentAddress() {
   } catch (e) {}
 }
 
+// Coupon state
+var appliedCoupon = null;
+var couponDiscount = 0;
+
 // Load saved addresses on page load
 if (document.getElementById("savedAddressesSection")) {
   loadSavedAddresses();
@@ -170,9 +174,11 @@ function renderCart() {
 }
 
 function updateSummary(itemCount, total) {
+  var finalTotal = total - couponDiscount;
+  if (finalTotal < 0) finalTotal = 0;
   cartItemCount.innerText = itemCount;
   cartSubtotal.innerText = total.toFixed(2);
-  cartTotal.innerText = total.toFixed(2);
+  cartTotal.innerText = finalTotal.toFixed(2);
   var summaryCount = document.getElementById("summaryItemCount");
   if (summaryCount) summaryCount.innerText = itemCount;
   updateHeaderCartCount(itemCount);
@@ -219,9 +225,12 @@ async function placeOrder() {
     return;
   }
 
-  var total = cart.reduce(function (sum, item) {
+  var subtotal = cart.reduce(function (sum, item) {
     return sum + (Number(item.price) * Number(item.quantity || 1));
   }, 0);
+  var finalTotal = subtotal - couponDiscount;
+  if (finalTotal < 0) finalTotal = 0;
+
   var savedCustomerId = null;
   var cust = window.getCustomer ? window.getCustomer() : null;
   if (cust && cust.id) {
@@ -236,7 +245,7 @@ async function placeOrder() {
 
   var saveCb = document.getElementById("saveAddressCheck");
   if (saveCb && saveCb.checked) {
-    saveCurrentAddress();
+    await saveCurrentAddress();
   }
 
   var api = window.PEHRAWA_API_BASE || "http://localhost:5000";
@@ -247,7 +256,7 @@ async function placeOrder() {
     rzpRes = await fetch(api + "/api/public/create-razorpay-order", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ amount: total })
+      body: JSON.stringify({ amount: finalTotal })
     });
   } catch (e) {
     if (typeof showToast === "function") showToast("Payment service unavailable");
@@ -273,7 +282,6 @@ async function placeOrder() {
     order_id: rzpData.order_id,
     theme: { color: "#ff6b00" },
     handler: async function (response) {
-      // Payment success — submit order
       try {
         var res = await fetch(api + "/api/public/orders", {
           method: "POST",
@@ -286,9 +294,12 @@ async function placeOrder() {
             customer_id: savedCustomerId,
             phone: customerPhone,
             address: fullAddress,
-            total_amount: total,
+            total_amount: finalTotal,
+            original_amount: subtotal,
             status: "Pending",
             payment_status: "paid",
+            coupon_code: appliedCoupon ? appliedCoupon.code : null,
+            coupon_discount: couponDiscount,
             razorpay_payment_id: response.razorpay_payment_id,
             items: cart.map(function (item) {
               return { id: item.id, name: item.name, price: item.price, quantity: item.quantity, size: item.size };
@@ -300,6 +311,8 @@ async function placeOrder() {
           cart = [];
           saveCart();
           renderCart();
+          appliedCoupon = null;
+          couponDiscount = 0;
           if (typeof showToast === "function") showToast("✅ Payment successful! Order placed.");
           setTimeout(function () { window.location.href = "my-orders.html"; }, 1500);
         } else {
@@ -334,5 +347,61 @@ if (checkoutBtn) {
 if (clearCartBtn) {
   clearCartBtn.addEventListener("click", clearCart);
 }
+
+// ===============================
+// COUPON UI
+// ===============================
+document.getElementById("applyCouponBtn").addEventListener("click", async function() {
+  var input = document.getElementById("couponInput");
+  var code = input.value.trim();
+  if (!code) {
+    document.getElementById("couponMessage").textContent = "Please enter a coupon code";
+    return;
+  }
+  var total = cart.reduce(function(sum, item) {
+    return sum + (Number(item.price) * Number(item.quantity || 1));
+  }, 0);
+  var api = window.PEHRAWA_API_BASE || "http://localhost:5000";
+  var btn = document.getElementById("applyCouponBtn");
+  btn.disabled = true;
+  btn.textContent = "Validating...";
+  try {
+    var res = await fetch(api + "/api/public/validate-coupon", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ code: code, order_amount: total })
+    });
+    var data = await res.json();
+    if (data.success) {
+      appliedCoupon = data.coupon;
+      couponDiscount = data.discount;
+      document.getElementById("couponMessage").textContent = "";
+      document.getElementById("appliedCoupon").style.display = "flex";
+      document.getElementById("couponCodeDisplay").textContent = data.coupon.code;
+      document.getElementById("couponDiscountDisplay").textContent = "- Rs. " + couponDiscount.toFixed(2);
+      renderCart();
+    } else {
+      couponDiscount = 0;
+      appliedCoupon = null;
+      document.getElementById("appliedCoupon").style.display = "none";
+      document.getElementById("couponMessage").textContent = data.message || "Invalid coupon";
+      document.getElementById("couponMessage").style.color = "#ff4d4d";
+      renderCart();
+    }
+  } catch (err) {
+    document.getElementById("couponMessage").textContent = "Failed to validate coupon";
+  }
+  btn.disabled = false;
+  btn.textContent = "Apply";
+});
+
+document.getElementById("removeCouponBtn").addEventListener("click", function() {
+  appliedCoupon = null;
+  couponDiscount = 0;
+  document.getElementById("appliedCoupon").style.display = "none";
+  document.getElementById("couponInput").value = "";
+  document.getElementById("couponMessage").textContent = "";
+  renderCart();
+});
 
 renderCart();
