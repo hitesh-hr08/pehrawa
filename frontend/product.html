@@ -120,8 +120,8 @@
       <div id="buySavedAddressesSection" style="display:none;margin-bottom:12px;">
         <label style="color:#ff6b00;font-weight:600;font-size:13px;margin-bottom:8px;display:block;">SAVED ADDRESSES</label>
         <div id="buySavedAddressList"></div>
-        <button id="buyToggleNewAddrBtn" type="button" style="width:100%;padding:10px;margin-bottom:12px;background:transparent;border:2px dashed #333;border-radius:8px;color:#ff6b00;font-weight:600;cursor:pointer;font-size:13px;transition:.3s;" onmouseover="this.style.borderColor='#ff6b00'" onmouseout="this.style.borderColor='#333'"><i class="fa-solid fa-plus"></i> Add New Address</button>
         <button id="buySavedAddrContinue" type="button" class="checkout-submit" style="display:none;">Deliver Here</button>
+        <button id="buyToggleNewAddrBtn" type="button" style="width:100%;padding:10px;margin-top:10px;background:transparent;border:2px dashed #333;border-radius:8px;color:#ff6b00;font-weight:600;cursor:pointer;font-size:13px;transition:.3s;" onmouseover="this.style.borderColor='#ff6b00'" onmouseout="this.style.borderColor='#333'"><i class="fa-solid fa-plus"></i> Add New Address</button>
       </div>
       <div id="buyNewAddressForm" style="display:none;">
         <form id="buyAddressForm">
@@ -139,6 +139,7 @@
             <label for="buySaveAddressCheck" style="color:#aaa;font-size:13px;cursor:pointer;">Save this address for future orders</label>
           </div>
           <button type="submit" class="checkout-submit">Continue</button>
+          <button id="buyBackToSavedBtn" type="button" style="width:100%;padding:10px;background:transparent;border:1px solid #333;border-radius:8px;color:#aaa;font-weight:600;cursor:pointer;font-size:13px;">Back to saved addresses</button>
         </form>
       </div>
     </div>

@@ -12,19 +12,7 @@ const staticProducts = [
   { id: 4, name: "Abstract Vision Tee", price: 749, original_price: 1099, image_url: "../images/product3.png", category: "GRAPHIC", description: "Abstract art graphic t-shirt.", stock_status: "in_stock" },
   { id: 5, name: "Minimal Logo Tee", price: 699, original_price: 999, image_url: "../images/product4.png", category: "MINIMAL", description: "Minimal logo design t-shirt.", stock_status: "in_stock" },
   { id: 6, name: "Street Graphic Tee", price: 849, original_price: 1299, image_url: "../images/product5.png", category: "GRAPHIC", description: "Street style graphic tee.", stock_status: "in_stock" },
-  { id: 7, name: "Urban Anime Tee", price: 799, original_price: 1199, image_url: "../images/product6.png", category: "ANIME OVERSIZED", description: "Urban anime oversized t-shirt.", stock_status: "in_stock" },
-  { id: 8, name: "Classic Oxford Shirt", price: 1299, original_price: 1799, image_url: "../images/Shirt1.avif", category: "SHIRTS", description: "Classic oxford shirt for men.", stock_status: "in_stock" },
-  { id: 9, name: "Black Cuban Collar Shirt", price: 1399, original_price: 1899, image_url: "../images/Shirt2.webp", category: "SHIRTS", description: "Cuban collar shirt in black.", stock_status: "in_stock" },
-  { id: 10, name: "Relaxed Denim Shirt", price: 1599, original_price: 2199, image_url: "../images/Shirt3.webp", category: "SHIRTS", description: "Denim shirt relaxed fit.", stock_status: "in_stock" },
-  { id: 11, name: "White Street Sneakers", price: 2499, original_price: 3499, image_url: "../images/Footwear1.webp", category: "FOOTWEAR", description: "White street sneakers.", stock_status: "in_stock" },
-  { id: 12, name: "Urban Slip-On Loafers", price: 2199, original_price: 2999, image_url: "../images/Footwear2.jpg", category: "FOOTWEAR", description: "Urban slip-on loafers.", stock_status: "in_stock" },
-  { id: 13, name: "Chunky Street Sneakers", price: 2899, original_price: 3999, image_url: "../images/Footwear3.jpg", category: "FOOTWEAR", description: "Chunky sole sneakers.", stock_status: "in_stock" },
-  { id: 14, name: "Aviator Sunglasses", price: 999, original_price: 1499, image_url: "../images/Sunglasses1.webp", category: "SUNGLASSES", description: "Classic aviator sunglasses.", stock_status: "in_stock" },
-  { id: 15, name: "Square Black Sunglasses", price: 1099, original_price: 1599, image_url: "../images/Sunglasses2.webp", category: "SUNGLASSES", description: "Square frame black sunglasses.", stock_status: "in_stock" },
-  { id: 16, name: "Minimal Black Watch", price: 1899, original_price: 2599, image_url: "../images/Watch1.jpg", category: "WATCHES", description: "Minimal black dial watch.", stock_status: "in_stock" },
-  { id: 17, name: "Brown Strap Chrono Watch", price: 2299, original_price: 3299, image_url: "../images/Watch2.jpg", category: "WATCHES", description: "Brown strap chronograph watch.", stock_status: "in_stock" },
-  { id: 18, name: "Slim Black Jeans", price: 1499, original_price: 2199, image_url: "../images/Jean1.webp", category: "JEANS", description: "Slim fit black jeans.", stock_status: "in_stock" },
-  { id: 19, name: "Blue Straight Jeans", price: 1599, original_price: 2299, image_url: "../images/Jean2.webp", category: "JEANS", description: "Straight fit blue jeans.", stock_status: "in_stock" }
+  { id: 7, name: "Urban Anime Tee", price: 799, original_price: 1199, image_url: "../images/product6.png", category: "ANIME OVERSIZED", description: "Urban anime oversized t-shirt.", stock_status: "in_stock" }
 ];
 
 var qtyInput = document.getElementById("quantity");
@@ -365,7 +353,7 @@ function renderBuyAddressCards() {
     return;
   }
   section.style.display = "block";
-  if (form) form.style.display = "none";
+  if (!buyUseNewAddress && form) form.style.display = "none";
   var html = "";
   buySavedAddresses.forEach(function(addr) {
     var isSelected = buySelectedAddressId == addr.id || (!buySelectedAddressId && addr.is_default);
@@ -386,7 +374,7 @@ function renderBuyAddressCards() {
   if (defaultAddr && !buySelectedAddressId) {
     buySelectedAddressId = defaultAddr.id;
   }
-  if (contBtn) contBtn.style.display = buySelectedAddressId ? "block" : "none";
+  if (contBtn) contBtn.style.display = (buySelectedAddressId && !buyUseNewAddress) ? "block" : "none";
 }
 
 window.selectBuyAddrCard = function(id) {
@@ -396,6 +384,8 @@ window.selectBuyAddrCard = function(id) {
   if (form) form.style.display = "none";
   var contBtn = document.getElementById("buySavedAddrContinue");
   if (contBtn) contBtn.style.display = "block";
+  var btn = document.getElementById("buyToggleNewAddrBtn");
+  if (btn) btn.style.display = "block";
   renderBuyAddressCards();
 };
 
@@ -411,9 +401,16 @@ window.deleteBuyAddr = async function(id) {
       headers: { "Authorization": "Bearer " + token }
     });
     buySavedAddresses = buySavedAddresses.filter(function(a) { return a.id !== id; });
-    if (buySelectedAddressId === id) buySelectedAddressId = null;
-    var contBtn = document.getElementById("buySavedAddrContinue");
-    if (contBtn) contBtn.style.display = "none";
+    if (buySelectedAddressId === id) {
+      buySelectedAddressId = buySavedAddresses.length > 0 ? buySavedAddresses[0].id : null;
+    }
+    if (buySavedAddresses.length === 0) {
+      buyUseNewAddress = true;
+      var form = document.getElementById("buyNewAddressForm");
+      var section = document.getElementById("buySavedAddressesSection");
+      if (form) form.style.display = "block";
+      if (section) section.style.display = "none";
+    }
     renderBuyAddressCards();
   } catch (e) {}
 };
@@ -454,30 +451,39 @@ document.getElementById("buySavedAddrContinue")?.addEventListener("click", funct
 });
 
 // "Add New Address" toggle for buy flow
-document.addEventListener("click", function(e) {
-  var btn = e.target.closest("#buyToggleNewAddrBtn");
-  if (btn) {
-    e.preventDefault();
-    buyUseNewAddress = true;
-    buySelectedAddressId = null;
-    var section = document.getElementById("buySavedAddressesSection");
-    var form = document.getElementById("buyNewAddressForm");
-    var contBtn = document.getElementById("buySavedAddrContinue");
-    if (section) section.style.display = "none";
-    if (form) form.style.display = "block";
-    if (contBtn) contBtn.style.display = "none";
-    var cust = window.getCustomer ? window.getCustomer() : null;
-    if (cust) {
-      if (document.getElementById("buyName")) document.getElementById("buyName").value = cust.name || "";
-      if (document.getElementById("buyPhone")) document.getElementById("buyPhone").value = cust.phone || "";
-    }
-    document.getElementById("buyAddress").value = "";
-    document.getElementById("buyPincode").value = "";
-    document.getElementById("buyCity").value = "";
-    document.getElementById("buyState").value = "";
-    document.getElementById("buyDistrict").value = "";
-    renderBuyAddressCards();
+document.getElementById("buyToggleNewAddrBtn")?.addEventListener("click", function(e) {
+  e.preventDefault();
+  buyUseNewAddress = true;
+  buySelectedAddressId = null;
+  var form = document.getElementById("buyNewAddressForm");
+  var contBtn = document.getElementById("buySavedAddrContinue");
+  var list = document.getElementById("buySavedAddressList");
+  if (list) list.style.display = "none";
+  if (contBtn) contBtn.style.display = "none";
+  if (form) form.style.display = "block";
+  var cust = window.getCustomer ? window.getCustomer() : null;
+  if (cust) {
+    if (document.getElementById("buyName")) document.getElementById("buyName").value = cust.name || "";
+    if (document.getElementById("buyPhone")) document.getElementById("buyPhone").value = cust.phone || "";
   }
+  document.getElementById("buyAddress").value = "";
+  document.getElementById("buyPincode").value = "";
+  document.getElementById("buyCity").value = "";
+  document.getElementById("buyState").value = "";
+  document.getElementById("buyDistrict").value = "";
+  renderBuyAddressCards();
+});
+
+// "Back to saved addresses" button
+document.getElementById("buyBackToSavedBtn")?.addEventListener("click", function() {
+  buyUseNewAddress = false;
+  var form = document.getElementById("buyNewAddressForm");
+  var list = document.getElementById("buySavedAddressList");
+  var contBtn = document.getElementById("buySavedAddrContinue");
+  if (form) form.style.display = "none";
+  if (list) list.style.display = "block";
+  if (contBtn && buySelectedAddressId) contBtn.style.display = "block";
+  renderBuyAddressCards();
 });
 
 // Step navigation
