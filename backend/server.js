@@ -652,12 +652,7 @@ app.get("/api/admin/seed", async (req, res) => {
 // Debug: fix prices by ID
 app.get("/api/debug/fix-prices", async (req, res) => {
   try {
-    await pool.query("UPDATE products SET price = 799, original_price = NULL WHERE id = 2");
-    await pool.query("UPDATE products SET price = 749, original_price = NULL WHERE id = 3");
-    await pool.query("UPDATE products SET price = 749, original_price = NULL WHERE id = 4");
-    await pool.query("UPDATE products SET price = 699, original_price = NULL WHERE id = 5");
-    await pool.query("UPDATE products SET price = 849, original_price = NULL WHERE id = 6");
-    await pool.query("UPDATE products SET price = 799, original_price = 999 WHERE id = 7");
+    await pool.query("UPDATE products SET price = 399, original_price = NULL WHERE category = 'T-Shirts'");
     var rows = (await pool.query("SELECT id, name, price, original_price FROM products ORDER BY id")).rows;
     res.json({ success: true, products: rows });
   } catch (err) {
@@ -1028,17 +1023,11 @@ var HOST = process.env.HOST || "0.0.0.0";
     console.error("Coupons migration error (non-fatal):", err.message);
   }
 
-  // Force correct prices on all T-Shirt products
+  // Set all T-Shirt prices to 399
   try {
-    await pool.query(`UPDATE products SET price = 799, original_price = NULL WHERE name = 'Black Printed Tees'`);
-    await pool.query(`UPDATE products SET price = 799, original_price = NULL WHERE name = 'Fearless Oversized Tee'`);
-    await pool.query(`UPDATE products SET price = 749, original_price = NULL WHERE name = 'Shadow Anime Tee'`);
-    await pool.query(`UPDATE products SET price = 749, original_price = NULL WHERE name = 'Abstract Vision Tee'`);
-    await pool.query(`UPDATE products SET price = 699, original_price = NULL WHERE name = 'Minimal Logo Tee'`);
-    await pool.query(`UPDATE products SET price = 849, original_price = NULL WHERE name = 'Street Graphic Tee'`);
-    await pool.query(`UPDATE products SET price = 799, original_price = 999 WHERE name = 'Urban Anime Tee'`);
+    await pool.query("UPDATE products SET price = 399, original_price = NULL WHERE category = 'T-Shirts'");
     var c = await pool.query('SELECT COUNT(*) as cnt FROM products WHERE category = $1', ['T-Shirts']);
-    console.log("Database migration: prices forced for", c.rows[0].cnt, "T-Shirt products");
+    console.log("Database migration: T-Shirt prices set to 399 for", c.rows[0].cnt, "products");
   } catch (err) {
     console.error("Price fix migration error (non-fatal):", err.message);
   }
@@ -1047,24 +1036,13 @@ var HOST = process.env.HOST || "0.0.0.0";
   try {
     await pool.query(`
       INSERT INTO products (name, description, price, image_url, stock, category, stock_status)
-      SELECT 'Black Printed Tees', 'Premium black printed t-shirt with a bold streetwear graphic.', 799, '/images/black-printed-tees.png', 20, 'T-Shirts', 'in_stock'
+      SELECT 'Black Printed Tees', 'Premium black printed t-shirt with a bold streetwear graphic.', 399, '/images/black-printed-tees.png', 20, 'T-Shirts', 'in_stock'
       WHERE NOT EXISTS (SELECT 1 FROM products WHERE name ILIKE 'Black Printed Tees')
     `);
     console.log("Database migration: Black Printed Tees ensured");
   } catch (err) {
     console.error("Black Printed Tees migration error (non-fatal):", err.message);
   }
-
-  // Run price fix again after server starts to override any startup overrides
-  setTimeout(async function() {
-    try {
-      await pool.query(`UPDATE products SET price = 799, original_price = NULL WHERE name = 'Fearless Oversized Tee'`);
-      await pool.query(`UPDATE products SET price = 749, original_price = NULL WHERE name = 'Shadow Anime Tee'`);
-      console.log("Delayed price fix applied");
-    } catch (e) {
-      console.error("Delayed price fix error:", e.message);
-    }
-  }, 5000);
 })();
 
 app.listen(PORT, HOST, function () {

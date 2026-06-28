@@ -8,13 +8,13 @@
   let searchTerm = "";
 
   const staticFallback = [
-    { id: 1, name: "Black Printed Tees", price: 799, image_url: "../images/product1.png", category: "Printed T-Shirts" },
-    { id: 2, name: "Fearless Oversized Tee", price: 799, image_url: "../images/product1.png", category: "OVERSIZED GRAPHIC" },
-    { id: 3, name: "Shadow Anime Tee", price: 749, image_url: "../images/product2.png", category: "ANIME" },
-    { id: 4, name: "Abstract Vision Tee", price: 749, image_url: "../images/product3.png", category: "GRAPHIC" },
-    { id: 5, name: "Minimal Logo Tee", price: 699, image_url: "../images/product4.png", category: "MINIMAL" },
-    { id: 6, name: "Street Graphic Tee", price: 849, image_url: "../images/product5.png", category: "GRAPHIC" },
-    { id: 7, name: "Urban Anime Tee", price: 799, image_url: "../images/product6.png", category: "ANIME OVERSIZED" }
+    { id: 1, name: "Black Printed Tees", price: 399, image_url: "../images/product1.png", category: "Printed T-Shirts" },
+    { id: 2, name: "Fearless Oversized Tee", price: 399, image_url: "../images/product1.png", category: "OVERSIZED GRAPHIC" },
+    { id: 3, name: "Shadow Anime Tee", price: 399, image_url: "../images/product2.png", category: "ANIME" },
+    { id: 4, name: "Abstract Vision Tee", price: 399, image_url: "../images/product3.png", category: "GRAPHIC" },
+    { id: 5, name: "Minimal Logo Tee", price: 399, image_url: "../images/product4.png", category: "MINIMAL" },
+    { id: 6, name: "Street Graphic Tee", price: 399, image_url: "../images/product5.png", category: "GRAPHIC" },
+    { id: 7, name: "Urban Anime Tee", price: 399, image_url: "../images/product6.png", category: "ANIME OVERSIZED" }
   ];
 
   if (!productGrid) return;

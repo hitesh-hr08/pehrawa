@@ -6,13 +6,13 @@ const params = new URLSearchParams(window.location.search);
 const productId = params.get("id");
 
 const staticProducts = [
-  { id: 1, name: "Black Printed Tees", price: 799, original_price: 1199, image_url: "../images/product1.png", category: "Printed T-Shirts", description: "Premium cotton printed t-shirt.", stock_status: "in_stock" },
-  { id: 2, name: "Fearless Oversized Tee", price: 799, original_price: 1199, image_url: "../images/product1.png", category: "OVERSIZED GRAPHIC", description: "Premium cotton oversized t-shirt with high quality print.", stock_status: "in_stock" },
-  { id: 3, name: "Shadow Anime Tee", price: 749, original_price: 999, image_url: "../images/product2.png", category: "ANIME", description: "Anime inspired graphic tee.", stock_status: "in_stock" },
-  { id: 4, name: "Abstract Vision Tee", price: 749, original_price: 1099, image_url: "../images/product3.png", category: "GRAPHIC", description: "Abstract art graphic t-shirt.", stock_status: "in_stock" },
-  { id: 5, name: "Minimal Logo Tee", price: 699, original_price: 999, image_url: "../images/product4.png", category: "MINIMAL", description: "Minimal logo design t-shirt.", stock_status: "in_stock" },
-  { id: 6, name: "Street Graphic Tee", price: 849, original_price: 1299, image_url: "../images/product5.png", category: "GRAPHIC", description: "Street style graphic tee.", stock_status: "in_stock" },
-  { id: 7, name: "Urban Anime Tee", price: 799, original_price: 1199, image_url: "../images/product6.png", category: "ANIME OVERSIZED", description: "Urban anime oversized t-shirt.", stock_status: "in_stock" }
+  { id: 1, name: "Black Printed Tees", price: 399, original_price: null, image_url: "../images/product1.png", category: "Printed T-Shirts", description: "Premium cotton printed t-shirt.", stock_status: "in_stock" },
+  { id: 2, name: "Fearless Oversized Tee", price: 399, original_price: null, image_url: "../images/product1.png", category: "OVERSIZED GRAPHIC", description: "Premium cotton oversized t-shirt with high quality print.", stock_status: "in_stock" },
+  { id: 3, name: "Shadow Anime Tee", price: 399, original_price: null, image_url: "../images/product2.png", category: "ANIME", description: "Anime inspired graphic tee.", stock_status: "in_stock" },
+  { id: 4, name: "Abstract Vision Tee", price: 399, original_price: null, image_url: "../images/product3.png", category: "GRAPHIC", description: "Abstract art graphic t-shirt.", stock_status: "in_stock" },
+  { id: 5, name: "Minimal Logo Tee", price: 399, original_price: null, image_url: "../images/product4.png", category: "MINIMAL", description: "Minimal logo design t-shirt.", stock_status: "in_stock" },
+  { id: 6, name: "Street Graphic Tee", price: 399, original_price: null, image_url: "../images/product5.png", category: "GRAPHIC", description: "Street style graphic tee.", stock_status: "in_stock" },
+  { id: 7, name: "Urban Anime Tee", price: 399, original_price: null, image_url: "../images/product6.png", category: "ANIME OVERSIZED", description: "Urban anime oversized t-shirt.", stock_status: "in_stock" }
 ];
 
 var qtyInput = document.getElementById("quantity");
