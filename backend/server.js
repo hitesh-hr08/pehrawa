@@ -1012,24 +1012,27 @@ var HOST = process.env.HOST || "0.0.0.0";
     console.error("Coupons migration error (non-fatal):", err.message);
   }
 
-  // Fix product prices (match by name for reliability across environments)
+  // Fix product prices for all T-Shirt products
   try {
-    var result;
-    result = await pool.query(`UPDATE products SET price = 799, original_price = NULL WHERE name = 'Black Printed Tees'`);
-    console.log("Price fix Black Printed Tees:", result.rowCount, "rows");
-    result = await pool.query(`UPDATE products SET price = 799, original_price = NULL WHERE name = 'Fearless Oversized Tee'`);
-    console.log("Price fix Fearless Oversized Tee:", result.rowCount, "rows");
-    result = await pool.query(`UPDATE products SET price = 749, original_price = NULL WHERE name = 'Shadow Anime Tee'`);
-    console.log("Price fix Shadow Anime Tee:", result.rowCount, "rows");
-    result = await pool.query(`UPDATE products SET price = 749, original_price = NULL WHERE name = 'Abstract Vision Tee'`);
-    console.log("Price fix Abstract Vision Tee:", result.rowCount, "rows");
-    result = await pool.query(`UPDATE products SET price = 699, original_price = NULL WHERE name = 'Minimal Logo Tee'`);
-    console.log("Price fix Minimal Logo Tee:", result.rowCount, "rows");
-    result = await pool.query(`UPDATE products SET price = 849, original_price = NULL WHERE name = 'Street Graphic Tee'`);
-    console.log("Price fix Street Graphic Tee:", result.rowCount, "rows");
-    result = await pool.query(`UPDATE products SET price = 799, original_price = 999 WHERE name = 'Urban Anime Tee'`);
-    console.log("Price fix Urban Anime Tee:", result.rowCount, "rows");
-    console.log("Database migration: product prices fixed");
+    await pool.query(`
+      UPDATE products SET price = CASE
+        WHEN name ILIKE '%black%printed%tees%' THEN 799
+        WHEN name ILIKE '%fearless%oversized%tee%' THEN 799
+        WHEN name ILIKE '%shadow%anime%tee%' THEN 749
+        WHEN name ILIKE '%abstract%vision%tee%' THEN 749
+        WHEN name ILIKE '%minimal%logo%tee%' THEN 699
+        WHEN name ILIKE '%street%graphic%tee%' THEN 849
+        WHEN name ILIKE '%urban%anime%tee%' THEN 799
+        ELSE price
+      END,
+      original_price = CASE
+        WHEN name ILIKE '%urban%anime%tee%' THEN 999
+        ELSE NULL
+      END
+      WHERE category = 'T-Shirts'
+    `);
+    var c = await pool.query('SELECT COUNT(*) as cnt FROM products WHERE category = $1', ['T-Shirts']);
+    console.log("Database migration: product prices fixed for", c.rows[0].cnt, "T-Shirt products");
   } catch (err) {
     console.error("Price fix migration error (non-fatal):", err.message);
   }
