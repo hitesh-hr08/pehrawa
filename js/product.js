@@ -348,11 +348,9 @@ function renderBuyAddressCards() {
   if (!list || !section) return;
   if (buySavedAddresses.length === 0) {
     section.style.display = "none";
-    if (form) form.style.display = "block";
     return;
   }
   section.style.display = "block";
-  if (!buyUseNewAddress && form) form.style.display = "none";
   var html = "";
   buySavedAddresses.forEach(function(addr) {
     var isSelected = buySelectedAddressId == addr.id || (!buySelectedAddressId && addr.is_default);
@@ -393,7 +391,6 @@ window.selectBuyAddrCard = function(id) {
   var form = document.getElementById("buyNewAddressForm");
   if (list) list.style.display = "none";
   if (form) form.style.display = "block";
-  renderBuyAddressCards();
 };
 
 window.deleteBuyAddr = async function(id) {
