@@ -1,4 +1,4 @@
-var wishlistContainer = document.getElementById("wishlistItems");
+var wishlistContainer = document.getElementById("wishlistContainer");
 
 function renderWishlist() {
   if (wishlist.length === 0) {
