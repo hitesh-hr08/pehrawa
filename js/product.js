@@ -502,12 +502,8 @@ async function placeBuyOrder() {
     amount: rzpData.amount,
     currency: "INR",
     name: "Pehrawa",
-    description: "Order Payment",
+    description: "",
     order_id: rzpData.order_id,
-    prefill: {
-      name: name,
-      contact: phone
-    },
     theme: { color: "#ff6b00" },
     handler: async function (response) {
       try {
