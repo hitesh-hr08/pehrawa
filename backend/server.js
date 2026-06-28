@@ -1011,6 +1011,20 @@ var HOST = process.env.HOST || "0.0.0.0";
   } catch (err) {
     console.error("Coupons migration error (non-fatal):", err.message);
   }
+
+  // Fix product prices (match by name for reliability across environments)
+  try {
+    await pool.query(`UPDATE products SET price = 799, original_price = NULL WHERE name ILIKE 'Black Printed Tees'`);
+    await pool.query(`UPDATE products SET price = 799, original_price = NULL WHERE name ILIKE 'Fearless Oversized Tee'`);
+    await pool.query(`UPDATE products SET price = 749, original_price = NULL WHERE name ILIKE 'Shadow Anime Tee'`);
+    await pool.query(`UPDATE products SET price = 749, original_price = NULL WHERE name ILIKE 'Abstract Vision Tee'`);
+    await pool.query(`UPDATE products SET price = 699, original_price = NULL WHERE name ILIKE 'Minimal Logo Tee'`);
+    await pool.query(`UPDATE products SET price = 849, original_price = NULL WHERE name ILIKE 'Street Graphic Tee'`);
+    await pool.query(`UPDATE products SET price = 799, original_price = 999 WHERE name ILIKE 'Urban Anime Tee'`);
+    console.log("Database migration: product prices fixed");
+  } catch (err) {
+    console.error("Price fix migration error (non-fatal):", err.message);
+  }
 })();
 
 app.listen(PORT, HOST, function () {
