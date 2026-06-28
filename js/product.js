@@ -421,7 +421,6 @@ function getProductPrice() {
 
 function populateBuyConfirmation() {
   var name = document.getElementById("buyName").value;
-  var phone = document.getElementById("buyPhone").value;
   var address = document.getElementById("buyAddress").value;
   var pincode = document.getElementById("buyPincode").value;
   var city = document.getElementById("buyCity").value;
@@ -436,10 +435,9 @@ function populateBuyConfirmation() {
     '<div class="buy-summary-row"><span>Product</span><span>' + productName + '</span></div>' +
     '<div class="buy-summary-row"><span>Size</span><span>' + size + '</span></div>' +
     '<div class="buy-summary-row"><span>Quantity</span><span>' + qty + '</span></div>' +
-    '<div class="buy-summary-row" style="border-bottom:1px solid #222;padding-bottom:10px;margin-bottom:4px;"><span style="font-weight:700;">Total</span><span style="color:#ff6b00;font-weight:700;">&#8377;' + total.toFixed(2) + '</span></div>' +
     '<div class="buy-summary-row"><span>Name</span><span>' + name + '</span></div>' +
-    '<div class="buy-summary-row"><span>Phone</span><span>' + phone + '</span></div>' +
-    '<div class="buy-summary-row"><span>Address</span><span style="font-size:12px;">' + address + ', ' + city + ', ' + state + ' - ' + pincode + '</span></div>';
+    '<div class="buy-summary-row"><span>Address</span><span style="font-size:12px;">' + address + ', ' + city + ', ' + state + ' - ' + pincode + '</span></div>' +
+    '<div class="buy-summary-row" style="border-top:1px solid #333;padding-top:10px;margin-top:6px;text-align:center;"><span style="font-weight:700;font-size:16px;">Total Amount</span><span style="color:#ff6b00;font-weight:700;font-size:18px;display:block;text-align:center;margin-top:4px;">&#8377;' + total.toFixed(2) + '</span></div>';
 }
 
 async function placeBuyOrder() {
