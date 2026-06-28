@@ -8,22 +8,25 @@
   let searchTerm = "";
 
   const staticFallback = [
-    { id: 1, name: "Fearless Oversized Tee", price: 799, image_url: "../images/product1.png", category: "OVERSIZED GRAPHIC" },
-    { id: 2, name: "Shadow Anime Tee", price: 749, image_url: "../images/product2.png", category: "ANIME" },
-    { id: 3, name: "Abstract Vision Tee", price: 749, image_url: "../images/product3.png", category: "GRAPHIC" },
-    { id: 4, name: "Minimal Logo Tee", price: 699, image_url: "../images/product4.png", category: "MINIMAL" },
-    { id: 5, name: "Street Graphic Tee", price: 849, image_url: "../images/product5.png", category: "GRAPHIC" },
-    { id: 6, name: "Urban Anime Tee", price: 799, image_url: "../images/product6.png", category: "ANIME OVERSIZED" },
-    { id: 7, name: "Classic Oxford Shirt", price: 1299, image_url: "../images/Shirt1.avif", category: "SHIRTS" },
-    { id: 8, name: "Black Cuban Collar Shirt", price: 1399, image_url: "../images/Shirt2.webp", category: "SHIRTS" },
-    { id: 9, name: "Relaxed Denim Shirt", price: 1599, image_url: "../images/Shirt3.webp", category: "SHIRTS" },
-    { id: 10, name: "White Street Sneakers", price: 2499, image_url: "../images/Footwear1.webp", category: "FOOTWEAR" },
-    { id: 11, name: "Urban Slip-On Loafers", price: 2199, image_url: "../images/Footwear2.jpg", category: "FOOTWEAR" },
-    { id: 12, name: "Chunky Street Sneakers", price: 2899, image_url: "../images/Footwear3.jpg", category: "FOOTWEAR" },
-    { id: 13, name: "Aviator Sunglasses", price: 999, image_url: "../images/Sunglasses1.webp", category: "SUNGLASSES" },
-    { id: 14, name: "Square Black Sunglasses", price: 1099, image_url: "../images/Sunglasses2.webp", category: "SUNGLASSES" },
-    { id: 15, name: "Minimal Black Watch", price: 1899, image_url: "../images/Watch1.jpg", category: "WATCHES" },
-    { id: 16, name: "Brown Strap Chrono Watch", price: 2299, image_url: "../images/Watch2.jpg", category: "WATCHES" }
+    { id: 1, name: "Black Printed Tees", price: 799, image_url: "../images/product1.png", category: "Printed T-Shirts" },
+    { id: 2, name: "Fearless Oversized Tee", price: 799, image_url: "../images/product1.png", category: "OVERSIZED GRAPHIC" },
+    { id: 3, name: "Shadow Anime Tee", price: 749, image_url: "../images/product2.png", category: "ANIME" },
+    { id: 4, name: "Abstract Vision Tee", price: 749, image_url: "../images/product3.png", category: "GRAPHIC" },
+    { id: 5, name: "Minimal Logo Tee", price: 699, image_url: "../images/product4.png", category: "MINIMAL" },
+    { id: 6, name: "Street Graphic Tee", price: 849, image_url: "../images/product5.png", category: "GRAPHIC" },
+    { id: 7, name: "Urban Anime Tee", price: 799, image_url: "../images/product6.png", category: "ANIME OVERSIZED" },
+    { id: 8, name: "Classic Oxford Shirt", price: 1299, image_url: "../images/Shirt1.avif", category: "SHIRTS" },
+    { id: 9, name: "Black Cuban Collar Shirt", price: 1399, image_url: "../images/Shirt2.webp", category: "SHIRTS" },
+    { id: 10, name: "Relaxed Denim Shirt", price: 1599, image_url: "../images/Shirt3.webp", category: "SHIRTS" },
+    { id: 11, name: "White Street Sneakers", price: 2499, image_url: "../images/Footwear1.webp", category: "FOOTWEAR" },
+    { id: 12, name: "Urban Slip-On Loafers", price: 2199, image_url: "../images/Footwear2.jpg", category: "FOOTWEAR" },
+    { id: 13, name: "Chunky Street Sneakers", price: 2899, image_url: "../images/Footwear3.jpg", category: "FOOTWEAR" },
+    { id: 14, name: "Aviator Sunglasses", price: 999, image_url: "../images/Sunglasses1.webp", category: "SUNGLASSES" },
+    { id: 15, name: "Square Black Sunglasses", price: 1099, image_url: "../images/Sunglasses2.webp", category: "SUNGLASSES" },
+    { id: 16, name: "Minimal Black Watch", price: 1899, image_url: "../images/Watch1.jpg", category: "WATCHES" },
+    { id: 17, name: "Brown Strap Chrono Watch", price: 2299, image_url: "../images/Watch2.jpg", category: "WATCHES" },
+    { id: 18, name: "Slim Black Jeans", price: 1499, image_url: "../images/Jean1.webp", category: "JEANS" },
+    { id: 19, name: "Blue Straight Jeans", price: 1599, image_url: "../images/Jean2.webp", category: "JEANS" }
   ];
 
   if (!productGrid) return;

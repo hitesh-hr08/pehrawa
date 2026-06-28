@@ -5,6 +5,28 @@ const API_URL = `${window.PEHRAWA_API_BASE || "http://localhost:5000"}/api/publi
 const params = new URLSearchParams(window.location.search);
 const productId = params.get("id");
 
+const staticProducts = [
+  { id: 1, name: "Black Printed Tees", price: 799, original_price: 1199, image_url: "../images/product1.png", category: "Printed T-Shirts", description: "Premium cotton printed t-shirt.", stock_status: "in_stock" },
+  { id: 2, name: "Fearless Oversized Tee", price: 799, original_price: 1199, image_url: "../images/product1.png", category: "OVERSIZED GRAPHIC", description: "Premium cotton oversized t-shirt with high quality print.", stock_status: "in_stock" },
+  { id: 3, name: "Shadow Anime Tee", price: 749, original_price: 999, image_url: "../images/product2.png", category: "ANIME", description: "Anime inspired graphic tee.", stock_status: "in_stock" },
+  { id: 4, name: "Abstract Vision Tee", price: 749, original_price: 1099, image_url: "../images/product3.png", category: "GRAPHIC", description: "Abstract art graphic t-shirt.", stock_status: "in_stock" },
+  { id: 5, name: "Minimal Logo Tee", price: 699, original_price: 999, image_url: "../images/product4.png", category: "MINIMAL", description: "Minimal logo design t-shirt.", stock_status: "in_stock" },
+  { id: 6, name: "Street Graphic Tee", price: 849, original_price: 1299, image_url: "../images/product5.png", category: "GRAPHIC", description: "Street style graphic tee.", stock_status: "in_stock" },
+  { id: 7, name: "Urban Anime Tee", price: 799, original_price: 1199, image_url: "../images/product6.png", category: "ANIME OVERSIZED", description: "Urban anime oversized t-shirt.", stock_status: "in_stock" },
+  { id: 8, name: "Classic Oxford Shirt", price: 1299, original_price: 1799, image_url: "../images/Shirt1.avif", category: "SHIRTS", description: "Classic oxford shirt for men.", stock_status: "in_stock" },
+  { id: 9, name: "Black Cuban Collar Shirt", price: 1399, original_price: 1899, image_url: "../images/Shirt2.webp", category: "SHIRTS", description: "Cuban collar shirt in black.", stock_status: "in_stock" },
+  { id: 10, name: "Relaxed Denim Shirt", price: 1599, original_price: 2199, image_url: "../images/Shirt3.webp", category: "SHIRTS", description: "Denim shirt relaxed fit.", stock_status: "in_stock" },
+  { id: 11, name: "White Street Sneakers", price: 2499, original_price: 3499, image_url: "../images/Footwear1.webp", category: "FOOTWEAR", description: "White street sneakers.", stock_status: "in_stock" },
+  { id: 12, name: "Urban Slip-On Loafers", price: 2199, original_price: 2999, image_url: "../images/Footwear2.jpg", category: "FOOTWEAR", description: "Urban slip-on loafers.", stock_status: "in_stock" },
+  { id: 13, name: "Chunky Street Sneakers", price: 2899, original_price: 3999, image_url: "../images/Footwear3.jpg", category: "FOOTWEAR", description: "Chunky sole sneakers.", stock_status: "in_stock" },
+  { id: 14, name: "Aviator Sunglasses", price: 999, original_price: 1499, image_url: "../images/Sunglasses1.webp", category: "SUNGLASSES", description: "Classic aviator sunglasses.", stock_status: "in_stock" },
+  { id: 15, name: "Square Black Sunglasses", price: 1099, original_price: 1599, image_url: "../images/Sunglasses2.webp", category: "SUNGLASSES", description: "Square frame black sunglasses.", stock_status: "in_stock" },
+  { id: 16, name: "Minimal Black Watch", price: 1899, original_price: 2599, image_url: "../images/Watch1.jpg", category: "WATCHES", description: "Minimal black dial watch.", stock_status: "in_stock" },
+  { id: 17, name: "Brown Strap Chrono Watch", price: 2299, original_price: 3299, image_url: "../images/Watch2.jpg", category: "WATCHES", description: "Brown strap chronograph watch.", stock_status: "in_stock" },
+  { id: 18, name: "Slim Black Jeans", price: 1499, original_price: 2199, image_url: "../images/Jean1.webp", category: "JEANS", description: "Slim fit black jeans.", stock_status: "in_stock" },
+  { id: 19, name: "Blue Straight Jeans", price: 1599, original_price: 2299, image_url: "../images/Jean2.webp", category: "JEANS", description: "Straight fit blue jeans.", stock_status: "in_stock" }
+];
+
 var qtyInput = document.getElementById("quantity");
 document.getElementById("qtyMinus").addEventListener("click", function(){
   var v = parseInt(qtyInput.value) || 1;
@@ -16,12 +38,10 @@ document.getElementById("qtyPlus").addEventListener("click", function(){
 });
 
 async function loadProductDetails() {
+  var fallbackById = staticProducts.find(function(p) { return p.id == productId; });
+
   if (!productId) {
-    currentProduct = {
-      id: 0, name: "Fearless Oversized Tee", price: 799, original_price: 1199,
-      description: "Premium cotton oversized t-shirt with high quality print.",
-      image_url: "../images/product1.png", category: "T-SHIRTS", stock_status: "in_stock"
-    };
+    currentProduct = staticProducts[1] || staticProducts[0];
     renderProduct(currentProduct, []);
     return;
   }
@@ -31,22 +51,30 @@ async function loadProductDetails() {
     const data = await res.json();
 
     if (!data.success) {
-      document.getElementById("productName").innerText = "Product Not Found";
-      document.getElementById("productDescription").innerText = data.message || "This product is unavailable.";
-      document.getElementById("productPrice").innerHTML = "&#8377;0.00";
-      document.getElementById("productImage").src = "../images/product1.png";
+      if (fallbackById) {
+        currentProduct = fallbackById;
+        renderProduct(currentProduct, []);
+      } else {
+        document.getElementById("productName").innerText = "Product Not Found";
+        document.getElementById("productDescription").innerText = data.message || "This product is unavailable.";
+        document.getElementById("productPrice").innerHTML = "&#8377;0.00";
+        document.getElementById("productImage").src = "../images/product1.png";
+      }
       return;
     }
 
     currentProduct = data.product;
     renderProduct(currentProduct, data.images || []);
   } catch (err) {
-    currentProduct = {
-      id: 0, name: "Fearless Oversized Tee", price: 799, original_price: 1199,
-      description: "Premium cotton oversized t-shirt with high quality print.",
-      image_url: "../images/product1.png", category: "T-SHIRTS", stock_status: "in_stock"
-    };
-    renderProduct(currentProduct, []);
+    if (fallbackById) {
+      currentProduct = fallbackById;
+      renderProduct(currentProduct, []);
+    } else {
+      document.getElementById("productName").innerText = "Product Not Found";
+      document.getElementById("productDescription").innerText = "This product is unavailable.";
+      document.getElementById("productPrice").innerHTML = "&#8377;0.00";
+      document.getElementById("productImage").src = "../images/product1.png";
+    }
   }
 }
 
