@@ -126,7 +126,7 @@ opacity:.8;
 transition:.35s;
 }
 
-nav a:hover{color:#ffffff;}
+nav a:hover{color:#ffffff;opacity:1;}
 
 .active{color:#ffffff;}
 
@@ -207,15 +207,16 @@ flex-shrink:0;
 }
 
 .nav-icons a{
+display:inline-flex;
 color:#fff;
 font-size:17px;
 position:relative;
 white-space:nowrap;
 line-height:1;
-transition:color .3s;
+transition:color .3s,transform .25s;
 }
 
-.nav-icons a:hover{color:#ffffff;}
+.nav-icons a:hover{color:#ffffff;transform:scale(1.15);}
 
 .nav-icons span{
 position:absolute;
@@ -1968,7 +1969,7 @@ RESPONSIVE
 .mobile-menu.open{left:0;}
 .mobile-menu ul{list-style:none;display:flex;flex-direction:column;gap:24px;}
 .mobile-menu ul li a{color:#fff;font-size:16px;font-weight:500;letter-spacing:2px;}
-.mobile-menu ul li a:hover{color:#ffffff;}
+.mobile-menu ul li a:hover{color:#ffffff;padding-left:8px;}
 .mobile-menu-close{
   position:absolute;
   top:24px;right:24px;
