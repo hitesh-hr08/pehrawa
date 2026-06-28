@@ -1,13 +1,4 @@
 (function () {
-  var localProducts = [
-    { id: 2, name: "Fearless Oversized Tee", price: 399, original_price: null, image: "../images/product1.png", is_hot_seller: true },
-    { id: 3, name: "Shadow Anime Tee", price: 399, original_price: null, image: "../images/product2.png", is_trending: true },
-    { id: 4, name: "Abstract Vision Tee", price: 399, original_price: null, image: "../images/product3.png" },
-    { id: 5, name: "Minimal Logo Tee", price: 399, original_price: null, image: "../images/product4.png" },
-    { id: 6, name: "Street Graphic Tee", price: 399, original_price: null, image: "../images/product5.png", is_hot_seller: true },
-    { id: 7, name: "Urban Anime Tee", price: 399, original_price: null, image: "../images/product6.png", is_new_arrival: true }
-  ];
-
   function renderCard(p) {
     var img = p.image_url || p.image || "../images/product1.png";
     var origPrice = p.original_price ? Number(p.original_price) : Math.round(Number(p.price) * 1.5);
@@ -53,7 +44,10 @@
   }
 
   function loadBestSellers() {
-    showProducts(localProducts);
+    var grid = document.getElementById("bestSellerGrid");
+    if (!grid) return;
+    grid.innerHTML = '<div style="text-align:center;padding:40px;color:#888;"><i class="fa-solid fa-spinner fa-spin"></i> Loading...</div>';
+
     var api = (window.PEHRAWA_API_BASE || "http://localhost:5000") + "/api/public/products";
     fetch(api)
       .then(function (r) {
@@ -63,9 +57,13 @@
       .then(function (data) {
         if (data.success && data.products && data.products.length > 0) {
           showProducts(data.products.slice(0, 6));
+        } else {
+          grid.innerHTML = '<div style="text-align:center;padding:40px;color:#888;">No products available.</div>';
         }
       })
-      .catch(function () {});
+      .catch(function () {
+        grid.innerHTML = '<div style="text-align:center;padding:40px;color:#888;">Server not connected.</div>';
+      });
   }
 
   if (document.readyState === "loading") {

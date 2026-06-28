@@ -5,16 +5,6 @@ const API_URL = `${window.PEHRAWA_API_BASE || "http://localhost:5000"}/api/publi
 const params = new URLSearchParams(window.location.search);
 const productId = params.get("id");
 
-const staticProducts = [
-  { id: 1, name: "Black Printed Tees", price: 399, original_price: null, image_url: "../images/product1.png", category: "Printed T-Shirts", description: "Premium cotton printed t-shirt.", stock_status: "in_stock" },
-  { id: 2, name: "Fearless Oversized Tee", price: 399, original_price: null, image_url: "../images/product1.png", category: "OVERSIZED GRAPHIC", description: "Premium cotton oversized t-shirt with high quality print.", stock_status: "in_stock" },
-  { id: 3, name: "Shadow Anime Tee", price: 399, original_price: null, image_url: "../images/product2.png", category: "ANIME", description: "Anime inspired graphic tee.", stock_status: "in_stock" },
-  { id: 4, name: "Abstract Vision Tee", price: 399, original_price: null, image_url: "../images/product3.png", category: "GRAPHIC", description: "Abstract art graphic t-shirt.", stock_status: "in_stock" },
-  { id: 5, name: "Minimal Logo Tee", price: 399, original_price: null, image_url: "../images/product4.png", category: "MINIMAL", description: "Minimal logo design t-shirt.", stock_status: "in_stock" },
-  { id: 6, name: "Street Graphic Tee", price: 399, original_price: null, image_url: "../images/product5.png", category: "GRAPHIC", description: "Street style graphic tee.", stock_status: "in_stock" },
-  { id: 7, name: "Urban Anime Tee", price: 399, original_price: null, image_url: "../images/product6.png", category: "ANIME OVERSIZED", description: "Urban anime oversized t-shirt.", stock_status: "in_stock" }
-];
-
 var qtyInput = document.getElementById("quantity");
 document.getElementById("qtyMinus").addEventListener("click", function(){
   var v = parseInt(qtyInput.value) || 1;
@@ -26,11 +16,14 @@ document.getElementById("qtyPlus").addEventListener("click", function(){
 });
 
 async function loadProductDetails() {
-  var fallbackById = staticProducts.find(function(p) { return p.id == productId; });
-
   if (!productId) {
-    currentProduct = staticProducts[1] || staticProducts[0];
-    renderProduct(currentProduct, []);
+    document.getElementById("productName").innerText = "No Product Selected";
+    document.getElementById("productDescription").innerText = "Please select a product from the shop.";
+    document.getElementById("productPrice").innerHTML = "&#8377;0.00";
+    document.getElementById("productImage").src = "../images/product1.png";
+    document.getElementById("productDetail").classList.add("visible");
+    document.getElementById("addCartBtn").style.display = "none";
+    document.getElementById("buyBtn").style.display = "none";
     return;
   }
 
@@ -39,30 +32,22 @@ async function loadProductDetails() {
     const data = await res.json();
 
     if (!data.success) {
-      if (fallbackById) {
-        currentProduct = fallbackById;
-        renderProduct(currentProduct, []);
-      } else {
-        document.getElementById("productName").innerText = "Product Not Found";
-        document.getElementById("productDescription").innerText = data.message || "This product is unavailable.";
-        document.getElementById("productPrice").innerHTML = "&#8377;0.00";
-        document.getElementById("productImage").src = "../images/product1.png";
-      }
+      document.getElementById("productName").innerText = "Product Not Found";
+      document.getElementById("productDescription").innerText = data.message || "This product is unavailable.";
+      document.getElementById("productPrice").innerHTML = "&#8377;0.00";
+      document.getElementById("productImage").src = "../images/product1.png";
+      document.getElementById("productDetail").classList.add("visible");
       return;
     }
 
     currentProduct = data.product;
     renderProduct(currentProduct, data.images || []);
   } catch (err) {
-    if (fallbackById) {
-      currentProduct = fallbackById;
-      renderProduct(currentProduct, []);
-    } else {
-      document.getElementById("productName").innerText = "Product Not Found";
-      document.getElementById("productDescription").innerText = "This product is unavailable.";
-      document.getElementById("productPrice").innerHTML = "&#8377;0.00";
-      document.getElementById("productImage").src = "../images/product1.png";
-    }
+    document.getElementById("productName").innerText = "Server Not Connected";
+    document.getElementById("productDescription").innerText = "Could not load product. Please check your connection and try again.";
+    document.getElementById("productPrice").innerHTML = "&#8377;0.00";
+    document.getElementById("productImage").src = "../images/product1.png";
+    document.getElementById("productDetail").classList.add("visible");
   }
 }
 
@@ -252,7 +237,32 @@ function renderProduct(product, images) {
     document.getElementById("addCartBtn").innerText = "ADD TO CART";
   }
 
-  if (product.category) loadRelatedProducts(product.category, product.id);
+}
+
+function loadRelatedProducts(category, excludeId) {
+  var el = document.getElementById("relatedProducts");
+  if (!el) return;
+  el.innerHTML = '<div style="text-align:center;padding:20px;color:#888;"><i class="fa-solid fa-spinner fa-spin"></i></div>';
+  fetch(API_URL)
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      if (!data.success || !data.products) return;
+      var related = data.products.filter(function(p) { return p.id != excludeId && p.category && p.category.toUpperCase().includes(category.toUpperCase().slice(0,4)); }).slice(0, 4);
+      if (related.length === 0) related = data.products.filter(function(p) { return p.id != excludeId; }).slice(0, 4);
+      if (related.length === 0) { el.innerHTML = ""; return; }
+      var html = '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:16px;padding:16px 0;">';
+      related.forEach(function(p) {
+        var img = p.image_url || "../images/product1.png";
+        html += '<a href="product.html?id=' + p.id + '" style="text-decoration:none;color:inherit;">' +
+          '<div style="border:1px solid #333;border-radius:8px;overflow:hidden;background:#1a1a1a;">' +
+          '<img src="' + img + '" style="width:100%;height:180px;object-fit:cover;" onerror="this.src=\'../images/product1.png\'">' +
+          '<div style="padding:8px 12px;"><div style="font-size:14px;">' + p.name + '</div>' +
+          '<div style="color:#ff6b00;font-weight:600;">&#8377;' + (Number(p.price) || 0).toFixed(0) + '</div></div></div></a>';
+      });
+      html += '</div>';
+      el.innerHTML = html;
+    })
+    .catch(function() { el.innerHTML = ""; });
 }
 
 document.getElementById("addCartBtn").addEventListener("click", () => {

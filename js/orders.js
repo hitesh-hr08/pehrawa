@@ -13,10 +13,6 @@
   var user = JSON.parse(userData);
   var apiBase = window.PEHRAWA_API_BASE || "http://localhost:5000";
 
-  fetch(apiBase + "/api/customers/" + user.id + "/orders", {
-    headers: { "Authorization": "Bearer " + token }
-  })
-  .then(function (r) { return r.json(); })
   window.cancelOrder = function(orderId, btn) {
     if (!confirm("Are you sure you want to cancel this order?")) return;
     btn.disabled = true;
@@ -43,6 +39,10 @@
     });
   };
 
+  fetch(apiBase + "/api/customers/" + user.id + "/orders", {
+    headers: { "Authorization": "Bearer " + token }
+  })
+  .then(function (r) { return r.json(); })
   .then(function (data) {
     if (!data.success) {
       container.innerHTML = '<div class="shop-state">' + (data.message || "Failed to load orders") + "</div>";

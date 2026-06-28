@@ -9,8 +9,34 @@
 <script src="../js/tracking.js"></script>
 </head>
 <body>
-<div class="top-bar">MY PROFILE</div>
-<header><div class="container nav"><a href="home.html" class="logo"><img src="../images/logo.png"></a><nav><ul><li><a href="home.html">HOME</a></li><li><a href="shop.html">SHOP</a></li><li><a href="collections.html">COLLECTIONS</a></li><li><a href="about.html">ABOUT</a></li><li><a href="contact.html">CONTACT</a></li></ul></nav><div class="nav-right"><a href="cart.html"><i class="fa-solid fa-cart-shopping"></i><span>0</span></a><div class="menu-btn"><i class="fa-solid fa-bars"></i></div></div></div></header>
+<div class="top-bar">FREE SHIPPING ABOVE &#8377;999 | BUY 2 TEES GET 10% OFF</div>
+<header>
+<div class="container nav">
+<a href="home.html" class="logo"><img src="../images/logo.png" alt="Pehrawa Logo"></a>
+<nav>
+<ul>
+<li><a href="home.html">HOME</a></li>
+<li><a href="shop.html">SHOP</a></li>
+<li><a href="collections.html">COLLECTIONS</a></li>
+<li><span class="nav-disabled">CUSTOM PRINT<em class="cs-badge">Soon</em></span></li>
+<li><a href="about.html">ABOUT</a></li>
+<li><a href="contact.html">CONTACT</a></li>
+</ul>
+</nav>
+<div class="nav-right">
+<div class="search-wrapper">
+<i class="fa-solid fa-magnifying-glass search-icon"></i>
+<input type="text" class="search-input" placeholder="Search products...">
+</div>
+<div class="nav-icons">
+<a href="wishlist.html"><i class="fa-regular fa-heart"></i><span>0</span></a>
+<a href="cart.html"><i class="fa-solid fa-cart-shopping"></i><span>0</span></a>
+</div>
+<a href="login.html" class="login-btn"><i class="fa-regular fa-user"></i><span class="login-text">LOGIN</span></a>
+<div class="menu-btn"><i class="fa-solid fa-bars"></i></div>
+</div>
+</div>
+</header>
 <div class="mobile-menu-overlay" id="mobileOverlay"></div>
 <div class="mobile-menu" id="mobileMenu">
 <button class="mobile-menu-close" id="mobileClose">&times;</button>
@@ -24,7 +50,40 @@
 </ul>
 </div>
 <section style="padding:80px 0;"><div class="container"><h1 style="font-size:72px;font-weight:800;margin-bottom:10px;">MY PROFILE</h1><p style="color:#aaa;margin-bottom:40px;">Manage your account details</p><div id="profileContainer" style="max-width:500px;"><div class="shop-state">Loading profile...</div></div></div></section>
-<footer><div class="container foot"><div><img src="../images/logo.png"><p>HOME OF HM</p></div><div><h4>SHOP</h4><a href="shop.html">All Products</a></div><div><h4>HELP</h4><a href="size-guide.html">Size Guide</a></div><div><h4>CONTACT</h4><p><i class="fa-solid fa-phone"></i> +91 9855707708</p><p><i class="fa-solid fa-envelope"></i> pehrawamenswear@gmail.com</p></div></div><div class="copyright">© 2026 Pehrawa</div></footer>
+<footer>
+<div class="container foot">
+<div>
+<img src="../images/logo.png" alt="Pehrawa Logo">
+<p>HOME OF HM — Premium printed and custom printed t-shirts for men who love to stand out.</p>
+<div class="socials">
+<a href="#"><i class="fab fa-facebook-f"></i></a>
+<a href="#"><i class="fab fa-instagram"></i></a>
+<a href="#"><i class="fab fa-youtube"></i></a>
+</div>
+</div>
+<div>
+<h4>SHOP</h4>
+<a href="shop.html">All Products</a>
+<a href="shop.html">T-Shirts</a>
+<a href="shop.html">Hoodies</a>
+<a href="collections.html">Collections</a>
+</div>
+<div>
+<h4>HELP</h4>
+<a href="size-guide.html">Size Guide</a>
+<a href="shipping-policy.html">Shipping Policy</a>
+<a href="track-order.html">Track Order</a>
+<a href="terms.html">Terms & Conditions</a>
+</div>
+<div>
+<h4>CONTACT</h4>
+<p><i class="fa-solid fa-phone"></i> +91 9855707708</p>
+<p><i class="fa-solid fa-envelope"></i> pehrawamenswear@gmail.com</p>
+<p><i class="fa-solid fa-location-dot"></i> Punjab, India</p>
+</div>
+</div>
+<div class="copyright">© 2026 Pehrawa. All Rights Reserved.</div>
+</footer>
 <script src="../js/script.js"></script><script src="../js/animations.js"></script>
 <script>
 const user = JSON.parse(localStorage.getItem("pehrawa_customer"));
