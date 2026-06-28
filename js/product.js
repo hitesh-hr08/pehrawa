@@ -507,3 +507,5 @@ async function placeBuyOrder() {
     btn.textContent = "Place Order";
   }
 }
+
+loadProductDetails();
