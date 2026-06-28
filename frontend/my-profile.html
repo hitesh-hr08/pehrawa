@@ -4,9 +4,8 @@
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>My Profile | Pehrawa</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../css/style.css"><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-<script src="../js/config.js"></script>
-<script src="../js/tracking.js"></script>
+<link rel="stylesheet" href="../css/style.css"><link rel="stylesheet" href="../css/profile.css"><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+<script src="../js/config.js"></script><script src="../js/tracking.js"></script>
 </head>
 <body>
 <div class="top-bar">FREE SHIPPING ABOVE &#8377;999 | BUY 2 TEES GET 10% OFF</div>
@@ -49,7 +48,41 @@
 <li><a href="contact.html">CONTACT</a></li>
 </ul>
 </div>
-<section style="padding:80px 0;"><div class="container"><h1 style="font-size:72px;font-weight:800;margin-bottom:10px;">MY PROFILE</h1><p style="color:#aaa;margin-bottom:40px;">Manage your account details</p><div id="profileContainer" style="max-width:500px;"><div class="shop-state">Loading profile...</div></div></div></section>
+
+<section class="profile-page">
+<div class="container">
+<div class="profile-layout" id="profileLayout" style="display:none;">
+  <aside class="profile-sidebar">
+    <div class="profile-sidebar-head">
+      <div class="profile-sidebar-avatar" id="profileAvatar">U</div>
+      <div class="profile-sidebar-name" id="sidebarName">User</div>
+      <div class="profile-sidebar-email" id="sidebarEmail">user@email.com</div>
+    </div>
+    <ul class="profile-nav">
+      <li><a href="#" class="active" data-tab="details"><i class="fa-regular fa-user"></i> My Details</a></li>
+      <li><a href="#" data-tab="orders"><i class="fa-solid fa-box"></i> My Orders</a></li>
+      <li><a href="#" data-tab="addresses"><i class="fa-solid fa-location-dot"></i> Addresses</a></li>
+      <li><a href="#" data-tab="wishlist"><i class="fa-regular fa-heart"></i> Wishlist</a></li>
+      <li><a href="#" class="profile-nav-logout" id="logoutBtn"><i class="fa-solid fa-sign-out-alt"></i> Logout</a></li>
+    </ul>
+  </aside>
+  <main class="profile-content" id="profileContent">
+    <!-- Dynamic content loaded here -->
+  </main>
+</div>
+<div id="profileLoading" style="text-align:center;padding:100px 0;color:#888;">
+  <i class="fa-solid fa-spinner fa-spin" style="font-size:32px;margin-bottom:16px;"></i><br>
+  Loading profile...
+</div>
+<div id="profileNotLoggedIn" style="display:none;text-align:center;padding:100px 0;">
+  <i class="fa-regular fa-user" style="font-size:48px;color:#555;margin-bottom:16px;"></i>
+  <h2 style="margin-bottom:8px;">Not Logged In</h2>
+  <p style="color:#999;margin-bottom:24px;">Please login to view your profile.</p>
+  <a href="login.html" class="login-btn" style="display:inline-flex;">LOGIN / REGISTER</a>
+</div>
+</div>
+</section>
+
 <footer>
 <div class="container foot">
 <div>
@@ -82,17 +115,358 @@
 <p><i class="fa-solid fa-location-dot"></i> Punjab, India</p>
 </div>
 </div>
-<div class="copyright">© 2026 Pehrawa. All Rights Reserved.</div>
+<div class="copyright">&copy; 2026 Pehrawa. All Rights Reserved.</div>
 </footer>
+
+<!-- Address Modal -->
+<div class="profile-modal-overlay" id="addrModal">
+  <div class="profile-modal">
+    <h3 id="addrModalTitle">Add Address</h3>
+    <div class="field">
+      <label>Label</label>
+      <select id="addrLabel"><option value="Home">Home</option><option value="Work">Work</option><option value="Other">Other</option></select>
+    </div>
+    <div class="field">
+      <label>Full Address</label>
+      <textarea id="addrAddress" placeholder="House/Flat no., Street, Area"></textarea>
+    </div>
+    <div class="field" style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+      <div><label>City</label><input id="addrCity" placeholder="City"></div>
+      <div><label>State</label><input id="addrState" placeholder="State"></div>
+    </div>
+    <div class="field">
+      <label>Pincode</label>
+      <input id="addrPincode" placeholder="6-digit pincode" maxlength="6">
+    </div>
+    <div class="field" style="display:flex;align-items:center;gap:8px;">
+      <input type="checkbox" id="addrDefault" style="width:auto;">
+      <label for="addrDefault" style="margin:0;">Set as default address</label>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-modal-cancel" onclick="closeAddrModal()">Cancel</button>
+      <button class="btn-modal-save" id="addrSaveBtn">Save</button>
+    </div>
+  </div>
+</div>
+
 <script src="../js/script.js"></script><script src="../js/animations.js"></script>
 <script>
-const user = JSON.parse(localStorage.getItem("pehrawa_customer"));
-const container = document.getElementById("profileContainer");
-if(user){
-  container.innerHTML = '<div style="background:#0a0a0a;border:1px solid #181818;padding:30px;border-radius:8px;"><div style="width:80px;height:80px;border-radius:50%;background:linear-gradient(135deg,#f97316,#ea580c);display:flex;align-items:center;justify-content:center;font-size:32px;font-weight:700;margin-bottom:20px;">'+(user.name?user.name.charAt(0).toUpperCase():"U")+'</div><h2 style="margin-bottom:6px;">'+(user.name||"User")+'</h2><p style="color:#aaa;margin-bottom:16px;">'+(user.email||"")+'</p><a href="my-orders.html" style="display:inline-block;padding:12px 24px;background:#ff6b00;border:none;color:#000;font-weight:700;cursor:pointer;border-radius:6px;text-decoration:none;margin-bottom:12px;">MY ORDERS</a><br><button onclick="localStorage.removeItem(\'pehrawa_customer\');localStorage.removeItem(\'pehrawa_customer_token\');localStorage.removeItem(\'customerId\');window.location.href=\'home.html\';" style="padding:12px 24px;background:transparent;border:1px solid #ff6b00;color:#ff6b00;font-weight:700;cursor:pointer;border-radius:6px;margin-top:8px;">LOGOUT</button></div>';
-} else {
-  container.innerHTML = '<div class="shop-state">Please <a href="login.html" style="color:#ff6b00;margin-left:6px;">login</a> to view your profile.</div>';
+const API = window.API_BASE || '';
+const user = JSON.parse(localStorage.getItem('pehrawa_customer') || 'null');
+const token = localStorage.getItem('pehrawa_customer_token') || '';
+const customerId = user ? user.id : null;
+
+let editingAddressId = null;
+
+function showLoading(){document.getElementById('profileContent').innerHTML='<div class="shop-state"><i class="fa-solid fa-spinner fa-spin" style="font-size:24px;"></i> Loading...</div>';}
+function showError(msg){document.getElementById('profileContent').innerHTML='<div class="shop-state" style="color:#ff4d4d;">'+msg+'</div>';}
+
+async function apiFetch(url,opts={}){
+  opts.headers=opts.headers||{};
+  if(token){opts.headers['Authorization']='Bearer '+token;}
+  if(opts.body&&typeof opts.body==='object'&&!(opts.body instanceof FormData)){opts.body=JSON.stringify(opts.body);opts.headers['Content-Type']='application/json';}
+  const res=await fetch(url,opts);
+  const data=await res.json();
+  if(!res.ok)throw new Error(data.message||'Something went wrong');
+  return data;
 }
+
+function getInitials(name){return name?name.charAt(0).toUpperCase():'U';}
+
+/* =========== TAB NAVIGATION =========== */
+const tabs=['details','orders','addresses','wishlist'];
+let currentTab='details';
+
+document.querySelectorAll('.profile-nav a[data-tab]').forEach(el=>{
+  el.addEventListener('click',function(e){
+    e.preventDefault();
+    document.querySelectorAll('.profile-nav a').forEach(a=>a.classList.remove('active'));
+    this.classList.add('active');
+    const tab=this.dataset.tab;
+    currentTab=tab;
+    if(tab==='details')renderDetails();
+    else if(tab==='orders')renderOrders();
+    else if(tab==='addresses')renderAddresses();
+    else if(tab==='wishlist')renderWishlist();
+  });
+});
+
+/* =========== DETAILS TAB =========== */
+function renderDetails(){
+  const content=document.getElementById('profileContent');
+  content.innerHTML=`
+    <h2>My Details</h2>
+    <p class="subtitle"><i class="fa-regular fa-pen-to-square"></i>Manage your personal information</p>
+    <div class="profile-info-display" id="detailsDisplay">
+      <div class="info-row">
+        <div><div class="info-label">Name</div><div class="info-value" id="dispName">${user.name||'-'}</div></div>
+        <div class="info-actions"><button class="btn-change" onclick="enableEdit()"><i class="fa-regular fa-pen-to-square"></i> Edit</button></div>
+      </div>
+      <div class="info-row">
+        <div><div class="info-label">Email</div><div class="info-value" id="dispEmail">${user.email||'-'}</div></div>
+        <div class="info-actions"><span style="font-size:11px;color:#38d27a;"><i class="fa-solid fa-check-circle"></i> Verified</span></div>
+      </div>
+      <div class="info-row">
+        <div><div class="info-label">Phone</div><div class="info-value" id="dispPhone">${user.phone||'Not added'}</div></div>
+        <div class="info-actions"><button class="btn-change" onclick="enableEdit()"><i class="fa-regular fa-pen-to-square"></i> Edit</button></div>
+      </div>
+      <div class="info-row">
+        <div><div class="info-label">Password</div><div class="info-value">********</div></div>
+        <div class="info-actions"><button class="btn-change" onclick="showToast('Password reset available on login page.')"><i class="fa-solid fa-key"></i> Change</button></div>
+      </div>
+    </div>
+    <div class="profile-form" id="detailsForm" style="display:none;">
+      <div class="field">
+        <label>Name</label>
+        <input id="editName" value="${user.name||''}">
+      </div>
+      <div class="field">
+        <label>Email</label>
+        <input id="editEmail" value="${user.email||''}" disabled>
+      </div>
+      <div class="field">
+        <label>Phone</label>
+        <input id="editPhone" value="${user.phone||''}" placeholder="+91XXXXXXXXXX">
+      </div>
+      <div class="form-actions">
+        <button class="btn-save" onclick="saveDetails()"><i class="fa-solid fa-floppy-disk"></i> Save Changes</button>
+        <button class="btn-cancel" onclick="disableEdit()">Cancel</button>
+      </div>
+    </div>
+  `;
+}
+
+function enableEdit(){
+  document.getElementById('detailsDisplay').style.display='none';
+  document.getElementById('detailsForm').style.display='grid';
+}
+
+function disableEdit(){
+  document.getElementById('detailsDisplay').style.display='block';
+  document.getElementById('detailsForm').style.display='none';
+}
+
+async function saveDetails(){
+  const name=document.getElementById('editName').value.trim();
+  const phone=document.getElementById('editPhone').value.trim();
+  if(!name){showToast('Name is required','error');return;}
+  try{
+    await apiFetch(API+'/api/customers/'+customerId,{method:'PUT',body:{name,phone}});
+    const upd=await apiFetch(API+'/api/customers/login',{method:'POST',body:{email:user.email,password:'dummy'}}).catch(()=>null);
+    if(upd&&upd.customer){
+      localStorage.setItem('pehrawa_customer',JSON.stringify(upd.customer));
+      Object.assign(user,upd.customer);
+      updateSidebar();
+    }else{
+      user.name=name;user.phone=phone;
+      localStorage.setItem('pehrawa_customer',JSON.stringify(user));
+    }
+    showToast('Profile updated successfully!','success');
+    renderDetails();
+  }catch(e){showToast(e.message||'Failed to update profile','error');}
+}
+
+/* =========== ORDERS TAB =========== */
+async function renderOrders(){
+  const content=document.getElementById('profileContent');
+  content.innerHTML=`
+    <h2>My Orders</h2>
+    <p class="subtitle"><i class="fa-solid fa-box"></i>View your order history</p>
+    <div id="ordersList"><div class="shop-state"><i class="fa-solid fa-spinner fa-spin"></i> Loading orders...</div></div>
+  `;
+  try{
+    const data=await apiFetch(API+'/api/customers/'+customerId+'/orders');
+    const list=document.getElementById('ordersList');
+    if(!data.orders||data.orders.length===0){
+      list.innerHTML='<div class="empty-state"><i class="fa-solid fa-box-open"></i><h3>No orders yet</h3><p>Start shopping to see your orders here.</p><a href="shop.html" class="btn-save" style="display:inline-flex;padding:12px 24px;text-decoration:none;">Browse Products</a></div>';
+      return;
+    }
+    const recent=data.orders.slice(0,5);
+    list.innerHTML=recent.map(o=>`
+      <div style="background:#0b0b0b;border:1px solid rgba(255,255,255,.08);border-radius:8px;padding:16px 18px;margin-bottom:10px;display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;">
+        <div>
+          <div style="font-weight:600;font-size:14px;">Order #${o.id}</div>
+          <div style="font-size:12px;color:#888;margin-top:4px;">${new Date(o.created_at).toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'})}</div>
+        </div>
+        <div style="text-align:right;">
+          <div style="font-weight:700;">&#8377;${Number(o.total_amount).toLocaleString()}</div>
+          <span style="font-size:11px;padding:2px 8px;border-radius:3px;background:${o.status==='delivered'?'rgba(56,210,122,.15)':o.status==='cancelled'?'rgba(255,60,60,.15)':'rgba(255,255,255,.1)'};color:${o.status==='delivered'?'#38d27a':o.status==='cancelled'?'#ff4d4d':'#fff'};font-weight:600;display:inline-block;margin-top:4px;text-transform:capitalize;">${o.status}</span>
+        </div>
+        <a href="my-orders.html" style="padding:8px 16px;border:1px solid rgba(255,255,255,.2);border-radius:6px;color:#fff;font-size:12px;font-weight:600;text-decoration:none;">View All</a>
+      </div>
+    `).join('');
+  }catch(e){
+    document.getElementById('ordersList').innerHTML='<div class="shop-state" style="color:#ff4d4d;">Failed to load orders. <button onclick="renderOrders()" style="background:none;border:1px solid #ff4d4d;color:#ff4d4d;padding:6px 14px;border-radius:4px;cursor:pointer;margin-left:8px;">Retry</button></div>';
+  }
+}
+
+/* =========== ADDRESSES TAB =========== */
+async function renderAddresses(){
+  const content=document.getElementById('profileContent');
+  content.innerHTML=`
+    <h2>Saved Addresses</h2>
+    <p class="subtitle"><i class="fa-solid fa-location-dot"></i>Manage your delivery addresses</p>
+    <div id="addrList"><div class="shop-state"><i class="fa-solid fa-spinner fa-spin"></i> Loading addresses...</div></div>
+  `;
+  try{
+    const data=await apiFetch(API+'/api/customers/'+customerId+'/addresses');
+    const list=document.getElementById('addrList');
+    if(!data.addresses||data.addresses.length===0){
+      list.innerHTML='<div class="empty-state"><i class="fa-solid fa-map-marker-alt"></i><h3>No saved addresses</h3><p>Add a delivery address for faster checkout.</p><button class="btn-save" onclick="openAddrModal()"><i class="fa-solid fa-plus"></i> Add Address</button></div>';
+      return;
+    }
+    list.innerHTML='<div class="addr-grid">'+data.addresses.map(a=>`
+      <div class="addr-card-prof">
+        ${a.is_default?'<span class="addr-badge-prof">DEFAULT</span>':''}
+        <div class="addr-name">${a.label||'Address'}</div>
+        <div class="addr-detail">${a.address||''}</div>
+        ${a.city||a.state?'<div class="addr-detail">'+[a.city,a.state].filter(Boolean).join(', ')+' - '+a.pincode+'</div>':''}
+        <div class="addr-actions">
+          <button class="btn-edit-addr" onclick="openAddrModal(${JSON.stringify(a).replace(/"/g,'&quot;')})"><i class="fa-regular fa-pen-to-square"></i></button>
+          <button class="btn-del-addr" onclick="deleteAddress(${a.id})"><i class="fa-regular fa-trash-can"></i></button>
+        </div>
+      </div>
+    `).join('')+'<button class="addr-add-btn" onclick="openAddrModal()"><i class="fa-solid fa-plus"></i> Add New Address</button></div>';
+  }catch(e){
+    document.getElementById('addrList').innerHTML='<div class="shop-state" style="color:#ff4d4d;">Failed to load addresses. <button onclick="renderAddresses()" style="background:none;border:1px solid #ff4d4d;color:#ff4d4d;padding:6px 14px;border-radius:4px;cursor:pointer;margin-left:8px;">Retry</button></div>';
+  }
+}
+
+function openAddrModal(addr){
+  editingAddressId=addr?addr.id:null;
+  document.getElementById('addrModalTitle').textContent=addr?'Edit Address':'Add Address';
+  document.getElementById('addrLabel').value=addr?addr.label||'Home':'Home';
+  document.getElementById('addrAddress').value=addr?addr.address||'':'';
+  document.getElementById('addrCity').value=addr?addr.city||'':'';
+  document.getElementById('addrState').value=addr?addr.state||'':'';
+  document.getElementById('addrPincode').value=addr?addr.pincode||'':'';
+  document.getElementById('addrDefault').checked=addr?!!addr.is_default:false;
+  document.getElementById('addrSaveBtn').onclick=addr?()=>saveAddress(addr.id):saveAddress;
+  document.getElementById('addrModal').classList.add('open');
+}
+
+function closeAddrModal(){document.getElementById('addrModal').classList.remove('open');}
+
+async function saveAddress(id){
+  const label=document.getElementById('addrLabel').value;
+  const address=document.getElementById('addrAddress').value.trim();
+  const city=document.getElementById('addrCity').value.trim();
+  const state=document.getElementById('addrState').value.trim();
+  const pincode=document.getElementById('addrPincode').value.trim();
+  const is_default=document.getElementById('addrDefault').checked;
+  if(!address){showToast('Address is required','error');return;}
+  try{
+    const body={label,address,city,state,pincode,is_default};
+    if(id){await apiFetch(API+'/api/customers/'+customerId+'/addresses/'+id,{method:'PUT',body});}
+    else{await apiFetch(API+'/api/customers/'+customerId+'/addresses',{method:'POST',body});}
+    closeAddrModal();
+    showToast(id?'Address updated!':'Address added!','success');
+    renderAddresses();
+  }catch(e){showToast(e.message||'Failed to save address','error');}
+}
+
+async function deleteAddress(id){
+  if(!confirm('Delete this address?'))return;
+  try{
+    await apiFetch(API+'/api/customers/'+customerId+'/addresses/'+id,{method:'DELETE'});
+    showToast('Address deleted','success');
+    renderAddresses();
+  }catch(e){showToast(e.message||'Failed to delete','error');}
+}
+
+/* =========== WISHLIST TAB =========== */
+function renderWishlist(){
+  const wl=JSON.parse(localStorage.getItem('pehrawa_wishlist')||'[]');
+  const content=document.getElementById('profileContent');
+  if(!wl.length){
+    content.innerHTML=`
+      <h2>My Wishlist</h2>
+      <p class="subtitle"><i class="fa-regular fa-heart"></i>Products you've saved</p>
+      <div class="empty-state"><i class="fa-regular fa-heart"></i><h3>Wishlist is empty</h3><p>Save your favorite products here.</p><a href="shop.html" class="btn-save" style="display:inline-flex;padding:12px 24px;text-decoration:none;">Shop Now</a></div>
+    `;
+    return;
+  }
+  content.innerHTML=`
+    <h2>My Wishlist</h2>
+    <p class="subtitle"><i class="fa-regular fa-heart"></i>${wl.length} item${wl.length>1?'s':''} saved</p>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:14px;" id="wlGrid">
+      <div class="shop-state"><i class="fa-solid fa-spinner fa-spin"></i> Loading products...</div>
+    </div>
+  `;
+  fetch(API+'/api/public/products')
+    .then(r=>r.json())
+    .then(data=>{
+      const products=data.products||[];
+      const items=products.filter(p=>wl.includes(String(p.id)));
+      if(!items.length){
+        document.getElementById('wlGrid').outerHTML='<div class="empty-state"><i class="fa-regular fa-heart"></i><h3>Products not found</h3><p>The saved products may have been removed.</p></div>';
+        return;
+      }
+      document.getElementById('wlGrid').innerHTML=items.map(p=>`
+        <a href="product.html?id=${p.id}" style="text-decoration:none;background:#0b0b0b;border:1px solid rgba(255,255,255,.08);border-radius:8px;overflow:hidden;transition:.3s;">
+          <img src="${p.image_url||'../images/placeholder.png'}" alt="${p.name}" style="width:100%;height:180px;object-fit:cover;">
+          <div style="padding:10px 12px;">
+            <div style="font-size:13px;font-weight:600;color:#fff;margin-bottom:4px;">${p.name}</div>
+            <div style="font-size:14px;font-weight:700;color:#fff;">&#8377;${p.price}</div>
+          </div>
+        </a>
+      `).join('');
+    })
+    .catch(()=>{
+      document.getElementById('wlGrid').innerHTML='<div class="shop-state" style="color:#ff4d4d;">Failed to load wishlist products.</div>';
+    });
+}
+
+/* =========== LOGOUT =========== */
+document.getElementById('logoutBtn').addEventListener('click',function(e){
+  e.preventDefault();
+  localStorage.removeItem('pehrawa_customer');
+  localStorage.removeItem('pehrawa_customer_token');
+  localStorage.removeItem('customerId');
+  window.location.href='home.html';
+});
+
+/* =========== SIDEBAR UPDATE =========== */
+function updateSidebar(){
+  const u=JSON.parse(localStorage.getItem('pehrawa_customer')||'null');
+  if(!u)return;
+  document.getElementById('profileAvatar').textContent=getInitials(u.name);
+  document.getElementById('sidebarName').textContent=u.name||'User';
+  document.getElementById('sidebarEmail').textContent=u.email||'';
+}
+
+/* =========== INIT =========== */
+function init(){
+  if(!user||!token){
+    document.getElementById('profileLoading').style.display='none';
+    document.getElementById('profileNotLoggedIn').style.display='block';
+    return;
+  }
+  updateSidebar();
+  document.getElementById('profileLoading').style.display='none';
+  document.getElementById('profileLayout').style.display='grid';
+  renderDetails();
+}
+
+/* =========== TOAST =========== */
+function showToast(msg,type){
+  const existing=document.querySelector('.toast');
+  if(existing)existing.remove();
+  const t=document.createElement('div');
+  t.className='toast';t.style.cssText='opacity:1;transform:translateY(0);';
+  t.style.background=type==='error'?'#ff3f3f':'#ffffff';
+  t.style.color=type==='error'?'#fff':'#000';
+  t.textContent=msg;
+  document.body.appendChild(t);
+  setTimeout(()=>{t.style.opacity='0';t.style.transform='translateY(20px)';setTimeout(()=>t.remove(),400);},3000);
+}
+
+/* Close modal on overlay click */
+document.getElementById('addrModal').addEventListener('click',function(e){
+  if(e.target===this)closeAddrModal();
+});
+
+init();
 </script>
 <div class="whatsapp-float" onclick="window.open('https://wa.me/919855707708','_blank')" role="button" tabindex="0" aria-label="Chat on WhatsApp"><i class="fa-brands fa-whatsapp"></i><span class="wa-tooltip">Chat with us</span><span class="wa-badge"></span></div>
 <script src="../js/customer-auth.js"></script>
