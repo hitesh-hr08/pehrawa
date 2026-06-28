@@ -442,17 +442,17 @@ function populateBuyConfirmation() {
     '<div class="buy-summary-row"><span>Address</span><span style="font-size:12px;">' + address + ', ' + city + ', ' + state + ' - ' + pincode + '</span></div>';
 }
 
-async function buyWithRazorpay() {
-  var btn = document.getElementById("razorpayBuyBtn");
+async function placeBuyOrder() {
+  var btn = document.getElementById("placeBuyOrderBtn");
   btn.disabled = true;
-  btn.textContent = "Opening...";
+  btn.textContent = "Placing...";
   var qty = parseInt(document.getElementById("buyQty").value) || 1;
   var price = getProductPrice();
   var total = price * qty;
   if (total < 1) {
     if (typeof showToast === "function") showToast("Invalid amount");
     btn.disabled = false;
-    btn.textContent = "Pay with Razorpay";
+    btn.textContent = "Place Order";
     return;
   }
   // Save address first if checkbox is checked
@@ -461,7 +461,7 @@ async function buyWithRazorpay() {
     await saveBuyAddress();
   }
 
-  await razorpayCheckout(total, async function (paymentId) {
+  try {
     var name = document.getElementById("buyName").value;
     var phone = document.getElementById("buyPhone").value;
     var address = document.getElementById("buyAddress").value;
@@ -486,15 +486,14 @@ async function buyWithRazorpay() {
           city: city,
           state: state,
           total_amount: total,
-          status: "Processing",
-          payment_id: paymentId,
+          status: "Pending",
           customer_id: cust ? cust.id : (localStorage.getItem("customerId") || null),
           items: [{ name: productName, size: size, quantity: qty, price: price }]
         })
       });
       var data = await res.json();
       if (data.success) {
-        if (typeof showToast === "function") showToast("✅ Payment successful! Order placed.");
+        if (typeof showToast === "function") showToast("✅ Order submitted successfully!");
         document.getElementById("buyCheckoutOverlay").classList.remove("active");
         setTimeout(function () { window.location.href = "my-orders.html"; }, 1500);
       } else {
@@ -503,11 +502,8 @@ async function buyWithRazorpay() {
     } catch (err) {
       if (typeof showToast === "function") showToast("Error placing order");
     }
+  } finally {
     btn.disabled = false;
-    btn.textContent = "Pay with Razorpay";
-  }, function () {
-    btn.disabled = false;
-    btn.textContent = "Pay with Razorpay";
-  });
+    btn.textContent = "Place Order";
+  }
 }
-

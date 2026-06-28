@@ -1,6 +1,6 @@
 ﻿(function () {
   const API_URL = `${window.PEHRAWA_API_BASE || "http://localhost:5000"}/api/public/products`;
-  const productGrid = document.querySelector(".product-grid");
+  const productGrid = document.getElementById("shopProductGrid");
   const filterButtons = document.querySelectorAll(".filter-btn");
   const searchInput = document.querySelector(".search-input");
   let shopProducts = [];
@@ -17,7 +17,6 @@
     { id: 7, name: "Classic Oxford Shirt", price: 1299, image_url: "../images/Shirt1.avif", category: "SHIRTS" },
     { id: 8, name: "Black Cuban Collar Shirt", price: 1399, image_url: "../images/Shirt2.webp", category: "SHIRTS" },
     { id: 9, name: "Relaxed Denim Shirt", price: 1599, image_url: "../images/Shirt3.webp", category: "SHIRTS" },
-
     { id: 10, name: "White Street Sneakers", price: 2499, image_url: "../images/Footwear1.webp", category: "FOOTWEAR" },
     { id: 11, name: "Urban Slip-On Loafers", price: 2199, image_url: "../images/Footwear2.jpg", category: "FOOTWEAR" },
     { id: 12, name: "Chunky Street Sneakers", price: 2899, image_url: "../images/Footwear3.jpg", category: "FOOTWEAR" },
@@ -29,32 +28,44 @@
 
   if (!productGrid) return;
 
-  const staticProductsHTML = productGrid.innerHTML;
+  function renderCard(product) {
+    const imageUrl = product.image_url || "../images/product1.png";
+    const price = parseFloat(product.price) || 0;
+    const origPrice = product.original_price ? Number(product.original_price) : Math.round(price * 1.5);
+    const discount = origPrice > price ? Math.round((1 - price / origPrice) * 100) : 0;
+    const rating = (3.5 + Math.random() * 1.5).toFixed(1);
+    const reviews = Math.floor(Math.random() * 500) + 20;
 
-  async function loadShopProducts() {
-    try {
-      const res = await fetch(API_URL);
-      const data = await res.json();
+    var badges = "";
+    if (product.stock_status === "out_of_stock") badges += '<span class="p-status p-out-of-stock">Out of Stock</span>';
+    else if (product.stock_status === "limited_stock") badges += '<span class="p-status p-limited">Limited</span>';
+    if (product.is_new_arrival) badges += '<span class="p-status p-new">New</span>';
+    if (product.is_trending) badges += '<span class="p-status p-trending">Trending</span>';
+    if (product.is_hot_seller) badges += '<span class="p-status p-hot">Hot</span>';
 
-      if (!data.success) {
-        return;
-      }
-
-      shopProducts = data.products.sort(function(a,b){
-        var tshirtCats = ["ANIME","GRAPHIC","MINIMAL","OVERSIZED","T-SHIRT","PRINTED"];
-        var ca = (a.category || "").toUpperCase();
-        var cb = (b.category || "").toUpperCase();
-        var aIsT = tshirtCats.some(function(k){ return ca.includes(k); });
-        var bIsT = tshirtCats.some(function(k){ return cb.includes(k); });
-        if (aIsT && !bIsT) return -1;
-        if (!aIsT && bIsT) return 1;
-        return 0;
-      });
-      renderProducts();
-    } catch (err) {
-      shopProducts = staticFallback;
-      renderProducts();
-    }
+    return '<div class="product-card revealed">' +
+      '<div class="product-image">' +
+        '<span class="product-badge">-' + discount + '%</span>' +
+        badges +
+        '<a href="product.html?id=' + product.id + '">' +
+          '<img src="' + imageUrl + '" alt="' + product.name + '">' +
+        '</a>' +
+      '</div>' +
+      '<div class="product-content">' +
+        '<h3>' + product.name + '</h3>' +
+        '<div class="product-rating">' +
+          '<span class="stars">' + '&#9733;'.repeat(Math.round(rating)) + '</span>' +
+          '<span class="count">' + rating + ' (' + reviews + ')</span>' +
+        '</div>' +
+        '<div class="price">&#8377;' + price.toFixed(0) +
+          '<span class="orig">&#8377;' + origPrice + '</span>' +
+          '<span class="discount">' + discount + '% off</span>' +
+        '</div>' +
+        '<button class="buy-now-btn" data-id="' + product.id + '" data-name="' + product.name.replace(/'/g, "\\'") + '" data-price="' + price + '" data-image="' + imageUrl + '">' +
+          '<i class="fa-solid fa-bag-shopping"></i>ADD TO CART' +
+        '</button>' +
+      '</div>' +
+    '</div>';
   }
 
   function renderProducts() {
@@ -64,79 +75,30 @@
       "SHIRTS": function(cat){ return cat.includes("SHIRTS") && !cat.includes("T-SHIRTS"); },
       "JEANS": function(cat){ return cat.includes("JEANS"); }
     };
-    const filteredProducts = shopProducts.filter((product) => {
+    const filtered = shopProducts.filter(function(product) {
       const category = (product.category || "").toUpperCase();
       const name = (product.name || "").toLowerCase();
       const description = (product.description || "").toLowerCase();
       var matchFn = filterMap[activeFilter];
       const matchesFilter = activeFilter === "ALL" || (matchFn ? matchFn(category) : category.includes(activeFilter));
-      const matchesSearch =
-        !searchTerm ||
-        name.includes(searchTerm) ||
-        description.includes(searchTerm) ||
-        category.toLowerCase().includes(searchTerm);
-
+      const matchesSearch = !searchTerm || name.includes(searchTerm) || description.includes(searchTerm) || category.toLowerCase().includes(searchTerm);
       return matchesFilter && matchesSearch;
     });
 
-    if (filteredProducts.length === 0) {
-      productGrid.innerHTML = `<div class="shop-state">No products found.</div>`;
+    if (filtered.length === 0) {
+      productGrid.innerHTML = '<div class="shop-state">No products found.</div>';
       return;
     }
-
-    productGrid.innerHTML = filteredProducts.map((product) => {
-      const imageUrl = product.image_url || "../images/product1.png";
-      const price = parseFloat(product.price) || 0;
-      const origPrice = product.original_price ? Number(product.original_price) : Math.round(price * 1.5);
-      const discount = origPrice > price ? Math.round((1 - price / origPrice) * 100) : 0;
-      const rating = (3.5 + Math.random() * 1.5).toFixed(1);
-      const reviews = Math.floor(Math.random() * 500) + 20;
-
-      var badges = "";
-      if (product.stock_status === "out_of_stock") badges += '<span class="p-status p-out-of-stock">Out of Stock</span>';
-      else if (product.stock_status === "limited_stock") badges += '<span class="p-status p-limited">Limited</span>';
-      if (product.is_new_arrival) badges += '<span class="p-status p-new">New</span>';
-      if (product.is_trending) badges += '<span class="p-status p-trending">Trending</span>';
-      if (product.is_hot_seller) badges += '<span class="p-status p-hot">Hot</span>';
-
-      return `
-        <div class="product-card revealed">
-          <div class="product-image">
-            <span class="product-badge">-${discount}%</span>
-            ${badges}
-            <a href="product.html?id=${product.id}">
-              <img src="${imageUrl}" alt="${product.name}">
-            </a>
-          </div>
-
-          <div class="product-content">
-            <h3>${product.name}</h3>
-            <div class="product-rating">
-              <span class="stars">${'★'.repeat(Math.round(rating))}</span>
-              <span class="count">${rating} (${reviews})</span>
-            </div>
-            <div class="price">&#8377;${price.toFixed(0)}
-              <span class="orig">&#8377;${origPrice}</span>
-              <span class="discount">${discount}% off</span>
-            </div>
-
-            <button class="buy-now-btn" data-id="${product.id}" data-name="${product.name}" data-price="${price}" data-image="${imageUrl}">
-              <i class="fa-solid fa-bag-shopping"></i>ADD TO CART
-            </button>
-          </div>
-        </div>
-      `;
-    }).join("");
+    productGrid.innerHTML = filtered.map(renderCard).join("");
   }
 
   function findProduct(productId) {
-    return shopProducts.find((item) => item.id === productId) || staticFallback.find((item) => item.id === productId);
+    return shopProducts.find(function(item) { return item.id === productId; }) || staticFallback.find(function(item) { return item.id === productId; });
   }
 
   function saveItem(key, productId) {
     const product = findProduct(productId);
     if (!product) return;
-
     const currentItems = JSON.parse(localStorage.getItem(key)) || [];
     currentItems.push({
       id: product.id,
@@ -144,28 +106,20 @@
       price: Number(product.price),
       image: product.image_url || "../images/product1.png"
     });
-
     localStorage.setItem(key, JSON.stringify(currentItems));
-    updateHeaderCount(key, currentItems.length);
-
-    if (typeof showToast === "function") {
-      showToast(`${product.name} added to ${key}`);
-    }
+    var selector = key === "cart" ? ".fa-cart-shopping" : ".fa-heart";
+    var icon = document.querySelector(selector);
+    var badge = icon && icon.parentElement.querySelector("span");
+    if (badge) badge.textContent = currentItems.length;
+    if (typeof showToast === "function") showToast(product.name + " added to " + key);
   }
 
-  function updateHeaderCount(key, count) {
-    const selector = key === "cart" ? ".fa-cart-shopping" : ".fa-heart";
-    const icon = document.querySelector(selector);
-    const badge = icon && icon.parentElement.querySelector("span");
+  window.addToCart = function (productId) { saveItem("cart", productId); };
+  window.addToWishlist = function (productId) { saveItem("wishlist", productId); };
 
-    if (badge) {
-      badge.textContent = count;
-    }
-  }
-
-  filterButtons.forEach((button) => {
-    button.addEventListener("click", () => {
-      filterButtons.forEach((item) => item.classList.remove("active"));
+  filterButtons.forEach(function(button) {
+    button.addEventListener("click", function() {
+      filterButtons.forEach(function(item) { item.classList.remove("active"); });
       button.classList.add("active");
       activeFilter = (button.dataset.filter || button.textContent).trim().toUpperCase();
       renderProducts();
@@ -173,19 +127,25 @@
   });
 
   if (searchInput) {
-    searchInput.addEventListener("input", () => {
+    searchInput.addEventListener("input", function() {
       searchTerm = searchInput.value.trim().toLowerCase();
       renderProducts();
     });
   }
 
-  window.addToCart = function (productId) {
-    saveItem("cart", productId);
-  };
+  shopProducts = staticFallback.slice();
+  renderProducts();
 
-  window.addToWishlist = function (productId) {
-    saveItem("wishlist", productId);
-  };
-
-  loadShopProducts();
+  fetch(API_URL)
+    .then(function(r) {
+      if (!r.ok) throw new Error("HTTP " + r.status);
+      return r.json();
+    })
+    .then(function(data) {
+      if (data.success && data.products && data.products.length > 0) {
+        shopProducts = data.products;
+        renderProducts();
+      }
+    })
+    .catch(function() {});
 })();

@@ -1,6 +1,5 @@
-import React, { useState, useEffect } from "react";
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, Modal, ActivityIndicator } from "react-native";
-import { WebView } from "react-native-webview";
+import React, { useEffect, useState } from "react";
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, Modal } from "react-native";
 import { useAuth } from "../context/AuthContext";
 import { useCart } from "../context/CartContext";
 import { api } from "../services/api";
@@ -18,11 +17,11 @@ const CheckoutScreen = ({ route, navigation }) => {
   const [city, setCity] = useState("");
   const [state, setState] = useState("");
   const [loading, setLoading] = useState(false);
-  const [paymentUrl, setPaymentUrl] = useState(null);
-  const [showPayment, setShowPayment] = useState(false);
-  const [payerror, setPayError] = useState(null);
   const [savedAddresses, setSavedAddresses] = useState([]);
   const [showAddressPicker, setShowAddressPicker] = useState(false);
+
+  const items = product ? [product] : cartItems || cart;
+  const total = product ? Number(product.price) * Number(product.quantity || 1) : getCartTotal();
 
   useEffect(() => {
     if (user?.id) {
@@ -43,10 +42,7 @@ const CheckoutScreen = ({ route, navigation }) => {
     setState(addr.state || "");
   };
 
-  const items = product ? [product] : cartItems || cart;
-  const total = product ? Number(product.price) * Number(product.quantity || 1) : getCartTotal();
-
-  const getOrderPayload = (paymentId) => {
+  const getOrderPayload = () => {
     const addr = address + ", " + city + ", " + state + " - " + pincode;
     return {
       customer_name: name,
@@ -57,8 +53,7 @@ const CheckoutScreen = ({ route, navigation }) => {
       city,
       state,
       total_amount: total,
-      status: paymentId ? "Processing" : "Pending",
-      payment_id: paymentId || null,
+      status: "Pending",
       items: items.map((i) => ({
         id: product ? null : i.id,
         name: i.name,
@@ -69,101 +64,30 @@ const CheckoutScreen = ({ route, navigation }) => {
     };
   };
 
-  const handleRazorpayPayment = async () => {
+  const handlePlaceOrder = async () => {
     if (!name || !phone || !address || !pincode || !city || !state) {
       showToast("Please fill all address fields");
       return;
     }
-    if (total < 1) { showToast("Invalid amount"); return; }
+    if (total < 1) {
+      showToast("Invalid amount");
+      return;
+    }
+
     setLoading(true);
     try {
-      const orderData = await api.createRazorpayOrder(total);
-      if (!orderData.success) { showToast("Failed to create payment"); setLoading(false); return; }
-
-      const keyData = await api.getRazorpayKey();
-      const key = keyData.key;
-
-      const html = `
-        <html>
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <body style="margin:0;background:transparent;">
-        <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
-        <script>
-          try {
-            var options = {
-              key: "${key}",
-              amount: ${Number(orderData.amount)},
-              currency: "${orderData.currency}",
-              name: "Pehrawa",
-              order_id: "${orderData.order_id}",
-              handler: function(r) {
-                window.ReactNativeWebView.postMessage(JSON.stringify({
-                  type: "success",
-                  razorpay_payment_id: r.razorpay_payment_id,
-                  razorpay_order_id: r.razorpay_order_id,
-                  razorpay_signature: r.razorpay_signature
-                }));
-              },
-              modal: {
-                ondismiss: function() {
-                  window.ReactNativeWebView.postMessage(JSON.stringify({ type: "cancelled" }));
-                }
-              },
-              theme: { color: "#ff6b00" }
-            };
-            var rzp = new Razorpay(options);
-            rzp.on("payment.failed", function(r) {
-              window.ReactNativeWebView.postMessage(JSON.stringify({ type: "failed", error: (r.error && r.error.description) || "Payment failed" }));
-            });
-            rzp.open();
-          } catch(e) {
-            window.ReactNativeWebView.postMessage(JSON.stringify({ type: "failed", error: e.message }));
-          }
-        </script>
-        </body></html>
-      `;
-      setPayerror(null);
-      setPaymentUrl(html);
-      setShowPayment(true);
-    } catch (err) {
-      showToast("Payment error");
+      const orderData = await api.createOrder(getOrderPayload());
+      if (orderData.success) {
+        showToast("Order placed successfully");
+        if (!product) clearCart();
+        setTimeout(() => navigation.navigate("MyOrders"), 1500);
+      } else {
+        showToast(orderData.message || "Order placement failed");
+      }
+    } catch (e) {
+      showToast("Order placement failed");
     }
     setLoading(false);
-  };
-
-  const handleWebViewMessage = async (event) => {
-    const msg = JSON.parse(event.nativeEvent.data);
-    setShowPayment(false);
-
-    if (msg.type === "success") {
-      setLoading(true);
-      try {
-        const verifyData = await api.verifyRazorpayPayment({
-          razorpay_order_id: msg.razorpay_order_id,
-          razorpay_payment_id: msg.razorpay_payment_id,
-          razorpay_signature: msg.razorpay_signature,
-        });
-        if (verifyData.success && verifyData.verified) {
-          const orderData = await api.createOrder(getOrderPayload(msg.razorpay_payment_id));
-          if (orderData.success) {
-            showToast("✅ Payment successful! Order placed.");
-            if (!product) clearCart();
-            setTimeout(() => navigation.navigate("MyOrders"), 1500);
-          } else {
-            showToast("Order placement failed");
-          }
-        } else {
-          showToast("Payment verification failed");
-        }
-      } catch (e) {
-        showToast("Verification error");
-      }
-      setLoading(false);
-    } else if (msg.type === "cancelled") {
-      showToast("Payment cancelled");
-    } else if (msg.type === "failed") {
-      showToast("Payment failed: " + (msg.error || ""));
-    }
   };
 
   return (
@@ -173,7 +97,7 @@ const CheckoutScreen = ({ route, navigation }) => {
       {savedAddresses.length > 0 && (
         <>
           <TouchableOpacity style={styles.savedAddrBtn} onPress={() => setShowAddressPicker(true)}>
-            <Text style={styles.savedAddrBtnText}>📌 Saved Addresses ({savedAddresses.length})</Text>
+            <Text style={styles.savedAddrBtnText}>Saved Addresses ({savedAddresses.length})</Text>
           </TouchableOpacity>
           <Modal visible={showAddressPicker} transparent animationType="slide" onRequestClose={() => setShowAddressPicker(false)}>
             <View style={styles.addrModalOverlay}>
@@ -206,38 +130,18 @@ const CheckoutScreen = ({ route, navigation }) => {
         {items.slice(0, 3).map((item, i) => (
           <View key={i} style={styles.summaryRow}>
             <Text style={styles.summaryName} numberOfLines={1}>{item.name} x{item.quantity || 1}</Text>
-            <Text style={styles.summaryPrice}>₹{(Number(item.price) * Number(item.quantity || 1)).toFixed(2)}</Text>
+            <Text style={styles.summaryPrice}>Rs. {(Number(item.price) * Number(item.quantity || 1)).toFixed(2)}</Text>
           </View>
         ))}
         <View style={styles.totalRow}>
           <Text style={styles.totalLabel}>Total</Text>
-          <Text style={styles.totalVal}>₹{total.toFixed(2)}</Text>
+          <Text style={styles.totalVal}>Rs. {total.toFixed(2)}</Text>
         </View>
       </View>
 
-      <TouchableOpacity style={styles.payBtn} onPress={handleRazorpayPayment} disabled={loading}>
-        <Text style={styles.payBtnText}>{loading ? "PROCESSING..." : "PAY WITH RAZORPAY"}</Text>
+      <TouchableOpacity style={styles.payBtn} onPress={handlePlaceOrder} disabled={loading}>
+        <Text style={styles.payBtnText}>{loading ? "PLACING..." : "PLACE ORDER"}</Text>
       </TouchableOpacity>
-
-      <Modal visible={showPayment} animationType="slide" onRequestClose={() => setShowPayment(false)}>
-        <View style={{ flex: 1, marginTop: 40, backgroundColor: "#050505" }}>
-          <TouchableOpacity onPress={() => setShowPayment(false)} style={{ padding: 12 }}>
-            <Text style={{ color: "#ff6b00", fontSize: 16 }}>✕ Close</Text>
-          </TouchableOpacity>
-          {paymentUrl && (
-            <WebView
-              source={{ html: paymentUrl }}
-              onMessage={handleWebViewMessage}
-              style={{ flex: 1, backgroundColor: "transparent" }}
-              originWhitelist={["*"]}
-              javaScriptEnabled={true}
-              domStorageEnabled={true}
-              startInLoadingState
-              onError={(e) => { showToast("WebView error: " + e.nativeEvent.description); setShowPayment(false); }}
-            />
-          )}
-        </View>
-      </Modal>
     </ScrollView>
   );
 };

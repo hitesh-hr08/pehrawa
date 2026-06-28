@@ -303,7 +303,6 @@ if (copyright) {
 // Fetch Orders
 // User Login
 // Admin Login
-// Payment Gateway
 // MongoDB Integration
 
 console.log(
@@ -388,9 +387,10 @@ if (checkoutForm) {
       });
       const data = await res.json();
       if (data.success) {
-        showToast("Order " + (data.order.tracking_id || "#" + data.order.id) + " placed! Track it in My Orders.");
+        showToast("✅ Order submitted successfully!");
         checkoutOverlay.classList.remove("active");
         checkoutForm.reset();
+        setTimeout(function () { window.location.href = "my-orders.html"; }, 1500);
       } else {
         showToast(data.message || "Failed to place order");
       }

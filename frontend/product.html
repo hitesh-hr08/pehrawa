@@ -150,21 +150,19 @@
       </form>
     </div>
 
-    <!-- Step 2: Confirmation + Payment -->
+    <!-- Step 2: Confirmation -->
     <div class="buy-step" id="buyStep2" style="display:none">
       <h3>Confirm Order</h3>
       <div class="buy-summary"></div>
       <div class="checkout-row" style="margin-top:16px;gap:10px;">
         <button class="checkout-submit" style="background:#333;color:#fff;flex:1;" onclick="showBuyStep(1)">Back</button>
-        <button class="checkout-submit" style="flex:1;" onclick="buyWithRazorpay()" id="razorpayBuyBtn">Pay with Razorpay</button>
+        <button class="checkout-submit" style="flex:1;" onclick="placeBuyOrder()" id="placeBuyOrderBtn">Place Order</button>
       </div>
     </div>
   </div>
 </div>
 
-<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 <script src="../js/customer-auth.js"></script>
-<script src="../js/razorpay-checkout.js"></script>
 <script src="../js/product.js"></script>
 <script src="../js/script.js"></script>
 <script src="../js/animations.js"></script>

@@ -205,25 +205,23 @@ function clearCart() {
   renderCart();
 }
 
-async function checkoutWithPayment() {
+async function placeOrder() {
   if (cart.length === 0) {
     alert("Cart is empty");
     return;
   }
-
   var customerName = document.getElementById("customerName").value.trim();
   var customerPhone = document.getElementById("customerPhone").value.trim();
   var customerAddress = document.getElementById("customerAddress").value.trim();
 
   if (!customerName || !customerPhone || !customerAddress) {
-    alert("Please enter your name, phone number, and delivery address.");
+    alert("Please fill name, phone, and address");
     return;
   }
 
   var total = cart.reduce(function (sum, item) {
     return sum + (Number(item.price) * Number(item.quantity || 1));
   }, 0);
-
   var savedCustomerId = null;
   var cust = window.getCustomer ? window.getCustomer() : null;
   if (cust && cust.id) {
@@ -234,82 +232,13 @@ async function checkoutWithPayment() {
   }
 
   checkoutBtn.disabled = true;
-  checkoutBtn.textContent = "Processing...";
+  checkoutBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Placing...';
 
-  var apiBase = window.PEHRAWA_API_BASE || "http://localhost:5000";
-
-  try {
-    var res = await fetch(apiBase + "/api/public/orders", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": "Bearer " + (window.getCustomerToken ? window.getCustomerToken() : "")
-      },
-      body: JSON.stringify({
-        customer_name: customerName,
-        customer_id: savedCustomerId,
-        phone: customerPhone,
-        address: customerAddress + ", " + (document.getElementById("customerCity")?.value || "") + ", " + (document.getElementById("customerState")?.value || "") + ", Pincode: " + (document.getElementById("customerPincode")?.value || ""),
-        pincode: document.getElementById("customerPincode")?.value || "",
-        city: document.getElementById("customerCity")?.value || "",
-        state: document.getElementById("customerState")?.value || "",
-        total_amount: total,
-        items: cart.map(function (item) {
-          return {
-            id: item.id,
-            name: item.name,
-            price: item.price,
-            quantity: item.quantity,
-            size: item.size
-          };
-        })
-      })
-    });
-
-    var data = await res.json();
-
-    if (!data.success) {
-      if (typeof showToast === "function") showToast(data.message || "Order could not be saved.");
-      checkoutBtn.disabled = false;
-      checkoutBtn.innerHTML = '<i class="fa-solid fa-bag-shopping"></i> BUY NOW';
-      return;
-    }
-
-    cart = [];
-    saveCart();
-    renderCart();
-    if (typeof showToast === "function") showToast("Order " + (data.order.tracking_id || "#" + data.order.id) + " placed! Track it in My Orders.");
-  } catch (err) {
-    if (typeof showToast === "function") showToast("Error placing order. Try again.");
+  var saveCb = document.getElementById("saveAddressCheck");
+  if (saveCb && saveCb.checked) {
+    saveCurrentAddress();
   }
 
-  checkoutBtn.disabled = false;
-  checkoutBtn.innerHTML = '<i class="fa-solid fa-bag-shopping"></i> BUY NOW';
-}
-
-if (checkoutBtn) {
-  checkoutBtn.addEventListener("click", function () {
-    window.requireAuth(function (loggedIn) {
-      if (loggedIn) checkoutWithPayment();
-    });
-  });
-}
-
-async function placeOrderAfterPayment(paymentId) {
-  var customerName = document.getElementById("customerName").value.trim();
-  var customerPhone = document.getElementById("customerPhone").value.trim();
-  var customerAddress = document.getElementById("customerAddress").value.trim();
-  var total = cart.reduce(function (sum, item) {
-    return sum + (Number(item.price) * Number(item.quantity || 1));
-  }, 0);
-  var savedCustomerId = null;
-  var cust = window.getCustomer ? window.getCustomer() : null;
-  if (cust && cust.id) {
-    savedCustomerId = cust.id;
-    localStorage.setItem("customerId", cust.id);
-  } else {
-    savedCustomerId = localStorage.getItem("customerId");
-  }
   var api = window.PEHRAWA_API_BASE || "http://localhost:5000";
   try {
     var res = await fetch(api + "/api/public/orders", {
@@ -327,8 +256,7 @@ async function placeOrderAfterPayment(paymentId) {
         city: document.getElementById("customerCity")?.value || "",
         state: document.getElementById("customerState")?.value || "",
         total_amount: total,
-        status: paymentId ? "Processing" : "Pending",
-        payment_id: paymentId || null,
+        status: "Pending",
         items: cart.map(function (item) {
           return { id: item.id, name: item.name, price: item.price, quantity: item.quantity, size: item.size };
         })
@@ -347,40 +275,21 @@ async function placeOrderAfterPayment(paymentId) {
   } catch (err) {
     if (typeof showToast === "function") showToast("Error placing order");
   }
+
+  checkoutBtn.disabled = false;
+  checkoutBtn.innerHTML = '<i class="fa-solid fa-bag-shopping"></i> PLACE ORDER';
 }
 
-function startRazorpayCheckout(btn) {
-  if (cart.length === 0) { alert("Cart is empty"); return; }
-  var name = document.getElementById("customerName").value.trim();
-  var phone = document.getElementById("customerPhone").value.trim();
-  var addr = document.getElementById("customerAddress").value.trim();
-  if (!name || !phone || !addr) { alert("Please fill name, phone, and address"); return; }
-  var total = cart.reduce(function (s, item) { return s + (Number(item.price) * Number(item.quantity || 1)); }, 0);
-  if (total < 1) { alert("Invalid total"); return; }
-  btn.disabled = true;
-  btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Opening...';
-
-  // Save address first if checkbox is checked
-  var saveCb = document.getElementById("saveAddressCheck");
-  if (saveCb && saveCb.checked) {
-    saveCurrentAddress();
-  }
-
-  razorpayCheckout(total, async function (paymentId) {
-    await placeOrderAfterPayment(paymentId);
-    btn.disabled = false;
-    btn.innerHTML = '<i class="fa-solid fa-credit-card"></i> PAY WITH RAZORPAY';
-  }, function () {
-    btn.disabled = false;
-    btn.innerHTML = '<i class="fa-solid fa-credit-card"></i> PAY WITH RAZORPAY';
+if (checkoutBtn) {
+  checkoutBtn.addEventListener("click", function () {
+    window.requireAuth(function (loggedIn) {
+      if (loggedIn) placeOrder();
+    });
   });
 }
 
-// Razorpay checkout handler
-document.getElementById("razorpayCheckoutBtn").addEventListener("click", function () {
-  window.requireAuth(function (loggedIn) {
-    if (!loggedIn) return;
-    startRazorpayCheckout(document.getElementById("razorpayCheckoutBtn"));
-  });
-});
+if (clearCartBtn) {
+  clearCartBtn.addEventListener("click", clearCart);
+}
 
+renderCart();

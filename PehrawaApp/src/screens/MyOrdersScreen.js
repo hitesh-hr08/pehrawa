@@ -5,7 +5,7 @@ import { useAuth } from "../context/AuthContext";
 import { api } from "../services/api";
 
 const statusColors = {
-  Pending: "#f59e0b", "Verifying Payment": "#f59e0b",
+  Pending: "#f59e0b",
   Processing: "#3b82f6", Shipped: "#8b5cf6",
   Delivered: "#10b981", Cancelled: "#ef4444",
 };

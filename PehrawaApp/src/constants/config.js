@@ -4,4 +4,3 @@ const getApiBase = () => {
 };
 
 export const API_BASE = getApiBase();
-export const RAZORPAY_KEY_ID = "rzp_live_T6aA0kd4BdVC3q";

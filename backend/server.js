@@ -4,20 +4,8 @@ const express = require("express");
 const cors = require("cors");
 const multer = require("multer");
 const passport = require("passport");
-const Razorpay = require("razorpay");
-const crypto = require("crypto");
-require("dotenv").config();
-
-var razorpay = null;
-if (process.env.RAZORPAY_KEY_ID && process.env.RAZORPAY_KEY_ID !== "rzp_test_YOUR_KEY_ID_HERE") {
-  razorpay = new Razorpay({
-    key_id: process.env.RAZORPAY_KEY_ID,
-    key_secret: process.env.RAZORPAY_KEY_SECRET
-  });
-  console.log("Razorpay initialized with key: " + process.env.RAZORPAY_KEY_ID.slice(0, 12) + "...");
-} else {
-  console.log("Razorpay not configured. Set RAZORPAY_KEY_ID and RAZORPAY_KEY_SECRET in .env");
-}
+require("dotenv").config({ path: path.join(__dirname, "..", ".env") });
+require("dotenv").config({ path: path.join(__dirname, ".env") });
 
 const uploadsDir = path.join(__dirname, "uploads");
 if (!fs.existsSync(uploadsDir)) {
@@ -203,60 +191,6 @@ app.put("/api/settings", verifyAdmin, async (req, res) => {
   }
 });
 
-// ===============================
-// RAZORPAY PAYMENT API
-// ===============================
-
-app.post("/api/create-order", async (req, res) => {
-  try {
-    if (!razorpay) {
-      return res.status(400).json({ success: false, message: "Payment gateway not configured. Use UPI/manual payment." });
-    }
-    var { amount, currency } = req.body;
-    if (!amount || amount <= 0) {
-      return res.status(400).json({ success: false, message: "Invalid amount" });
-    }
-    var options = {
-      amount: Math.round(amount * 100),
-      currency: currency || "INR",
-      receipt: "rcpt_" + Date.now()
-    };
-    var order = await razorpay.orders.create(options);
-    res.json({
-      success: true,
-      order_id: order.id,
-      amount: order.amount,
-      currency: order.currency
-    });
-  } catch (err) {
-    console.error("Razorpay order error:", err.message);
-    res.status(500).json({ success: false, message: "Failed to create payment order" });
-  }
-});
-
-app.post("/api/verify-payment", async (req, res) => {
-  try {
-    var { razorpay_order_id, razorpay_payment_id, razorpay_signature } = req.body;
-    var expectedSig = crypto
-      .createHmac("sha256", process.env.RAZORPAY_KEY_SECRET || "")
-      .update(razorpay_order_id + "|" + razorpay_payment_id)
-      .digest("hex");
-    if (expectedSig === razorpay_signature) {
-      res.json({ success: true, verified: true, payment_id: razorpay_payment_id });
-    } else {
-      res.json({ success: false, verified: false, message: "Payment verification failed" });
-    }
-  } catch (err) {
-    res.status(500).json({ success: false, message: "Verification error" });
-  }
-});
-
-app.get("/api/razorpay-key", function (req, res) {
-  res.json({ key: process.env.RAZORPAY_KEY_ID || "" });
-});
-
-// ===============================
-
 app.get("/api/public/products", async (req, res) => {
   try {
     const search = req.query.search || "";
@@ -382,10 +316,10 @@ app.post("/api/public/orders", async (req, res) => {
     }
 
     const result = await pool.query(
-      `INSERT INTO orders (customer_id, customer_name, phone, address, total_amount, status, items, payment_id)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+      `INSERT INTO orders (customer_id, customer_name, phone, address, total_amount, status, items)
+       VALUES ($1, $2, $3, $4, $5, $6, $7)
        RETURNING *`,
-      [customerId, customer_name, phone, address, total_amount, status || "Pending", itemSummary, req.body.payment_id || null]
+      [customerId, customer_name, phone, address, total_amount, status || "Pending", itemSummary]
     );
 
     for (const item of items) {
@@ -437,7 +371,7 @@ app.get("/api/public/orders/:id", async (req, res) => {
 
 app.post("/api/public/requests", async (req, res) => {
   try {
-    const { customer_name, phone, address, city, district, state, pincode, note, image_url, payment_id, amount, customer_id } = req.body;
+    const { customer_name, phone, address, city, district, state, pincode, note, image_url, amount, customer_id } = req.body;
 
     if (!customer_name || !phone) {
       return res.status(400).json({
@@ -454,10 +388,10 @@ app.post("/api/public/requests", async (req, res) => {
     }
 
     const result = await pool.query(
-      `INSERT INTO custom_requests (customer_name, phone, address, city, district, state, pincode, note, image_url, payment_id, amount, status)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
+      `INSERT INTO custom_requests (customer_name, phone, address, city, district, state, pincode, note, image_url, amount, status)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
        RETURNING *`,
-      [customer_name, phone, address, city || null, district || null, state || null, pincode || null, note || null, image_url || null, payment_id || null, amount || null, payment_id ? "Paid" : "Pending"]
+      [customer_name, phone, address, city || null, district || null, state || null, pincode || null, note || null, image_url || null, amount || null, "Pending"]
     );
 
     var request = result.rows[0];
@@ -667,20 +601,9 @@ var HOST = process.env.HOST || "0.0.0.0";
         ADD COLUMN IF NOT EXISTS district VARCHAR(100),
         ADD COLUMN IF NOT EXISTS state VARCHAR(100),
         ADD COLUMN IF NOT EXISTS pincode VARCHAR(10),
-        ADD COLUMN IF NOT EXISTS payment_id VARCHAR(255),
         ADD COLUMN IF NOT EXISTS amount NUMERIC(10,2)
     `);
     console.log("Database migration: custom_requests columns added/verified");
-  } catch (err) {
-    console.error("Migration error (non-fatal):", err.message);
-  }
-
-  try {
-    await pool.query(`
-      ALTER TABLE orders
-        ADD COLUMN IF NOT EXISTS payment_id VARCHAR(255)
-    `);
-    console.log("Database migration: orders.payment_id column added/verified");
   } catch (err) {
     console.error("Migration error (non-fatal):", err.message);
   }

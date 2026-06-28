@@ -1,55 +1,59 @@
 (function () {
   var localProducts = [
-    { id: 1, name: "Oversized Graphic Tee", price: 799, image: "../images/product1.png" },
-    { id: 2, name: "Premium Streetwear Tee", price: 899, image: "../images/product2.png" },
-    { id: 3, name: "Pehrawa Signature T-Shirt", price: 749, image: "../images/product3.png" },
-    { id: 4, name: "Classic Printed T-Shirt", price: 699, image: "../images/product4.png" },
-    { id: 5, name: "Urban Style Tee", price: 849, image: "../images/product5.png" },
-    { id: 6, name: "Minimal Logo Tee", price: 649, image: "../images/product6.png" }
+    { id: 1, name: "Fearless Oversized Tee", price: 799, original_price: 1199, image: "../images/product1.png", is_hot_seller: true },
+    { id: 2, name: "Shadow Anime Tee", price: 749, original_price: 999, image: "../images/product2.png", is_trending: true },
+    { id: 3, name: "Abstract Vision Tee", price: 749, original_price: 1099, image: "../images/product3.png" },
+    { id: 4, name: "Minimal Logo Tee", price: 699, original_price: 999, image: "../images/product4.png" },
+    { id: 5, name: "Street Graphic Tee", price: 849, original_price: 1299, image: "../images/product5.png", is_hot_seller: true },
+    { id: 6, name: "Urban Anime Tee", price: 799, original_price: 1199, image: "../images/product6.png", is_new_arrival: true }
   ];
 
-  function renderProducts(products) {
-    return products.map(function (p) {
-      var img = p.image_url || p.image;
-      var origPrice = p.original_price ? Number(p.original_price) : Math.round(p.price * 1.5);
-      var discount = origPrice > p.price ? Math.round((1 - p.price / origPrice) * 100) : 0;
-      var rating = (3.5 + Math.random() * 1.5).toFixed(1);
-      var reviews = Math.floor(Math.random() * 500) + 20;
-      var badges = "";
-      if (p.stock_status === "out_of_stock") badges += '<span class="p-status p-out-of-stock">Out of Stock</span>';
-      else if (p.stock_status === "limited_stock") badges += '<span class="p-status p-limited">Limited</span>';
-      if (p.is_new_arrival) badges += '<span class="p-status p-new">New</span>';
-      if (p.is_trending) badges += '<span class="p-status p-trending">Trending</span>';
-      if (p.is_hot_seller) badges += '<span class="p-status p-hot">Hot</span>';
-      return '<div class="product-card revealed">' +
-        '<div class="product-image">' +
-          '<span class="product-badge">-' + discount + '%</span>' +
-          badges +
-          '<a href="product.html?id=' + p.id + '">' +
-            '<img src="' + img + '" alt="' + p.name + '">' +
-          '</a>' +
+  function renderCard(p) {
+    var img = p.image_url || p.image || "../images/product1.png";
+    var origPrice = p.original_price ? Number(p.original_price) : Math.round(Number(p.price) * 1.5);
+    var pr = Number(p.price) || 0;
+    var disc = origPrice > pr ? Math.round((1 - pr / origPrice) * 100) : 0;
+    var rating = (3.5 + Math.random() * 1.5).toFixed(1);
+    var reviews = Math.floor(Math.random() * 500) + 20;
+    var badges = "";
+    if (p.stock_status === "out_of_stock") badges += '<span class="p-status p-out-of-stock">Out of Stock</span>';
+    else if (p.stock_status === "limited_stock") badges += '<span class="p-status p-limited">Limited</span>';
+    if (p.is_new_arrival) badges += '<span class="p-status p-new">New</span>';
+    if (p.is_trending) badges += '<span class="p-status p-trending">Trending</span>';
+    if (p.is_hot_seller) badges += '<span class="p-status p-hot">Hot</span>';
+    return '<div class="product-card revealed">' +
+      '<div class="product-image">' +
+        '<span class="product-badge">-' + disc + '%</span>' +
+        badges +
+        '<a href="product.html?id=' + p.id + '">' +
+          '<img src="' + img + '" alt="' + p.name + '">' +
+        '</a>' +
+      '</div>' +
+      '<div class="product-content">' +
+        '<h3><a href="product.html?id=' + p.id + '" class="product-link">' + p.name + '</a></h3>' +
+        '<div class="product-rating">' +
+          '<span class="stars">' + '&#9733;'.repeat(Math.round(rating)) + '</span>' +
+          '<span class="count">' + rating + ' (' + reviews + ')</span>' +
         '</div>' +
-        '<div class="product-content">' +
-          '<h3><a href="product.html?id=' + p.id + '" class="product-link">' + p.name + '</a></h3>' +
-          '<div class="product-rating">' +
-            '<span class="stars">' + '★'.repeat(Math.round(rating)) + '</span>' +
-            '<span class="count">' + rating + ' (' + reviews + ')</span>' +
-          '</div>' +
-          '<div class="price">&#8377;' + Number(p.price).toFixed(0) +
-            '<span class="orig">&#8377;' + origPrice + '</span>' +
-            '<span class="discount">' + discount + '% off</span>' +
-          '</div>' +
-          '<button class="buy-now-btn" data-id="' + p.id + '" data-name="' + p.name + '" data-price="' + p.price + '" data-image="' + img + '">' +
-            '<i class="fa-solid fa-bag-shopping"></i>ADD TO CART' +
-          '</button>' +
+        '<div class="price">&#8377;' + pr.toFixed(0) +
+          '<span class="orig">&#8377;' + origPrice + '</span>' +
+          '<span class="discount">' + disc + '% off</span>' +
         '</div>' +
-      '</div>';
-    }).join("");
+        '<button class="buy-now-btn" data-id="' + p.id + '" data-name="' + p.name.replace(/'/g, "\\'") + '" data-price="' + pr + '" data-image="' + img + '">' +
+          '<i class="fa-solid fa-bag-shopping"></i>ADD TO CART' +
+        '</button>' +
+      '</div>' +
+    '</div>';
   }
 
-  function loadProducts() {
+  function showProducts(products) {
     var grid = document.getElementById("bestSellerGrid");
     if (!grid) return;
+    grid.innerHTML = products.map(renderCard).join("");
+  }
+
+  function loadBestSellers() {
+    showProducts(localProducts);
     var api = (window.PEHRAWA_API_BASE || "http://localhost:5000") + "/api/public/products";
     fetch(api)
       .then(function (r) {
@@ -57,27 +61,16 @@
         return r.json();
       })
       .then(function (data) {
-        if (!data.success || !data.products || data.products.length === 0) {
-          grid.innerHTML = renderProducts(localProducts);
-          return;
+        if (data.success && data.products && data.products.length > 0) {
+          showProducts(data.products.slice(0, 6));
         }
-        var products = data.products.slice(0, 4);
-        grid.innerHTML = renderProducts(products);
       })
-      .catch(function () {
-        grid.innerHTML = renderProducts(localProducts);
-      });
+      .catch(function () {});
   }
 
-  function initProducts() {
-    var grid = document.getElementById("bestSellerGrid");
-    if (grid) grid.innerHTML = renderProducts(localProducts);
-    if (document.readyState === "loading") {
-      document.addEventListener("DOMContentLoaded", loadProducts);
-    } else {
-      loadProducts();
-    }
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", loadBestSellers);
+  } else {
+    loadBestSellers();
   }
-
-  initProducts();
 })();

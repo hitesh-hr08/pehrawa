@@ -30,8 +30,7 @@
     data.orders.forEach(function (o) {
       var statusColor = "#f59e0b";
       var s = (o.status || "").toLowerCase();
-      if (s === "verifying payment") statusColor = "#eab308";
-      else if (s === "processing") statusColor = "#8b5cf6";
+      if (s === "processing") statusColor = "#8b5cf6";
       else if (s === "shipped") statusColor = "#8b5cf6";
       else if (s === "delivered") statusColor = "#10b981";
       else if (s === "cancelled") statusColor = "#ef4444";

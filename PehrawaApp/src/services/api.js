@@ -55,21 +55,6 @@ export const api = {
   getOrderByTracking: (trackingId, phone) =>
     request("/api/public/orders/" + encodeURIComponent(trackingId) + "?phone=" + encodeURIComponent(phone)),
 
-  // Razorpay
-  createRazorpayOrder: (amount) =>
-    request("/api/create-order", {
-      method: "POST",
-      body: JSON.stringify({ amount, currency: "INR" }),
-    }),
-
-  verifyRazorpayPayment: (data) =>
-    request("/api/verify-payment", {
-      method: "POST",
-      body: JSON.stringify(data),
-    }),
-
-  getRazorpayKey: () => request("/api/razorpay-key"),
-
   // Addresses
   getAddresses: (customerId) =>
     request("/api/customers/" + customerId + "/addresses"),

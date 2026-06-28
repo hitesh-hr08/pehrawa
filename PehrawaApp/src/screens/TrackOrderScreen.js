@@ -4,14 +4,13 @@ import { api } from "../services/api";
 
 const steps = [
   { key: "placed", label: "Order Placed" },
-  { key: "verify", label: "Verifying Payment" },
   { key: "processing", label: "Processing" },
   { key: "shipped", label: "Shipped" },
   { key: "delivered", label: "Delivered" },
 ];
 
 const getActiveStep = (status) => {
-  const map = { "Pending": 0, "Verifying Payment": 1, "Processing": 2, "Shipped": 3, "Delivered": 4, "Cancelled": -1 };
+  const map = { "Pending": 0, "Processing": 1, "Shipped": 2, "Delivered": 3, "Cancelled": -1 };
   return map[status] ?? -1;
 };
 
