@@ -272,11 +272,16 @@ async function placeOrder() {
     name: "Pehrawa",
     description: "Order Payment",
     order_id: rzpData.order_id,
-    prefill: {
-      name: customerName,
-      contact: customerPhone
-    },
     theme: { color: "#ff6b00" },
+    config: {
+      display: {
+        blocks: {
+          upi: { name: "Pay via UPI", instruments: [{ method: "upi" }] }
+        },
+        sequence: ["block.upi"],
+        preferences: { show_default_blocks: false }
+      }
+    },
     handler: async function (response) {
       // Payment success — submit order
       try {
