@@ -345,7 +345,6 @@ function renderBuyAddressCards() {
   var list = document.getElementById("buySavedAddressList");
   var section = document.getElementById("buySavedAddressesSection");
   var form = document.getElementById("buyNewAddressForm");
-  var contBtn = document.getElementById("buySavedAddrContinue");
   if (!list || !section) return;
   if (buySavedAddresses.length === 0) {
     section.style.display = "none";
@@ -374,19 +373,13 @@ function renderBuyAddressCards() {
   if (defaultAddr && !buySelectedAddressId) {
     buySelectedAddressId = defaultAddr.id;
   }
-  if (contBtn) contBtn.style.display = (buySelectedAddressId && !buyUseNewAddress) ? "block" : "none";
 }
 
 window.selectBuyAddrCard = function(id) {
   buySelectedAddressId = id;
   buyUseNewAddress = false;
-  var form = document.getElementById("buyNewAddressForm");
-  if (form) form.style.display = "none";
-  var contBtn = document.getElementById("buySavedAddrContinue");
-  if (contBtn) contBtn.style.display = "block";
-  var btn = document.getElementById("buyToggleNewAddrBtn");
-  if (btn) btn.style.display = "block";
   renderBuyAddressCards();
+  showBuyStep(2);
 };
 
 window.deleteBuyAddr = async function(id) {
@@ -444,22 +437,14 @@ async function saveBuyAddress() {
   } catch (e) {}
 }
 
-// "Deliver Here" button for saved address
-document.getElementById("buySavedAddrContinue")?.addEventListener("click", function() {
-  if (!buySelectedAddressId) return;
-  showBuyStep(2);
-});
-
 // "Add New Address" toggle for buy flow
 document.getElementById("buyToggleNewAddrBtn")?.addEventListener("click", function(e) {
   e.preventDefault();
   buyUseNewAddress = true;
   buySelectedAddressId = null;
   var form = document.getElementById("buyNewAddressForm");
-  var contBtn = document.getElementById("buySavedAddrContinue");
   var list = document.getElementById("buySavedAddressList");
   if (list) list.style.display = "none";
-  if (contBtn) contBtn.style.display = "none";
   if (form) form.style.display = "block";
   var cust = window.getCustomer ? window.getCustomer() : null;
   if (cust) {
@@ -479,10 +464,8 @@ document.getElementById("buyBackToSavedBtn")?.addEventListener("click", function
   buyUseNewAddress = false;
   var form = document.getElementById("buyNewAddressForm");
   var list = document.getElementById("buySavedAddressList");
-  var contBtn = document.getElementById("buySavedAddrContinue");
   if (form) form.style.display = "none";
   if (list) list.style.display = "block";
-  if (contBtn && buySelectedAddressId) contBtn.style.display = "block";
   renderBuyAddressCards();
 });
 
