@@ -2022,6 +2022,18 @@ RESPONSIVE
   .shop-section{padding:24px 0;}
   .pagination{gap:6px;}
   .pagination button{width:32px;height:32px;font-size:12px;}
+
+  .custom-grid{grid-template-columns:1fr !important;gap:30px !important;}
+  .custom-left{flex-direction:column;text-align:center;align-items:center;}
+  .custom-right .step{flex-direction:column !important;align-items:center !important;text-align:center !important;gap:10px !important;margin-bottom:18px !important;}
+  .custom-right .step span{width:42px !important;height:42px !important;min-width:42px !important;font-size:16px;}
+}
+
+.custom-grid{
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:50px;
+align-items:center;
 }
 
 /* Mobile Slide Menu */
