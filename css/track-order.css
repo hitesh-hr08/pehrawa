@@ -81,9 +81,9 @@ background:#e0e0e0;
 .track-items { margin-top: 15px; padding-top: 15px; border-top: 1px solid #333; }
 .track-items ul { list-style: none; padding: 0; margin: 10px 0 0; }
 .track-items li { padding: 6px 0; color: #aaa; font-size: 14px; border-bottom: 1px solid #222; }
-.track-timeline { display: flex; justify-content: space-between; margin: 25px 0; padding: 0; position: relative; }
+.track-timeline { display: flex; justify-content: space-between; margin: 25px 0; padding: 0; position: relative; overflow-x:auto; -webkit-overflow-scrolling:touch; }
 .track-timeline::before { content: ""; position: absolute; top: 14px; left: 10%; right: 10%; height: 3px; background: #333; z-index: 0; }
-.tl-step { display: flex; flex-direction: column; align-items: center; position: relative; z-index: 1; }
+.tl-step { display: flex; flex-direction: column; align-items: center; position: relative; z-index: 1; min-width:60px; }
 .tl-step span { display: flex; align-items: center; justify-content: center; width: 30px; height: 30px; border-radius: 50%; background: #222; border: 3px solid #333; color: #666; font-size: 0; margin-bottom: 8px; }
 .tl-step.completed span { background: #ffffff; border-color: #ffffff; }
 .tl-step.completed span::after { content: "\\2713"; font-size: 14px; color: #000; }
@@ -101,5 +101,8 @@ font-size:42px;
 .track-box{
 padding:25px;
 }
+
+.track-timeline::before{left:5%;right:5%;}
+.tl-step{min-width:50px;}
 
 }

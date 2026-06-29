@@ -157,6 +157,35 @@
     renderProducts();
   });
 
+  // Mobile filter toggle
+  var filterToggle = document.getElementById("filterToggle");
+  var filtersPanel = document.getElementById("filtersPanel");
+  var filtersClose = document.getElementById("filtersClose");
+  var shopFilters = document.getElementById("shopFilters");
+
+  if (filterToggle && filtersPanel && shopFilters) {
+    filterToggle.addEventListener("click", function() {
+      var body = filtersPanel.querySelector(".filters-panel-body");
+      if (body && !body.hasChildNodes()) {
+        var clone = shopFilters.cloneNode(true);
+        clone.id = "mobileFilters";
+        body.appendChild(clone);
+      }
+      filtersPanel.classList.add("open");
+      document.body.style.overflow = "hidden";
+    });
+
+    function closeFilters() {
+      filtersPanel.classList.remove("open");
+      document.body.style.overflow = "";
+    }
+
+    if (filtersClose) filtersClose.addEventListener("click", closeFilters);
+    filtersPanel.addEventListener("click", function(e) {
+      if (e.target === filtersPanel) closeFilters();
+    });
+  }
+
   if (searchInput) {
     searchInput.addEventListener("input", function() {
       searchTerm = searchInput.value.trim().toLowerCase();

@@ -71,7 +71,7 @@
 <div class="container shop-layout">
 
 <!-- FILTER -->
-<aside class="filters">
+<aside class="filters" id="shopFilters">
 <h3>FILTER</h3>
 <div>
 <h4>CATEGORY</h4>
@@ -98,15 +98,27 @@
 </div>
 </aside>
 
+<!-- Mobile filter panel -->
+<div class="filters-panel" id="filtersPanel">
+<div class="filters-panel-head">
+<h3>FILTERS</h3>
+<button class="filters-close" id="filtersClose">&times;</button>
+</div>
+<div class="filters-panel-body"></div>
+</div>
+
 <!-- PRODUCTS -->
 <div class="shop-products">
 <div class="shop-head">
 <p>Showing Products</p>
+<div class="shop-head-right">
+<button class="filter-toggle" id="filterToggle"><i class="fa-solid fa-sliders"></i> FILTER</button>
 <select>
 <option>Latest</option>
 <option>Popular</option>
 <option>Low Price</option>
 </select>
+</div>
 </div>
 <div class="product-grid" id="shopProductGrid">
 <div class="shop-state">Loading products...</div>
