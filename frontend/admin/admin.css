@@ -749,6 +749,16 @@ select:focus {
   font-weight: 800;
 }
 
+.status-select option {
+  background: #1a1a1a;
+  color: #fff;
+}
+
+.status-select option:checked {
+  background: #333;
+  color: var(--orange);
+}
+
 .artwork-link {
   display: inline-flex;
   align-items: center;
