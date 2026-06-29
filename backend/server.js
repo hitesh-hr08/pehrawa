@@ -975,17 +975,7 @@ var HOST = process.env.HOST || "0.0.0.0";
   // NOTE: T-Shirt price override disabled to preserve admin dashboard changes
   // Previously: UPDATE products SET price = 399, original_price = NULL WHERE category = 'T-Shirts'
 
-  // Ensure Black Printed Tees exists
-  try {
-    await pool.query(`
-      INSERT INTO products (name, description, price, image_url, stock, category, stock_status)
-      SELECT 'Black Printed Tees', 'Premium black printed t-shirt with a bold streetwear graphic.', 399, '/images/black-printed-tees.png', 20, 'T-Shirts', 'in_stock'
-      WHERE NOT EXISTS (SELECT 1 FROM products WHERE name ILIKE 'Black Printed Tees')
-    `);
-    console.log("Database migration: Black Printed Tees ensured");
-  } catch (err) {
-    console.error("Black Printed Tees migration error (non-fatal):", err.message);
-  }
+  // NOTE: Black Printed Tees auto-insert removed to allow admin delete permanently
 })();
 
 app.listen(PORT, HOST, function () {
