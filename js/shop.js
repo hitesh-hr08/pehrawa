@@ -1,10 +1,8 @@
 ﻿(function () {
   const API_URL = `${window.PEHRAWA_API_BASE || "http://localhost:5000"}/api/public/products`;
   const productGrid = document.getElementById("shopProductGrid");
-  const filterButtons = document.querySelectorAll(".filter-btn");
   const searchInput = document.querySelector(".search-input");
   let shopProducts = [];
-  let activeFilter = "ALL";
   let searchTerm = "";
 
   if (!productGrid) return;
@@ -54,17 +52,42 @@
     '</div>';
   }
 
+  function getActiveCategories() {
+    var cbs = document.querySelectorAll(".filter-cb:checked");
+    var cats = [];
+    cbs.forEach(function(cb) {
+      cats.push(cb.getAttribute("data-category"));
+    });
+    return cats;
+  }
+
+  function isAllChecked() {
+    var allCb = document.querySelector('.filter-cb[data-category="ALL"]');
+    return allCb && allCb.checked;
+  }
+
   function renderProducts() {
-    var tshirtCats = ["ANIME","GRAPHIC","MINIMAL","OVERSIZED","PRINTED T-SHIRTS"];
-    var filterMap = {
-      "T-SHIRTS": function(cat){ return tshirtCats.some(function(k){ return cat.includes(k); }); }
-    };
+    var activeCats = getActiveCategories();
+
     const filtered = shopProducts.filter(function(product) {
       const category = (product.category || "").toUpperCase();
       const name = (product.name || "").toLowerCase();
       const description = (product.description || "").toLowerCase();
-      var matchFn = filterMap[activeFilter];
-      const matchesFilter = activeFilter === "ALL" || (matchFn ? matchFn(category) : category.includes(activeFilter));
+
+      var matchesFilter = false;
+      if (activeCats.length === 0 || isAllChecked()) {
+        matchesFilter = true;
+      } else {
+        matchesFilter = activeCats.some(function(cat) {
+          if (cat === "T-SHIRTS") {
+            return ["ANIME","GRAPHIC","MINIMAL","OVERSIZED","PRINTED T-SHIRTS","T-SHIRTS"].some(function(k) {
+              return category.includes(k);
+            });
+          }
+          return category.includes(cat);
+        });
+      }
+
       const matchesSearch = !searchTerm || name.includes(searchTerm) || description.includes(searchTerm) || category.toLowerCase().includes(searchTerm);
       return matchesFilter && matchesSearch;
     });
@@ -111,13 +134,27 @@
     if (id) window.addToCart(id);
   });
 
-  filterButtons.forEach(function(button) {
-    button.addEventListener("click", function() {
-      filterButtons.forEach(function(item) { item.classList.remove("active"); });
-      button.classList.add("active");
-      activeFilter = (button.dataset.filter || button.textContent).trim().toUpperCase();
-      renderProducts();
-    });
+  document.addEventListener("change", function(e) {
+    var cb = e.target.closest(".filter-cb");
+    if (!cb) return;
+
+    var cat = cb.getAttribute("data-category");
+    var allCb = document.querySelector('.filter-cb[data-category="ALL"]');
+
+    if (cat === "ALL") {
+      document.querySelectorAll('.filter-cb[data-category]:not([data-category="ALL"])').forEach(function(c) {
+        c.checked = false;
+      });
+    } else {
+      if (allCb) allCb.checked = false;
+    }
+
+    var checkedSpecific = document.querySelectorAll('.filter-cb[data-category]:not([data-category="ALL"]):checked');
+    if (checkedSpecific.length === 0 && allCb) {
+      allCb.checked = true;
+    }
+
+    renderProducts();
   });
 
   if (searchInput) {

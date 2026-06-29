@@ -883,59 +883,8 @@ var HOST = process.env.HOST || "0.0.0.0";
     console.error("Back-fill migration error (non-fatal):", err.message);
   }
 
-  // Update product images to use dedicated images (by category order, works on any DB)
-  try {
-    // WATCHES
-    await pool.query(
-      `WITH ranked AS (SELECT id, ROW_NUMBER() OVER (ORDER BY id) as rn FROM products WHERE category = 'WATCHES')
-       UPDATE products SET image_url = CASE ranked.rn
-         WHEN 1 THEN '/images/Watch1.jpg'
-         WHEN 2 THEN '/images/Watch2.jpg'
-         ELSE image_url END
-       FROM ranked WHERE products.id = ranked.id`
-    );
-    // SUNGLASSES
-    await pool.query(
-      `WITH ranked AS (SELECT id, ROW_NUMBER() OVER (ORDER BY id) as rn FROM products WHERE category = 'SUNGLASSES')
-       UPDATE products SET image_url = CASE ranked.rn
-         WHEN 1 THEN '/images/Sunglasses1.webp'
-         WHEN 2 THEN '/images/Sunglasses2.webp'
-         ELSE image_url END
-       FROM ranked WHERE products.id = ranked.id`
-    );
-    // FOOTWEAR
-    await pool.query(
-      `WITH ranked AS (SELECT id, ROW_NUMBER() OVER (ORDER BY id) as rn FROM products WHERE category = 'FOOTWEAR')
-       UPDATE products SET image_url = CASE ranked.rn
-         WHEN 1 THEN '/images/Footwear1.webp'
-         WHEN 2 THEN '/images/Footwear2.jpg'
-         WHEN 3 THEN '/images/Footwear3.jpg'
-         ELSE image_url END
-       FROM ranked WHERE products.id = ranked.id`
-    );
-    // SHIRTS
-    await pool.query(
-      `WITH ranked AS (SELECT id, ROW_NUMBER() OVER (ORDER BY id) as rn FROM products WHERE category = 'SHIRTS')
-       UPDATE products SET image_url = CASE ranked.rn
-         WHEN 1 THEN '/images/Shirt1.avif'
-         WHEN 2 THEN '/images/Shirt2.webp'
-         WHEN 3 THEN '/images/Shirt3.webp'
-         ELSE image_url END
-       FROM ranked WHERE products.id = ranked.id`
-    );
-    // JEANS
-    await pool.query(
-      `WITH ranked AS (SELECT id, ROW_NUMBER() OVER (ORDER BY id) as rn FROM products WHERE category = 'JEANS')
-       UPDATE products SET image_url = CASE ranked.rn
-         WHEN 1 THEN '/images/Jean1.webp'
-         WHEN 2 THEN '/images/Jean2.webp'
-         ELSE image_url END
-       FROM ranked WHERE products.id = ranked.id`
-    );
-    console.log("Database migration: updated product images by category (watch, sunglass, footwear, shirts, jeans)");
-  } catch (err) {
-    console.error("Product image migration error (non-fatal):", err.message);
-  }
+  // NOTE: Product image override disabled to preserve admin dashboard changes
+  // Previously: updated product images by category (watch, sunglass, footwear, shirts, jeans)
 
   // Add product status/tag columns
   try {
@@ -1023,14 +972,8 @@ var HOST = process.env.HOST || "0.0.0.0";
     console.error("Coupons migration error (non-fatal):", err.message);
   }
 
-  // Set all T-Shirt prices to 399
-  try {
-    await pool.query("UPDATE products SET price = 399, original_price = NULL WHERE category = 'T-Shirts'");
-    var c = await pool.query('SELECT COUNT(*) as cnt FROM products WHERE category = $1', ['T-Shirts']);
-    console.log("Database migration: T-Shirt prices set to 399 for", c.rows[0].cnt, "products");
-  } catch (err) {
-    console.error("Price fix migration error (non-fatal):", err.message);
-  }
+  // NOTE: T-Shirt price override disabled to preserve admin dashboard changes
+  // Previously: UPDATE products SET price = 399, original_price = NULL WHERE category = 'T-Shirts'
 
   // Ensure Black Printed Tees exists
   try {

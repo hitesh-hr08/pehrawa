@@ -685,7 +685,7 @@ cursor:pointer;
 font-size:16px;
 }
 
-.product-actions button:hover{background:#ffffff;}
+.product-actions button:hover{background:#ffffff;color:#000;}
 
 .buy-now-btn{
 flex:1;
@@ -1014,7 +1014,10 @@ display:block;
 margin-bottom:14px;
 opacity:.8;
 cursor:pointer;
+transition:.3s;
 }
+
+.filters label:hover{opacity:1;color:#ffffff;}
 
 .filters input{margin-right:10px;}
 
@@ -1034,7 +1037,11 @@ background:#111;
 color:white;
 border:none;
 padding:0 20px;
+cursor:pointer;
+transition:.3s;
 }
+
+.shop-head select:hover{background:#222;}
 
 .shop-products .product-grid{
 display:grid;
@@ -1192,6 +1199,12 @@ padding:0 48px;
 background:#ffffff;
 color:#000;
 font-weight:700;
+transition:.35s;
+}
+
+.collection-cta a:hover{
+transform:translateY(-4px);
+box-shadow:0 12px 40px rgba(255,255,255,0.2);
 }
 
 /* =======================

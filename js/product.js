@@ -163,7 +163,7 @@ function getCategoryConfig(cat) {
 
 function renderProduct(product, images) {
   document.getElementById("productDetail").classList.add("visible");
-  document.title = `${product.name} | Pehrawa`;
+  document.title = `${product.name} | ${window.PEHRAWA_SETTINGS && window.PEHRAWA_SETTINGS.store_name ? window.PEHRAWA_SETTINGS.store_name : "Pehrawa"}`;
   var allImages = images && images.length ? images.map(function(i){ return i.image_url; }) : [];
   if (product.image_url && allImages.indexOf(product.image_url) === -1) allImages.unshift(product.image_url);
   if (!allImages.length) allImages = ["../images/product1.png"];

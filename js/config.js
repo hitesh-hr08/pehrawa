@@ -4,4 +4,26 @@
     api = "http://localhost:5000";
   }
   window.PEHRAWA_API_BASE = api;
+
+  // Load store settings from backend
+  window.PEHRAWA_SETTINGS = {};
+  fetch(api + "/api/public/settings")
+    .then(function (r) { return r.json(); })
+    .then(function (data) {
+      window.PEHRAWA_SETTINGS = data;
+
+      // Update copyright year dynamically
+      var cp = document.querySelector(".copyright");
+      if (cp) {
+        var name = data.store_name || "Pehrawa";
+        cp.textContent = "\u00A9 " + new Date().getFullYear() + " " + name + ". All Rights Reserved.";
+      }
+
+      // Update footer description with tagline from settings
+      var footDesc = document.querySelector(".foot > div:first-child p");
+      if (footDesc && data.store_tagline) {
+        footDesc.textContent = data.store_tagline;
+      }
+    })
+    .catch(function () {});
 })();
