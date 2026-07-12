@@ -4,6 +4,8 @@ const express = require("express");
 const cors = require("cors");
 const multer = require("multer");
 const passport = require("passport");
+const jwt = require("jsonwebtoken");
+const helmet = require("helmet");
 require("dotenv").config({ path: path.join(__dirname, "..", ".env") });
 require("dotenv").config({ path: path.join(__dirname, ".env") });
 
@@ -30,12 +32,27 @@ const requestRoutes = require("./routes/requestRoutes");
 const verifyAdmin = require("./middleware/auth");
 const authRoutes = require("./routes/authRoutes");
 const Razorpay = require("razorpay");
+const shiprocket = require("./services/shiprocket");
 
 const app = express();
 
-app.use(cors({ origin: true, credentials: true }));
+app.use(helmet({
+  contentSecurityPolicy: false
+}));
+
+const allowedOrigins = [
+  "https://pehrawa.store",
+  "https://www.pehrawa.store",
+  "https://pehrawa-store.up.railway.app"
+];
+app.use(cors({
+  origin: function (origin, cb) { cb(null, !origin || allowedOrigins.indexOf(origin) !== -1); },
+  credentials: true
+}));
 
 app.use(express.json());
+
+
 
 const razorpay = new Razorpay({
   key_id: process.env.RAZORPAY_KEY_ID || "rzp_live_T6aA0kd4BdVC3q",
@@ -79,11 +96,24 @@ app.use("/api/admin", adminRoutes);
 app.use("/api/products", verifyAdmin, productRoutes);
 app.use("/api/orders", verifyAdmin, orderRoutes);
 app.use("/api/requests", verifyAdmin, requestRoutes);
-app.use("/api/custom-print", requestRoutes);
+app.post("/api/custom-print/submit", (req, res) => {
+  const { name, phone, description } = req.body;
+  if (!name || !phone) {
+    return res.status(400).json({ success: false, message: "Name and phone are required" });
+  }
+  pool.query(
+    "INSERT INTO custom_requests (customer_name, phone, note, status) VALUES ($1, $2, $3, $4)",
+    [name, phone, description || null, "Pending"]
+  ).then(function () {
+    res.json({ success: true, message: "Request submitted" });
+  }).catch(function (err) {
+    res.status(500).json({ success: false, message: "Server error" });
+  });
+});
 app.use("/api/customers", customerRoutes);
 app.use("/api/user", customerRoutes);
 
-app.post("/api/upload", (req, res) => {
+app.post("/api/upload", verifyAdmin, (req, res) => {
   upload.single("image")(req, res, function (err) {
     if (err) {
       return res.status(400).json({ success: false, message: err.message });
@@ -197,6 +227,10 @@ app.put("/api/settings", verifyAdmin, async (req, res) => {
   }
 });
 
+app.get("/api/public/razorpay-key", function (req, res) {
+  res.json({ key: process.env.RAZORPAY_KEY_ID });
+});
+
 app.get("/api/public/products", async (req, res) => {
   try {
     const search = req.query.search || "";
@@ -259,14 +293,13 @@ app.post("/api/public/orders", async (req, res) => {
       });
     }
 
-    // If token provided, extract customer_id from it
+    // If token provided, verify and extract customer_id
     var authHeader = req.headers.authorization;
     if (authHeader && authHeader.startsWith("Bearer ")) {
       try {
-        var token = authHeader.slice(7);
-        var payload = JSON.parse(Buffer.from(token.split(".")[1], "base64url").toString());
-        if (payload && payload.id) {
-          customer_id = payload.id;
+        var decoded = jwt.verify(authHeader.slice(7), process.env.JWT_SECRET);
+        if (decoded && decoded.id && decoded.role === "customer") {
+          customer_id = decoded.id;
         }
       } catch (e) {}
     }
@@ -321,11 +354,11 @@ app.post("/api/public/orders", async (req, res) => {
       if (custCheck.rows.length === 0) customerId = null;
     }
 
+    const itemsDataStr = JSON.stringify(items.map(function (i) { return { id: i.id || 0, name: i.name || "", quantity: Number(i.quantity) || 1, price: Number(i.price) || 0, size: i.size || "M" }; }));
+
     const result = await pool.query(
-      `INSERT INTO orders (customer_id, customer_name, phone, address, total_amount, status, items, payment_status, razorpay_payment_id)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
-       RETURNING *`,
-      [customerId, customer_name, phone, address, total_amount, status || "Pending", itemSummary, payment_status || "unpaid", razorpay_payment_id || null]
+      "INSERT INTO orders (customer_id, customer_name, phone, address, total_amount, status, items, payment_status, razorpay_payment_id, items_data) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10::jsonb) RETURNING *",
+      [customerId, customer_name, phone, address, total_amount, status || "Pending", itemSummary, payment_status || "unpaid", razorpay_payment_id || null, itemsDataStr]
     );
 
     for (const item of items) {
@@ -339,6 +372,34 @@ app.post("/api/public/orders", async (req, res) => {
 
     var order = result.rows[0];
     order.tracking_id = "PHR-" + String(order.id).padStart(6, "0");
+
+    shiprocket.createOrder({
+      id: order.id,
+      tracking_id: order.tracking_id,
+      customer_name: order.customer_name,
+      phone: order.phone,
+      address: order.address,
+      total_amount: order.total_amount,
+      payment_status: order.payment_status,
+      items_data: items,
+    }).then(function (srRes) {
+      if (srRes && srRes.shipment_id) {
+        pool.query("UPDATE orders SET shiprocket_order_id = $1 WHERE id = $2", [String(srRes.shipment_id), order.id]).catch(function () {});
+        if (srRes.awb_code) {
+          pool.query("UPDATE orders SET awb_number = $1 WHERE id = $2", [srRes.awb_code, order.id]).catch(function () {});
+        }
+        if (srRes.shipment_id) {
+          shiprocket.assignAWB(srRes.shipment_id).then(function (awbRes) {
+            if (awbRes && awbRes.awb_charge_code) {
+              pool.query("UPDATE orders SET awb_number = $1 WHERE id = $2", [awbRes.awb_code || awbRes.awb_charge_code, order.id]).catch(function () {});
+            }
+          }).catch(function () {});
+        }
+      }
+    }).catch(function (err) {
+      console.error("Shiprocket auto-creation failed for order " + order.id + ":", err.message);
+    });
+
     res.status(201).json({ success: true, order: order });
   } catch (err) {
     console.error("Order placement error:", err.message, err.stack);
@@ -359,7 +420,7 @@ app.get("/api/public/orders/:id", async (req, res) => {
       return res.status(400).json({ success: false, message: "Invalid order ID" });
     }
     const result = await pool.query(
-      "SELECT id, customer_name, phone, address, total_amount, status, items, created_at FROM orders WHERE id = $1 AND phone = $2",
+      "SELECT id, customer_name, phone, address, total_amount, status, items, created_at, shiprocket_order_id, awb_number, tracking_status FROM orders WHERE id = $1 AND phone = $2",
       [orderId, phone]
     );
 
@@ -372,6 +433,44 @@ app.get("/api/public/orders/:id", async (req, res) => {
     res.json({ success: true, order: order });
   } catch (err) {
     res.status(500).json({ success: false, message: "Failed to fetch order" });
+  }
+});
+
+app.get("/api/public/track/:id", async (req, res) => {
+  try {
+    const orderId = parseInt(req.params.id.replace("PHR-", ""), 10);
+    if (!orderId) return res.status(400).json({ success: false, message: "Invalid order ID" });
+    const result = await pool.query("SELECT id, shiprocket_order_id, awb_number, tracking_status FROM orders WHERE id = $1", [orderId]);
+    if (result.rows.length === 0) return res.status(404).json({ success: false, message: "Order not found" });
+    const order = result.rows[0];
+    if (!order.shiprocket_order_id) return res.json({ success: true, tracking: null, message: "No shipment created yet" });
+    let tracking = null;
+    try {
+      const sid = parseInt(order.shiprocket_order_id, 10);
+      if (!isNaN(sid)) {
+        tracking = await shiprocket.trackShipment(sid);
+        if (tracking && tracking.tracking_data && tracking.tracking_data.shipment_status && tracking.tracking_data.shipment_status !== order.tracking_status) {
+          pool.query("UPDATE orders SET tracking_status = $1 WHERE id = $2", [tracking.tracking_data.shipment_status, order.id]).catch(function () {});
+        }
+      }
+    } catch (e) { console.error("Track fetch error:", e.message); }
+    res.json({ success: true, tracking: tracking, awb: order.awb_number });
+  } catch (err) {
+    res.status(500).json({ success: false, message: "Failed to fetch tracking" });
+  }
+});
+
+app.post("/api/public/track/pageview", async (req, res) => {
+  try {
+    const { visitor_id, page_path, referrer } = req.body;
+    if (!page_path) return res.json({ success: false });
+    await pool.query(
+      "INSERT INTO page_views (visitor_id, page_path, referrer, user_agent, ip_address) VALUES ($1, $2, $3, $4, $5)",
+      [visitor_id || "anon", page_path, referrer || "", req.headers["user-agent"] || "", req.ip || req.connection.remoteAddress || ""]
+    );
+    res.json({ success: true });
+  } catch (err) {
+    res.json({ success: false });
   }
 });
 
@@ -635,7 +734,7 @@ app.post("/api/public/reset-password", async (req, res) => {
   }
 });
 
-app.get("/api/admin/seed", async (req, res) => {
+app.get("/api/admin/seed", verifyAdmin, async (req, res) => {
   try {
     const bcrypt = require("bcryptjs");
     const hash = await bcrypt.hash(process.env.ADMIN_PASSWORD || "admin123", 10);
@@ -645,16 +744,77 @@ app.get("/api/admin/seed", async (req, res) => {
     );
     res.json({ success: true, message: "Admin seeded" });
   } catch (err) {
-    res.status(500).json({ success: false, message: err.message });
+    res.status(500).json({ success: false, message: "Server error" });
   }
 });
 
-// Debug: fix prices by ID
-app.get("/api/debug/fix-prices", async (req, res) => {
+app.get("/api/admin/analytics", verifyAdmin, async (req, res) => {
   try {
-    await pool.query("UPDATE products SET price = 399, original_price = NULL WHERE category = 'T-Shirts'");
-    var rows = (await pool.query("SELECT id, name, price, original_price FROM products ORDER BY id")).rows;
-    res.json({ success: true, products: rows });
+    const totalViews = await pool.query("SELECT COUNT(*) FROM page_views");
+    const todayViews = await pool.query("SELECT COUNT(*) FROM page_views WHERE created_at::date = CURRENT_DATE");
+    const yesterdayViews = await pool.query("SELECT COUNT(*) FROM page_views WHERE created_at::date = CURRENT_DATE - 1");
+    const uniqueVisitors = await pool.query("SELECT COUNT(DISTINCT visitor_id) FROM page_views WHERE visitor_id != 'anon'");
+    const totalCustomers = await pool.query("SELECT COUNT(*) FROM customers");
+    const newCustomersToday = await pool.query("SELECT COUNT(*) FROM customers WHERE created_at::date = CURRENT_DATE");
+    const totalOrders = await pool.query("SELECT COUNT(*) FROM orders");
+    const newOrdersToday = await pool.query("SELECT COUNT(*) FROM orders WHERE created_at::date = CURRENT_DATE");
+    const totalRevenue = await pool.query("SELECT COALESCE(SUM(total_amount), 0) AS coalesce FROM orders WHERE payment_status = 'paid'");
+    const revenueToday = await pool.query("SELECT COALESCE(SUM(total_amount), 0) AS coalesce FROM orders WHERE payment_status = 'paid' AND created_at::date = CURRENT_DATE");
+    const topPages = await pool.query("SELECT page_path, COUNT(*) as cnt FROM page_views GROUP BY page_path ORDER BY cnt DESC LIMIT 10");
+    const dailyViews = await pool.query("SELECT DATE(created_at) as day, COUNT(*) as cnt FROM page_views WHERE created_at >= CURRENT_DATE - 6 GROUP BY DATE(created_at) ORDER BY day");
+
+    res.json({
+      success: true,
+      analytics: {
+        total_views: parseInt(totalViews.rows[0].count),
+        today_views: parseInt(todayViews.rows[0].count),
+        yesterday_views: parseInt(yesterdayViews.rows[0].count),
+        unique_visitors: parseInt(uniqueVisitors.rows[0].count),
+        total_customers: parseInt(totalCustomers.rows[0].count),
+        new_customers_today: parseInt(newCustomersToday.rows[0].count),
+        total_orders: parseInt(totalOrders.rows[0].count),
+        new_orders_today: parseInt(newOrdersToday.rows[0].count),
+        total_revenue: parseFloat(totalRevenue.rows[0].coalesce),
+        revenue_today: parseFloat(revenueToday.rows[0].coalesce),
+        top_pages: topPages.rows,
+        daily_views: dailyViews.rows,
+      }
+    });
+  } catch (err) {
+    console.error("Analytics error:", err.message);
+    res.json({ success: true, analytics: { total_views: 0, today_views: 0, yesterday_views: 0, unique_visitors: 0, total_customers: 0, new_customers_today: 0, total_orders: 0, new_orders_today: 0, total_revenue: 0, revenue_today: 0, top_pages: [], daily_views: [] } });
+  }
+});
+
+app.post("/api/admin/shiprocket/:id", verifyAdmin, async (req, res) => {
+  try {
+    const orderId = parseInt(req.params.id, 10);
+    if (!orderId) return res.status(400).json({ success: false, message: "Invalid order ID" });
+
+    const orderR = await pool.query("SELECT * FROM orders WHERE id = $1", [orderId]);
+    if (orderR.rows.length === 0) return res.status(404).json({ success: false, message: "Order not found" });
+
+    const order = orderR.rows[0];
+    const itemsData = Array.isArray(order.items_data) ? order.items_data : [];
+    const trackingId = "PHR-" + String(order.id).padStart(6, "0");
+
+    const srRes = await shiprocket.createOrder({
+      id: order.id, tracking_id: trackingId,
+      customer_name: order.customer_name, phone: order.phone,
+      address: order.address, total_amount: order.total_amount,
+      payment_status: order.payment_status, items_data: itemsData,
+    });
+
+    if (srRes && srRes.shipment_id) {
+      await pool.query("UPDATE orders SET shiprocket_order_id = $1 WHERE id = $2", [String(srRes.shipment_id), order.id]);
+      if (srRes.awb_code) await pool.query("UPDATE orders SET awb_number = $1 WHERE id = $2", [srRes.awb_code, order.id]);
+      // Try to assign courier
+      shiprocket.assignAWB(srRes.shipment_id).then(function (awb) {
+        if (awb && awb.awb_code) pool.query("UPDATE orders SET awb_number = $1 WHERE id = $2", [awb.awb_code, order.id]).catch(function () {});
+      }).catch(function () {});
+      return res.json({ success: true, message: "Shipment created", data: srRes });
+    }
+    res.status(500).json({ success: false, message: "Shiprocket error", data: srRes });
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });
   }
@@ -676,17 +836,15 @@ app.post("/api/reviews", async (req, res) => {
     if (!authHeader || !authHeader.startsWith("Bearer ")) {
       return res.status(401).json({ success: false, message: "Authentication required" });
     }
-    var token = authHeader.slice(7);
-    var payload;
     try {
-      payload = JSON.parse(Buffer.from(token.split(".")[1], "base64url").toString());
+      var decoded = jwt.verify(authHeader.slice(7), process.env.JWT_SECRET);
+      if (!decoded || !decoded.id || decoded.role !== "customer") {
+        return res.status(401).json({ success: false, message: "Invalid token" });
+      }
+      var customerId = decoded.id;
     } catch (e) {
       return res.status(401).json({ success: false, message: "Invalid token" });
     }
-    if (!payload || !payload.id) {
-      return res.status(401).json({ success: false, message: "Invalid token" });
-    }
-    var customerId = payload.id;
 
     var { product_id, order_id, rating, review_text } = req.body;
 
@@ -970,6 +1128,38 @@ var HOST = process.env.HOST || "0.0.0.0";
     console.log("Database migration: coupons table created/verified");
   } catch (err) {
     console.error("Coupons migration error (non-fatal):", err.message);
+  }
+
+  // Shiprocket columns for orders
+  try {
+    await pool.query(`
+      ALTER TABLE orders
+        ADD COLUMN IF NOT EXISTS items_data JSONB DEFAULT '[]'::jsonb,
+        ADD COLUMN IF NOT EXISTS shiprocket_order_id TEXT DEFAULT NULL,
+        ADD COLUMN IF NOT EXISTS awb_number TEXT DEFAULT NULL,
+        ADD COLUMN IF NOT EXISTS tracking_status VARCHAR(50) DEFAULT NULL
+    `);
+    console.log("Database migration: shiprocket columns added to orders");
+  } catch (err) {
+    console.error("Shiprocket migration error (non-fatal):", err.message);
+  }
+
+  // Page views / analytics table
+  try {
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS page_views (
+        id SERIAL PRIMARY KEY,
+        visitor_id VARCHAR(255),
+        page_path VARCHAR(500) NOT NULL,
+        referrer TEXT DEFAULT '',
+        user_agent TEXT DEFAULT '',
+        ip_address VARCHAR(45) DEFAULT '',
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      )
+    `);
+    console.log("Database migration: page_views table created");
+  } catch (err) {
+    console.error("Page views migration error (non-fatal):", err.message);
   }
 
   // NOTE: T-Shirt price override disabled to preserve admin dashboard changes
