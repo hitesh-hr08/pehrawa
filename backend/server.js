@@ -33,6 +33,7 @@ const verifyAdmin = require("./middleware/auth");
 const authRoutes = require("./routes/authRoutes");
 const Razorpay = require("razorpay");
 const shiprocket = require("./services/shiprocket");
+const cloudinaryUpload = require("./services/cloudinary");
 
 const app = express();
 
@@ -115,28 +116,36 @@ app.use("/api/customers", customerRoutes);
 app.use("/api/user", customerRoutes);
 
 app.post("/api/upload", verifyAdmin, (req, res) => {
-  upload.single("image")(req, res, function (err) {
+  upload.single("image")(req, res, async function (err) {
     if (err) {
       return res.status(400).json({ success: false, message: err.message });
     }
     if (!req.file) {
       return res.status(400).json({ success: false, message: "No file uploaded" });
     }
-    const url = "/uploads/" + req.file.filename;
-    res.json({ success: true, url: url, filename: req.file.filename });
+    try {
+      const result = await cloudinaryUpload.upload(req.file.path);
+      res.json({ success: true, url: result.url, filename: result.public_id });
+    } catch (e) {
+      res.status(500).json({ success: false, message: "Upload failed: " + e.message });
+    }
   });
 });
 
 app.post("/api/admin/upload", verifyAdmin, (req, res) => {
-  upload.single("image")(req, res, function (err) {
+  upload.single("image")(req, res, async function (err) {
     if (err) {
       return res.status(400).json({ success: false, message: err.message });
     }
     if (!req.file) {
       return res.status(400).json({ success: false, message: "No file uploaded" });
     }
-    const url = "/uploads/" + req.file.filename;
-    res.json({ success: true, url: url, filename: req.file.filename });
+    try {
+      const result = await cloudinaryUpload.upload(req.file.path);
+      res.json({ success: true, url: result.url, filename: result.public_id });
+    } catch (e) {
+      res.status(500).json({ success: false, message: "Upload failed: " + e.message });
+    }
   });
 });
 
@@ -147,12 +156,13 @@ app.post("/api/admin/products/:id/images", verifyAdmin, (req, res) => {
     try {
       const existing = await pool.query("SELECT COUNT(*)::int AS cnt FROM product_images WHERE product_id = $1", [req.params.id]);
       if (existing.rows[0].cnt >= 5) {
+        fs.unlink(req.file.path, function () {});
         return res.status(400).json({ success: false, message: "Maximum 5 images allowed per product" });
       }
-      const url = "/uploads/" + req.file.filename;
+      const cloudResult = await cloudinaryUpload.upload(req.file.path);
       const result = await pool.query(
         "INSERT INTO product_images (product_id, image_url, sort_order) VALUES ($1, $2, $3) RETURNING *",
-        [req.params.id, url, existing.rows[0].cnt]
+        [req.params.id, cloudResult.url, existing.rows[0].cnt]
       );
       res.json({ success: true, image: result.rows[0] });
     } catch (e) {
@@ -163,6 +173,11 @@ app.post("/api/admin/products/:id/images", verifyAdmin, (req, res) => {
 
 app.delete("/api/admin/products/:id/images/:imageId", verifyAdmin, async (req, res) => {
   try {
+    const img = await pool.query("SELECT image_url FROM product_images WHERE id = $1 AND product_id = $2", [req.params.imageId, req.params.id]);
+    if (img.rows.length > 0) {
+      const pid = cloudinaryUpload.publicIdFromUrl(img.rows[0].image_url);
+      if (pid) cloudinaryUpload.destroy(pid).catch(function () {});
+    }
     await pool.query("DELETE FROM product_images WHERE id = $1 AND product_id = $2", [req.params.imageId, req.params.id]);
     res.json({ success: true, message: "Image deleted" });
   } catch (err) {
