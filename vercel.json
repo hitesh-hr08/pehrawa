@@ -1,12 +1,9 @@
 {
-  "framework": null,
   "public": ".",
-  "miss": false,
   "rewrites": [
     { "source": "/api/(.*)", "destination": "https://pehrawa-api.onrender.com/api/$1" },
     { "source": "/uploads/(.*)", "destination": "https://pehrawa-api.onrender.com/uploads/$1" },
     { "source": "/", "destination": "/frontend/home.html" },
-    { "source": "/home", "destination": "/frontend/home.html" },
     { "source": "/shop", "destination": "/frontend/shop.html" },
     { "source": "/product", "destination": "/frontend/product.html" },
     { "source": "/cart", "destination": "/frontend/cart.html" },
@@ -27,8 +24,6 @@
     { "source": "/reset-password", "destination": "/frontend/reset-password.html" },
     { "source": "/auth-callback", "destination": "/frontend/auth-callback.html" },
     { "source": "/admin/login", "destination": "/frontend/admin/login.html" },
-    { "source": "/admin/dashboard", "destination": "/frontend/admin/dashboard.html" },
-    { "source": "/admin/:path*", "destination": "/frontend/admin/:path*" },
-    { "source": "/:path*.html", "destination": "/frontend/:path*.html" }
+    { "source": "/admin/dashboard", "destination": "/frontend/admin/dashboard.html" }
   ]
 }
