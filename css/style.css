@@ -143,6 +143,13 @@ font-size:21px;
 position:relative;
 display:flex;
 align-items:center;
+width:40px;
+transition:width .35s ease;
+}
+
+.search-wrapper:hover,
+.search-wrapper:focus-within{
+width:270px;
 }
 
 .search-icon{
@@ -1857,10 +1864,11 @@ RESPONSIVE
 @media(max-width:991px){
   .logo img{width:130px;}
   .search-wrapper .search-input{display:none;}
+  .search-wrapper.search-open{width:240px;}
   .search-wrapper.search-open .search-input{
-    display:block;position:absolute;right:100%;top:50%;transform:translateY(-50%);
-    width:40vw;max-width:160px;padding:5px 10px;margin-right:6px;
-    border:1px solid #555;background:#111;color:#fff;border-radius:30px;font-size:12px;outline:none;z-index:20;
+    display:block;width:190px;opacity:1;margin-left:8px;
+    position:static;padding:6px 12px;font-size:12px;
+    background:#111;border:1px solid #555;color:#fff;border-radius:30px;outline:none;
   }
   .search-wrapper.search-open .search-icon{color:#ffffff;}
   .product-grid{grid-template-columns:repeat(2,1fr);gap:12px;}
