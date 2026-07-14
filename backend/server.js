@@ -43,7 +43,8 @@ app.use(helmet({
 const allowedOrigins = [
   "https://pehrawa.store",
   "https://www.pehrawa.store",
-  "https://pehrawa-store.up.railway.app"
+  "https://pehrawa.vercel.app",
+  "https://pehrawa-7upe4t8o7-hitesh-hr08s-projects.vercel.app"
 ];
 app.use(cors({
   origin: function (origin, cb) { cb(null, !origin || allowedOrigins.indexOf(origin) !== -1); },

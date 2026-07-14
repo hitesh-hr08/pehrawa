@@ -418,7 +418,7 @@ if (checkoutForm) {
 
     // Step 2: Open Razorpay checkout
     var options = {
-      key: "rzp_live_T6aA0kd4BdVC3q",
+      key: window.PEHRAWA_RZP_KEY || "rzp_live_T6aA0kd4BdVC3q",
       amount: rzpData.amount,
       currency: "INR",
       name: "Pehrawa",

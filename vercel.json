@@ -1,0 +1,29 @@
+{
+  "public": ".",
+  "rewrites": [
+    { "source": "/api/(.*)", "destination": "https://pehrawa-api.onrender.com/api/$1" },
+    { "source": "/uploads/(.*)", "destination": "https://pehrawa-api.onrender.com/uploads/$1" },
+    { "source": "/", "destination": "/frontend/home.html" },
+    { "source": "/shop", "destination": "/frontend/shop.html" },
+    { "source": "/product", "destination": "/frontend/product.html" },
+    { "source": "/cart", "destination": "/frontend/cart.html" },
+    { "source": "/about", "destination": "/frontend/about.html" },
+    { "source": "/contact", "destination": "/frontend/contact.html" },
+    { "source": "/login", "destination": "/frontend/login.html" },
+    { "source": "/register", "destination": "/frontend/register.html" },
+    { "source": "/my-profile", "destination": "/frontend/my-profile.html" },
+    { "source": "/my-orders", "destination": "/frontend/my-orders.html" },
+    { "source": "/custom-print", "destination": "/frontend/custom-print.html" },
+    { "source": "/track-order", "destination": "/frontend/track-order.html" },
+    { "source": "/collections", "destination": "/frontend/collections.html" },
+    { "source": "/wishlist", "destination": "/frontend/wishlist.html" },
+    { "source": "/terms", "destination": "/frontend/terms.html" },
+    { "source": "/privacy-policy", "destination": "/frontend/privacy-policy.html" },
+    { "source": "/shipping-policy", "destination": "/frontend/shipping-policy.html" },
+    { "source": "/size-guide", "destination": "/frontend/size-guide.html" },
+    { "source": "/reset-password", "destination": "/frontend/reset-password.html" },
+    { "source": "/auth-callback", "destination": "/frontend/auth-callback.html" },
+    { "source": "/admin/login", "destination": "/frontend/admin/login.html" },
+    { "source": "/admin/dashboard", "destination": "/frontend/admin/dashboard.html" }
+  ]
+}

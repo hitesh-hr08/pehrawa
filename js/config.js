@@ -7,6 +7,14 @@
 
   // Load store settings from backend
   window.PEHRAWA_SETTINGS = {};
+
+  // Fetch Razorpay key
+  window.PEHRAWA_RZP_KEY = "rzp_live_T6aA0kd4BdVC3q";
+  fetch(api + "/api/public/razorpay-key")
+    .then(function (r) { return r.json(); })
+    .then(function (data) { if (data && data.key) window.PEHRAWA_RZP_KEY = data.key; })
+    .catch(function () {});
+
   fetch(api + "/api/public/settings")
     .then(function (r) { return r.json(); })
     .then(function (data) {
