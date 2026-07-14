@@ -1085,6 +1085,17 @@ var HOST = process.env.HOST || "0.0.0.0";
     console.error("Original price migration error (non-fatal):", err.message);
   }
 
+  // Add sizes column
+  try {
+    await pool.query(`
+      ALTER TABLE products
+        ADD COLUMN IF NOT EXISTS sizes JSONB DEFAULT NULL
+    `);
+    console.log("Database migration: sizes column added/verified");
+  } catch (err) {
+    console.error("Sizes migration error (non-fatal):", err.message);
+  }
+
   // Create product_images table
   try {
     await pool.query(`

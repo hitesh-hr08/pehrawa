@@ -976,6 +976,39 @@ select:focus {
   border-color: rgba(255, 63, 63, 0.4);
 }
 
+.size-checkboxes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.size-cb {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 6px;
+  background: rgba(255,255,255,0.04);
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+  color: #aaa;
+  transition: all .2s;
+  user-select: none;
+}
+.size-cb:hover {
+  border-color: #ff6b00;
+  color: #fff;
+}
+.size-cb input { display: none; }
+.size-cb:has(input:checked) {
+  border-color: #ff6b00;
+  background: rgba(255,107,0,0.15);
+  color: #fff;
+  box-shadow: 0 0 10px rgba(255,107,0,0.2);
+}
+
 .status-stack {
   display: flex;
   flex-wrap: wrap;

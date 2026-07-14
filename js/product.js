@@ -193,19 +193,27 @@ function renderProduct(product, images) {
     }).join("");
   }
 
-  // Sizes
+  // Sizes - use product.sizes from DB if available, fall back to categoryConfig
   var sizeSection = document.getElementById("sizeSection");
   var sizeContainer = document.getElementById("sizeContainer");
   var sizeLabel = document.getElementById("sizeLabel");
-  if (config.sizes.length > 0) {
+  var availableSizes = product.sizes;
+  if (typeof availableSizes === "string") { try { availableSizes = JSON.parse(availableSizes); } catch(e) { availableSizes = null; } }
+  if (!availableSizes || !availableSizes.length) availableSizes = config.sizes;
+  if (availableSizes.length > 0) {
     sizeSection.style.display = "block";
-    sizeLabel.innerText = config.sizeLabel;
-    sizeContainer.innerHTML = config.sizes.map(function(s, i){
-      var active = i === 1 ? ' active' : '';
-      return '<button class="size-btn' + active + '">' + s + '</button>';
+    sizeLabel.innerText = "Select Size";
+    var allSizes = config.sizes.length ? config.sizes : ["S","M","L","XL","XXL"];
+    sizeContainer.innerHTML = allSizes.map(function(s){
+      var avail = availableSizes.indexOf(s) !== -1;
+      return '<button class="size-btn' + (avail ? '' : ' size-na') + '"' + (avail ? '' : ' disabled') + '>' + s + '</button>';
     }).join("");
-    selectedSize = config.sizes[1] || config.sizes[0];
-    sizeContainer.querySelectorAll(".size-btn").forEach(function(btn){
+    selectedSize = availableSizes[1] || availableSizes[0] || "";
+    if (availableSizes.length > 0) {
+      var firstAvail = sizeContainer.querySelector(".size-btn:not(.size-na)");
+      if (firstAvail) { firstAvail.classList.add("active"); selectedSize = firstAvail.innerText; }
+    }
+    sizeContainer.querySelectorAll(".size-btn:not(.size-na)").forEach(function(btn){
       btn.addEventListener("click", function(){
         sizeContainer.querySelectorAll(".size-btn").forEach(function(b){ b.classList.remove("active"); });
         btn.classList.add("active");

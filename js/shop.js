@@ -112,7 +112,7 @@
       name: product.name,
       price: Number(product.price),
       image: product.image_url || "../images/product1.png",
-      size: "M",
+      size: product.sizes && product.sizes.length ? product.sizes[0] : "M",
       quantity: 1
     });
     localStorage.setItem(key, JSON.stringify(currentItems));
