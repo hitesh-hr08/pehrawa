@@ -143,13 +143,7 @@ font-size:21px;
 position:relative;
 display:flex;
 align-items:center;
-width:40px;
-transition:width .35s ease;
-}
-
-.search-wrapper:hover,
-.search-wrapper:focus-within{
-width:270px;
+flex:0 0 auto;
 }
 
 .search-icon{
@@ -157,27 +151,32 @@ font-size:18px;
 cursor:pointer;
 z-index:2;
 color:#fff;
+flex-shrink:0;
 }
 
 .search-input{
 width:0;
 opacity:0;
-padding:10px 15px;
+padding:8px 14px;
 margin-left:10px;
 background:#111;
 border:1px solid #333;
 color:#fff;
 border-radius:30px;
-transition:.4s ease;
+transition:.35s ease;
 outline:none;
+flex:0 0 0;
 }
 
-.search-wrapper:hover .search-input{
+.search-wrapper:hover .search-input,
+.search-wrapper:focus-within .search-input{
 width:220px;
 opacity:1;
+flex:0 0 220px;
+border-color:#555;
 }
 
-.search-input:focus{border-color:#ffffff;}
+.search-input:focus{border-color:#ff6b00;}
 
 .login-btn{
 display:flex;
