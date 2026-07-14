@@ -197,6 +197,17 @@ function renderProduct(product, images) {
   var sizeSection = document.getElementById("sizeSection");
   var sizeContainer = document.getElementById("sizeContainer");
   var sizeLabel = document.getElementById("sizeLabel");
+
+  // Size guide link - filter by category
+  var sgLink = document.querySelector(".size-guide-link");
+  if (sgLink && product.category) {
+    var cat = product.category.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/-+$/, "");
+    if (cat.includes("footwear") || cat.includes("shoe")) cat = "footwear";
+    else if (cat.includes("jean") || cat.includes("pant") || cat.includes("waist")) cat = "jeans";
+    else if (cat.includes("hoodie") || cat.includes("sweat")) cat = "hoodies";
+    else cat = "t-shirts";
+    sgLink.href = "size-guide.html?cat=" + cat;
+  }
   var availableSizes = product.sizes;
   if (typeof availableSizes === "string") { try { availableSizes = JSON.parse(availableSizes); } catch(e) { availableSizes = null; } }
   if (!availableSizes || !availableSizes.length) availableSizes = config.sizes;
