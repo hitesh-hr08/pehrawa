@@ -155,9 +155,9 @@ app.post("/api/admin/products/:id/images", verifyAdmin, (req, res) => {
     if (!req.file) return res.status(400).json({ success: false, message: "No file uploaded" });
     try {
       const existing = await pool.query("SELECT COUNT(*)::int AS cnt FROM product_images WHERE product_id = $1", [req.params.id]);
-      if (existing.rows[0].cnt >= 5) {
+      if (existing.rows[0].cnt >= 10) {
         fs.unlink(req.file.path, function () {});
-        return res.status(400).json({ success: false, message: "Maximum 5 images allowed per product" });
+        return res.status(400).json({ success: false, message: "Maximum 10 images allowed per product" });
       }
       const cloudResult = await cloudinaryUpload.upload(req.file.path);
       const result = await pool.query(
