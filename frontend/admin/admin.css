@@ -30,6 +30,11 @@ body {
   min-height: 100vh;
   background: var(--bg);
   color: var(--text);
+  overflow-x: hidden;
+}
+
+html {
+  overflow-x: hidden;
 }
 
 a {
@@ -335,6 +340,9 @@ input {
 
 .admin-main {
   min-width: 0;
+  min-height: 0;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
   padding: 26px;
   background:
     radial-gradient(circle at 78% 4%, rgba(255,255,255, 0.08), transparent 30%),
@@ -614,8 +622,9 @@ input {
 }
 
 .product-form-body.open {
-  max-height: 800px;
+  max-height: none;
   opacity: 1;
+  overflow: visible;
 }
 
 .form-grid {
@@ -863,6 +872,11 @@ select:focus {
   .admin-sidebar {
     position: static;
     height: auto;
+  }
+
+  .admin-main {
+    overflow-y: visible;
+    -webkit-overflow-scrolling: auto;
   }
 
   .dashboard-grid {
