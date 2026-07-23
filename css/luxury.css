@@ -1,0 +1,272 @@
+/* =============================================
+PEHRAWA LUXURY FEATURES CSS
+Daily Drop, Recently Viewed, Scratch Card,
+Gallery, Vault, Coming Soon, Rewards, Smart Search
+============================================= */
+
+/* ===========================
+DAILY DROP
+=========================== */
+.daily-drop{display:none;padding:60px 0 0;background:linear-gradient(180deg,#050505,#0a0a0a);border-top:1px solid #121212;}
+.dd-label{display:inline-flex;align-items:center;gap:8px;font-size:11px;letter-spacing:4px;color:#ff6b00;font-weight:700;margin-bottom:30px;padding:8px 16px;background:rgba(255,107,0,0.08);border:1px solid rgba(255,107,0,0.2);border-radius:30px;}
+.dd-label i{font-size:12px;}
+.dd-grid{display:grid;grid-template-columns:1fr 1fr;gap:50px;align-items:center;}
+.dd-image{position:relative;border-radius:16px;overflow:hidden;background:#0a0a0a;border:1px solid #1a1a1a;}
+.dd-image img{width:100%;height:480px;object-fit:cover;transition:transform .6s;}
+.dd-image:hover img{transform:scale(1.03);}
+.dd-badge{position:absolute;top:16px;left:16px;background:#ff3f3f;color:#fff;font-size:13px;font-weight:800;padding:6px 14px;border-radius:4px;letter-spacing:1px;}
+.dd-title{font-size:36px;font-weight:700;margin-bottom:12px;line-height:1.2;}
+.dd-desc{color:#888;line-height:1.8;margin-bottom:20px;font-size:15px;}
+.dd-price{font-size:32px;font-weight:800;color:#fff;margin-bottom:24px;}
+.dd-orig{font-size:16px;color:#555;text-decoration:line-through;margin-left:10px;font-weight:400;}
+.dd-disc{font-size:13px;color:#36b37e;margin-left:8px;font-weight:600;}
+.dd-countdown{display:flex;align-items:center;gap:12px;margin-bottom:24px;}
+.dd-cd-item{text-align:center;}
+.dd-cd-item span{display:block;font-size:36px;font-weight:800;color:#fff;background:#111;border:1px solid #222;border-radius:8px;padding:8px 16px;min-width:64px;font-variant-numeric:tabular-nums;}
+.dd-cd-item small{display:block;font-size:10px;color:#666;margin-top:4px;text-transform:uppercase;letter-spacing:1px;}
+.dd-cd-sep{font-size:28px;font-weight:800;color:#444;padding-bottom:18px;}
+.dd-stock{display:flex;align-items:center;gap:8px;font-size:13px;color:#ff6b00;margin-bottom:24px;}
+.dd-stock i{animation:fireFlicker 1.5s infinite;}
+.dd-actions{display:flex;gap:12px;align-items:center;}
+.dd-buy{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:54px;padding:0 36px;background:#fff;color:#000;font-weight:700;font-size:14px;border-radius:4px;transition:.3s;letter-spacing:0.5px;}
+.dd-buy:hover{background:#e0e0e0;transform:translateY(-2px);box-shadow:0 8px 30px rgba(255,255,255,0.2);}
+.dd-wishlist-btn{width:54px;height:54px;border:1px solid #333;background:transparent;color:#fff;font-size:18px;border-radius:4px;cursor:pointer;transition:.3s;display:flex;align-items:center;justify-content:center;}
+.dd-wishlist-btn:hover{border-color:#ff3f3f;color:#ff3f3f;background:rgba(255,63,63,0.08);}
+
+@keyframes fireFlicker{0%,100%{opacity:1;}50%{opacity:.6;}}
+
+/* ===========================
+RECENTLY VIEWED
+=========================== */
+.recently-viewed{display:none;padding:60px 0 0;}
+.rv-title{font-size:18px;letter-spacing:6px;font-weight:500;text-align:center;margin-bottom:30px;}
+.rv-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:16px;}
+.rv-card{background:#080808;border:1px solid #121212;border-radius:8px;overflow:hidden;transition:.3s;text-decoration:none;color:inherit;}
+.rv-card:hover{transform:translateY(-4px);border-color:#333;}
+.rv-img{position:relative;overflow:hidden;}
+.rv-img img{width:100%;height:160px;object-fit:cover;transition:.5s;}
+.rv-card:hover .rv-img img{transform:scale(1.06);}
+.rv-disc{position:absolute;top:8px;left:8px;background:#ff3f3f;color:#fff;font-size:9px;font-weight:700;padding:2px 6px;border-radius:3px;}
+.rv-info{padding:10px 12px;}
+.rv-info h4{font-size:12px;font-weight:500;margin-bottom:4px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.rv-price{font-size:14px;font-weight:700;}
+.rv-orig{font-size:10px;color:#555;text-decoration:line-through;margin-left:4px;font-weight:400;}
+
+@media(max-width:991px){.rv-grid{grid-template-columns:repeat(3,1fr);}}
+@media(max-width:768px){.rv-grid{grid-template-columns:repeat(2,1fr);gap:10px;}}
+@media(max-width:480px){.rv-grid{grid-template-columns:repeat(2,1fr);gap:8px;}.rv-img img{height:120px;}}
+
+/* ===========================
+SMART SEARCH
+=========================== */
+.ss-dropdown{position:absolute;top:100%;left:0;right:0;margin-top:8px;background:#0d0d0d;border:1px solid #222;border-radius:10px;max-height:400px;overflow-y:auto;z-index:1000;box-shadow:0 12px 40px rgba(0,0,0,.6);}
+.ss-results{padding:6px;}
+.ss-item{display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:8px;text-decoration:none;color:inherit;transition:.2s;}
+.ss-item:hover{background:#1a1a1a;}
+.ss-thumb{width:44px;height:44px;object-fit:cover;border-radius:6px;flex-shrink:0;}
+.ss-item-info{display:flex;flex-direction:column;gap:2px;}
+.ss-item-name{font-size:13px;font-weight:500;color:#e0e0e0;}
+.ss-item-name mark{background:#ff6b00;color:#fff;border-radius:2px;padding:0 2px;}
+.ss-item-price{font-size:13px;font-weight:700;color:#fff;}
+.ss-item-cat{font-size:10px;color:#666;text-transform:uppercase;letter-spacing:1px;}
+.ss-empty{padding:20px;text-align:center;color:#666;font-size:13px;}
+.ss-view-all{display:block;padding:12px;text-align:center;color:#ff6b00;font-size:13px;font-weight:600;border-top:1px solid #1a1a1a;transition:.2s;}
+.ss-view-all:hover{background:#111;}
+
+/* ===========================
+COMING SOON
+=========================== */
+.coming-soon{display:none;padding:60px 0 0;}
+.cs-title{font-size:18px;letter-spacing:6px;font-weight:500;text-align:center;margin-bottom:30px;}
+.cs-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;}
+.cs-grid-item{background:#080808;border:1px solid #151515;border-radius:12px;overflow:hidden;transition:.3s;}
+.cs-grid-item:hover{transform:translateY(-4px);border-color:#222;}
+.cs-img{position:relative;height:280px;overflow:hidden;}
+.cs-img img{width:100%;height:100%;object-fit:cover;filter:brightness(0.6);}
+.cs-overlay-label{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:14px;font-weight:800;letter-spacing:6px;color:#fff;background:rgba(0,0,0,0.6);padding:10px 24px;border:1px solid rgba(255,255,255,0.3);border-radius:4px;white-space:nowrap;}
+.cs-info{padding:20px;}
+.cs-info h4{font-size:18px;margin-bottom:8px;}
+.cs-info p{color:#888;font-size:13px;line-height:1.6;margin-bottom:16px;}
+.cs-countdown{display:flex;gap:10px;margin-bottom:16px;}
+.cs-cd{text-align:center;}
+.cs-cd span{display:block;font-size:22px;font-weight:800;color:#fff;background:#111;border:1px solid #222;border-radius:6px;padding:6px 12px;min-width:48px;}
+.cs-cd small{display:block;font-size:9px;color:#666;margin-top:3px;text-transform:uppercase;letter-spacing:1px;}
+.cs-notify{display:flex;gap:8px;}
+.cs-notify input{flex:1;padding:10px 14px;background:#0d0d0d;border:1px solid #222;color:#fff;border-radius:6px;font-size:13px;outline:none;}
+.cs-notify input:focus{border-color:#fff;}
+.cs-notify button{padding:10px 20px;background:#fff;color:#000;border:none;border-radius:6px;font-size:12px;font-weight:700;cursor:pointer;transition:.3s;white-space:nowrap;}
+.cs-notify button:hover{background:#e0e0e0;}
+@media(max-width:991px){.cs-grid{grid-template-columns:repeat(2,1fr);}}
+@media(max-width:768px){.cs-grid{grid-template-columns:1fr;}}
+
+/* ===========================
+SCRATCH CARD
+=========================== */
+.sc-float{position:fixed;bottom:90px;left:24px;z-index:9998;opacity:0;transform:translateX(-120%);transition:.5s cubic-bezier(.34,1.56,.64,1);}
+.sc-float.sc-show{opacity:1;transform:translateX(0);}
+.sc-float-inner{display:flex;align-items:center;gap:10px;padding:12px 20px;background:linear-gradient(135deg,#ff6b00,#ff8c40);color:#fff;border-radius:30px;cursor:pointer;box-shadow:0 6px 24px rgba(255,107,0,0.4);animation:scPulse 2s infinite;font-size:13px;font-weight:600;white-space:nowrap;}
+.sc-float-inner i{font-size:18px;}
+@keyframes scPulse{0%,100%{box-shadow:0 6px 24px rgba(255,107,0,0.4);}50%{box-shadow:0 6px 36px rgba(255,107,0,0.7);}}
+
+.sc-modal{text-align:center;position:relative;}
+.sc-title{font-size:24px;margin-bottom:8px;}
+.sc-surface{width:280px;height:160px;margin:20px auto;background:linear-gradient(135deg,#c0c0c0,#a0a0a0);border-radius:12px;cursor:pointer;position:relative;overflow:hidden;transition:.3s;border:2px solid #888;}
+.sc-surface:hover{border-color:#fff;transform:scale(1.03);}
+.sc-surface-pattern{position:absolute;inset:0;background:repeating-linear-gradient(45deg,transparent,transparent 10px,rgba(255,255,255,0.05) 10px,rgba(255,255,255,0.05) 20px);}
+.sc-surface-text{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:16px;font-weight:800;color:#fff;letter-spacing:4px;text-shadow:1px 1px 2px rgba(0,0,0,0.3);}
+.sc-scratching{animation:scratchReveal .8s forwards;}
+@keyframes scratchReveal{0%{opacity:1;transform:scale(1);}50%{opacity:.5;transform:scale(1.1);}100%{opacity:0;transform:scale(1.2);}}
+.sc-reward-icon{font-size:48px;color:#ffd700;margin:16px 0 12px;}
+.sc-reward-text{font-size:24px;font-weight:800;color:#fff;margin-bottom:4px;}
+.sc-reward-type{font-size:11px;color:#888;letter-spacing:3px;}
+.sc-redeem-btn{margin-top:16px;padding:14px 32px;background:#fff;color:#000;border:none;border-radius:8px;font-weight:700;font-size:14px;cursor:pointer;transition:.3s;}
+.sc-redeem-btn:hover{background:#e0e0e0;}
+
+/* ===========================
+REWARDS WIDGET
+=========================== */
+.rewards-widget{padding:60px 0 0;}
+.rw-card{background:#0a0a0a;border:1px solid #1a1a1a;border-radius:16px;padding:30px;max-width:500px;margin:0 auto;}
+.rw-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;}
+.rw-tier-badge{padding:6px 16px;border-radius:20px;font-size:12px;font-weight:700;color:#000;letter-spacing:1px;text-transform:uppercase;}
+.rw-points-display{text-align:right;}
+.rw-points-num{display:block;font-size:32px;font-weight:800;color:#fff;line-height:1;}
+.rw-points-label{font-size:10px;color:#666;letter-spacing:2px;}
+.rw-progress-wrap{margin-bottom:20px;}
+.rw-progress-bar{height:4px;background:#1a1a1a;border-radius:4px;overflow:hidden;}
+.rw-progress-fill{height:100%;border-radius:4px;transition:width .8s ease;}
+.rw-progress-label{font-size:11px;color:#666;margin-top:6px;}
+.rw-actions{margin-bottom:16px;}
+.rw-redeem-btn{padding:10px 24px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);color:#fff;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;transition:.3s;}
+.rw-redeem-btn:hover{background:#fff;color:#000;}
+.rw-history h4{font-size:13px;color:#888;margin-bottom:10px;letter-spacing:1px;}
+.rw-history-item{display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid #111;}
+.rw-h-desc{font-size:12px;color:#ccc;flex:1;}
+.rw-h-pts{font-size:13px;font-weight:700;margin:0 12px;}
+.rw-h-pts.positive{color:#36b37e;}
+.rw-h-pts.negative{color:#ff3f3f;}
+.rw-h-date{font-size:11px;color:#555;}
+
+/* ===========================
+CUSTOMER GALLERY
+=========================== */
+.customer-gallery{display:none;padding:60px 0 0;}
+.gallery-title{font-size:18px;letter-spacing:6px;font-weight:500;text-align:center;margin-bottom:30px;}
+.gallery-masonry{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;}
+.gallery-item{position:relative;border-radius:12px;overflow:hidden;cursor:pointer;aspect-ratio:3/4;}
+.gallery-item img{width:100%;height:100%;object-fit:cover;transition:transform .6s;}
+.gallery-item:hover img{transform:scale(1.08);}
+.gallery-overlay{position:absolute;inset:0;background:linear-gradient(transparent 50%,rgba(0,0,0,0.85));display:flex;flex-direction:column;justify-content:flex-end;padding:16px;opacity:0;transition:.3s;}
+.gallery-item:hover .gallery-overlay{opacity:1;}
+.gallery-customer{font-size:12px;color:#fff;font-weight:600;display:flex;align-items:center;gap:6px;}
+.gallery-product{font-size:10px;color:#aaa;display:flex;align-items:center;gap:4px;margin-top:4px;}
+.gallery-caption{font-size:11px;color:#888;margin-top:4px;font-style:italic;}
+.gallery-cta{text-align:center;margin-top:30px;font-size:14px;color:#666;}
+.gallery-cta strong{color:#fff;}
+@media(max-width:991px){.gallery-masonry{grid-template-columns:repeat(3,1fr);}}
+@media(max-width:768px){.gallery-masonry{grid-template-columns:repeat(2,1fr);gap:10px;}}
+@media(max-width:480px){.gallery-masonry{grid-template-columns:repeat(2,1fr);gap:8px;}}
+
+/* ===========================
+VAULT
+=========================== */
+.vault-header{text-align:center;margin-bottom:24px;}
+.vault-icon{width:60px;height:60px;background:linear-gradient(135deg,#ffd700,#b8860b);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;font-size:24px;color:#000;}
+.vault-header h2{font-size:28px;letter-spacing:6px;margin-bottom:4px;}
+.vault-header p{color:#888;font-size:13px;}
+.vault-products{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;}
+.vault-item{background:#0d0d0d;border:1px solid #1a1a1a;border-radius:10px;overflow:hidden;transition:.3s;text-decoration:none;color:inherit;}
+.vault-item:hover{transform:translateY(-4px);border-color:#ffd700;}
+.vault-item-img{position:relative;height:200px;overflow:hidden;}
+.vault-item-img img{width:100%;height:100%;object-fit:cover;}
+.vault-item-badge{position:absolute;top:8px;left:8px;background:linear-gradient(135deg,#ffd700,#b8860b);color:#000;font-size:9px;font-weight:800;padding:3px 8px;border-radius:3px;letter-spacing:1px;}
+.vault-item-info{padding:12px;}
+.vault-item-info h4{font-size:13px;margin-bottom:6px;color:#fff;}
+.vault-item-price{font-size:16px;font-weight:700;color:#ffd700;}
+.vault-item-orig{font-size:11px;color:#555;text-decoration:line-through;margin-left:4px;}
+.vault-item-disc{font-size:10px;color:#36b37e;margin-left:4px;}
+@media(max-width:480px){.vault-products{grid-template-columns:1fr;}}
+
+/* ===========================
+OUTFIT BUILDER
+=========================== */
+.outfit-section{display:none;padding:60px 0 0;}
+.outfit-title{font-size:18px;letter-spacing:6px;font-weight:500;text-align:center;margin-bottom:6px;}
+.outfit-subtitle{text-align:center;color:#666;font-size:13px;margin-bottom:30px;}
+.outfit-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;}
+.outfit-card{background:#080808;border:1px solid #151515;border-radius:10px;overflow:hidden;transition:.3s;text-decoration:none;color:inherit;}
+.outfit-card:hover{transform:translateY(-6px);border-color:#333;}
+.outfit-img{position:relative;overflow:hidden;height:220px;}
+.outfit-img img{width:100%;height:100%;object-fit:cover;transition:.5s;}
+.outfit-card:hover .outfit-img img{transform:scale(1.06);}
+.outfit-label{position:absolute;top:10px;left:10px;background:#fff;color:#000;font-size:9px;font-weight:800;padding:3px 10px;border-radius:3px;letter-spacing:1px;}
+.outfit-info{padding:12px;}
+.outfit-info h4{font-size:13px;margin-bottom:4px;color:#e0e0e0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.outfit-price{font-size:15px;font-weight:700;color:#fff;}
+@media(max-width:991px){.outfit-grid{grid-template-columns:repeat(2,1fr);}}
+@media(max-width:480px){.outfit-grid{grid-template-columns:repeat(2,1fr);gap:10px;}.outfit-img{height:160px;}}
+
+/* ===========================
+SIZE RECOMMENDER BUTTON
+=========================== */
+.size-rec-trigger{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.12);border-radius:8px;color:#fff;font-size:12px;font-weight:600;cursor:pointer;transition:.3s;margin-top:10px;}
+.size-rec-trigger:hover{background:rgba(255,255,255,0.1);border-color:rgba(255,255,255,0.25);}
+.size-rec-trigger i{font-size:14px;}
+
+/* ===========================
+PREMIUM GALLERY (product page)
+=========================== */
+.product-detail-image.zoomable{cursor:zoom-in;}
+.product-detail-image.zoomed{cursor:zoom-out;}
+.product-detail-image.zoomed img{transform:scale(2.2);cursor:zoom-out;}
+.gallery-nav{position:absolute;top:50%;transform:translateY(-50%);width:40px;height:40px;background:rgba(0,0,0,0.5);border:1px solid rgba(255,255,255,0.15);border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-size:16px;cursor:pointer;z-index:5;transition:.3s;opacity:0;}
+.product-detail-image:hover .gallery-nav{opacity:1;}
+.gallery-nav:hover{background:rgba(255,255,255,0.15);}
+.gallery-nav.prev{left:12px;}
+.gallery-nav.next{right:12px;}
+.gallery-dots{display:flex;justify-content:center;gap:8px;margin-top:12px;}
+.gallery-dot{width:8px;height:8px;border-radius:50%;background:#333;cursor:pointer;transition:.3s;}
+.gallery-dot.active{background:#fff;width:20px;border-radius:4px;}
+
+/* ===========================
+LIMITED STOCK PSYCHOLOGY
+=========================== */
+.p-stock-urgency{display:flex;align-items:center;gap:6px;font-size:11px;color:#ff3f3f;font-weight:600;margin-top:6px;}
+.p-stock-urgency i{animation:urgencyPulse 1.5s infinite;}
+@keyframes urgencyPulse{0%,100%{opacity:1;transform:scale(1);}50%{opacity:.6;transform:scale(1.15);}}
+
+.p-stock-bar{height:3px;background:#1a1a1a;border-radius:3px;margin-top:8px;overflow:hidden;}
+.p-stock-bar-fill{height:100%;background:linear-gradient(90deg,#ff3f3f,#ff6b00);border-radius:3px;transition:width 1s ease;}
+
+.p-viewing{display:flex;align-items:center;gap:6px;font-size:11px;color:#ff6b00;font-weight:500;margin-top:8px;}
+.p-viewing i{font-size:10px;}
+
+.p-social-proof{display:flex;align-items:center;gap:6px;font-size:11px;color:#36b37e;margin-top:6px;}
+
+/* ===========================
+DAILY DROP RESPONSIVE
+=========================== */
+@media(max-width:991px){
+  .dd-grid{grid-template-columns:1fr;gap:30px;}
+  .dd-image img{height:360px;}
+  .dd-title{font-size:28px;}
+}
+@media(max-width:768px){
+  .dd-image img{height:280px;}
+  .dd-title{font-size:24px;}
+  .dd-price{font-size:26px;}
+  .dd-cd-item span{font-size:28px;padding:6px 12px;min-width:52px;}
+}
+@media(max-width:480px){
+  .dd-image img{height:220px;}
+  .dd-title{font-size:20px;}
+  .dd-countdown{gap:8px;}
+  .dd-cd-item span{font-size:22px;padding:4px 10px;min-width:44px;}
+  .dd-actions{flex-direction:column;}
+  .dd-buy{width:100%;}
+}
+
+/* ===========================
+WISHLIST PRICE DROP
+=========================== */
+.wishlist-drop-badge{display:inline-flex;align-items:center;gap:4px;padding:3px 8px;background:#36b37e;color:#000;font-size:9px;font-weight:700;border-radius:3px;margin-left:6px;}

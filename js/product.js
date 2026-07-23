@@ -48,6 +48,7 @@ async function loadProductDetails() {
 
     currentProduct = data.product;
     renderProduct(currentProduct, data.images || []);
+    if (window.PehrawaRecentlyViewed) PehrawaRecentlyViewed.add(currentProduct);
   } catch (err) {
     document.getElementById("productName").innerText = "Server Not Connected";
     document.getElementById("productDescription").innerText = "Could not load product. Please check your connection and try again.";
@@ -266,6 +267,28 @@ function renderProduct(product, images) {
     document.getElementById("addCartBtn").style.cursor = "pointer";
     document.getElementById("addCartBtn").innerText = "ADD TO CART";
   }
+
+  // Limited Stock Psychology
+  var stock = parseInt(product.stock) || 0;
+  var stockEl = document.getElementById("stockUrgency");
+  if (stockEl && product.stock_status !== "out_of_stock" && stock > 0 && stock <= 10) {
+    stockEl.innerHTML = '<i class="fa-solid fa-fire"></i> Only <strong>' + stock + '</strong> left in stock — order soon!' +
+      '<div class="p-stock-bar"><div class="p-stock-bar-fill" style="width:' + Math.max(10, stock * 10) + '%"></div></div>';
+    stockEl.style.display = "block";
+  } else if (stockEl) {
+    stockEl.style.display = "none";
+  }
+
+  // Social proof
+  var socialEl = document.getElementById("socialProof");
+  if (socialEl && product.stock_status !== "out_of_stock") {
+    var viewers = Math.floor(Math.random() * 30) + 5;
+    socialEl.innerHTML = '<i class="fa-solid fa-eye"></i> ' + viewers + ' people are viewing this right now';
+    socialEl.style.display = "flex";
+  }
+
+  // Recently viewed on product page
+  if (window.PehrawaRecentlyViewed) PehrawaRecentlyViewed.render();
 
 }
 
@@ -722,3 +745,21 @@ async function placeBuyOrder() {
 }
 
 loadProductDetails();
+
+// Premium Gallery: click to zoom
+(function(){
+  var imgWrap = document.querySelector(".product-detail-image");
+  if(!imgWrap) return;
+  imgWrap.classList.add("zoomable");
+  imgWrap.addEventListener("click", function(e){
+    if(e.target.tagName === "IMG" || e.target === imgWrap){
+      imgWrap.classList.toggle("zoomed");
+    }
+  });
+  // Keyboard zoom out
+  document.addEventListener("keydown", function(e){
+    if(e.key === "Escape" && imgWrap.classList.contains("zoomed")){
+      imgWrap.classList.remove("zoomed");
+    }
+  });
+})();

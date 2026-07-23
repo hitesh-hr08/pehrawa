@@ -250,7 +250,7 @@ app.get("/api/public/razorpay-key", function (req, res) {
 app.get("/api/public/products", async (req, res) => {
   try {
     const search = req.query.search || "";
-    let query = "SELECT * FROM products";
+    let query = "SELECT *, COALESCE(stock, 0) as stock_count FROM products";
     let params = [];
 
     if (search.trim()) {
@@ -417,6 +417,14 @@ app.post("/api/public/orders", async (req, res) => {
     });
 
     res.status(201).json({ success: true, order: order });
+
+    if (customerId) {
+      var rewardPts = Math.floor(Number(total_amount) || 0);
+      if (rewardPts > 0) {
+        addRewardPoints(customerId, rewardPts, "order", "Order #" + order.id + " reward", order.id).catch(function() {});
+        createScratchCard(customerId, order.id).catch(function() {});
+      }
+    }
   } catch (err) {
     console.error("Order placement error:", err.message, err.stack);
     res.status(500).json({ success: false, message: "Failed to place order" });
@@ -1189,11 +1197,642 @@ var HOST = process.env.HOST || "0.0.0.0";
     console.error("Page views migration error (non-fatal):", err.message);
   }
 
-  // NOTE: T-Shirt price override disabled to preserve admin dashboard changes
-  // Previously: UPDATE products SET price = 399, original_price = NULL WHERE category = 'T-Shirts'
+  // ===========================
+  // LUXURY FASHION FEATURES
+  // ===========================
 
-  // NOTE: Black Printed Tees auto-insert removed to allow admin delete permanently
+  // Daily Drop table
+  try {
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS daily_drops (
+        id SERIAL PRIMARY KEY,
+        product_id INTEGER REFERENCES products(id) ON DELETE CASCADE,
+        active_date DATE NOT NULL DEFAULT CURRENT_DATE,
+        is_active BOOLEAN DEFAULT TRUE,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      )
+    `);
+    console.log("Database migration: daily_drops table created");
+  } catch (err) {
+    console.error("Daily drops migration error (non-fatal):", err.message);
+  }
+
+  // Rewards / Points table
+  try {
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS rewards (
+        id SERIAL PRIMARY KEY,
+        customer_id INTEGER REFERENCES customers(id) ON DELETE CASCADE,
+        points INTEGER NOT NULL DEFAULT 0,
+        type VARCHAR(50) NOT NULL,
+        description TEXT,
+        order_id INTEGER REFERENCES orders(id) ON DELETE SET NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      )
+    `);
+    console.log("Database migration: rewards table created");
+  } catch (err) {
+    console.error("Rewards migration error (non-fatal):", err.message);
+  }
+
+  // Scratch Cards table
+  try {
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS scratch_cards (
+        id SERIAL PRIMARY KEY,
+        customer_id INTEGER REFERENCES customers(id) ON DELETE CASCADE,
+        order_id INTEGER REFERENCES orders(id) ON DELETE SET NULL,
+        reward_type VARCHAR(50) NOT NULL,
+        reward_value NUMERIC(10,2) DEFAULT 0,
+        reward_text VARCHAR(255),
+        is_revealed BOOLEAN DEFAULT FALSE,
+        is_redeemed BOOLEAN DEFAULT FALSE,
+        expires_at TIMESTAMP,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      )
+    `);
+    console.log("Database migration: scratch_cards table created");
+  } catch (err) {
+    console.error("Scratch cards migration error (non-fatal):", err.message);
+  }
+
+  // Coming Soon products table
+  try {
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS coming_soon (
+        id SERIAL PRIMARY KEY,
+        name VARCHAR(255) NOT NULL,
+        description TEXT,
+        image_url TEXT,
+        launch_date TIMESTAMP,
+        category VARCHAR(100),
+        notify_emails JSONB DEFAULT '[]'::jsonb,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      )
+    `);
+    console.log("Database migration: coming_soon table created");
+  } catch (err) {
+    console.error("Coming soon migration error (non-fatal):", err.message);
+  }
+
+  // Customer Gallery (Styled by Pehrawa)
+  try {
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS customer_gallery (
+        id SERIAL PRIMARY KEY,
+        customer_id INTEGER REFERENCES customers(id) ON DELETE SET NULL,
+        customer_name VARCHAR(150) DEFAULT 'Anonymous',
+        image_url TEXT NOT NULL,
+        product_id INTEGER REFERENCES products(id) ON DELETE SET NULL,
+        caption TEXT,
+        is_approved BOOLEAN DEFAULT FALSE,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      )
+    `);
+    console.log("Database migration: customer_gallery table created");
+  } catch (err) {
+    console.error("Customer gallery migration error (non-fatal):", err.message);
+  }
+
+  // Pehrawa Vault (invite-only)
+  try {
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS vault_products (
+        id SERIAL PRIMARY KEY,
+        product_id INTEGER REFERENCES products(id) ON DELETE CASCADE,
+        vault_price NUMERIC(10,2) NOT NULL,
+        access_code VARCHAR(50),
+        is_active BOOLEAN DEFAULT TRUE,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      )
+    `);
+    console.log("Database migration: vault_products table created");
+  } catch (err) {
+    console.error("Vault migration error (non-fatal):", err.message);
+  }
+
+  // Add membership/tier columns to customers
+  try {
+    await pool.query(`
+      ALTER TABLE customers
+        ADD COLUMN IF NOT EXISTS membership_tier VARCHAR(20) DEFAULT 'bronze',
+        ADD COLUMN IF NOT EXISTS total_points INTEGER DEFAULT 0,
+        ADD COLUMN IF NOT EXISTS total_spent NUMERIC(10,2) DEFAULT 0
+    `);
+    console.log("Database migration: customer membership columns added");
+  } catch (err) {
+    console.error("Membership columns migration error (non-fatal):", err.message);
+  }
+
+  // Add color/tags to products
+  try {
+    await pool.query(`
+      ALTER TABLE products
+        ADD COLUMN IF NOT EXISTS color VARCHAR(50) DEFAULT NULL,
+        ADD COLUMN IF NOT EXISTS tags JSONB DEFAULT '[]'::jsonb
+    `);
+    console.log("Database migration: product color/tags columns added");
+  } catch (err) {
+    console.error("Product color/tags migration error (non-fatal):", err.message);
+  }
+
+  // ===========================
+  // DAILY DROP API
+  // ===========================
+
+  app.get("/api/public/daily-drop", async function (req, res) {
+    try {
+      var today = new Date().toISOString().slice(0, 10);
+      var result = await pool.query(
+        `SELECT dd.*, p.name, p.price, p.original_price, p.image_url, p.description, p.stock_status, p.category
+         FROM daily_drops dd
+         JOIN products p ON dd.product_id = p.id
+         WHERE dd.active_date = $1 AND dd.is_active = TRUE
+         ORDER BY dd.created_at DESC LIMIT 1`,
+        [today]
+      );
+      if (result.rows.length === 0) {
+        var fallback = await pool.query(
+          `SELECT dd.*, p.name, p.price, p.original_price, p.image_url, p.description, p.stock_status, p.category
+           FROM daily_drops dd
+           JOIN products p ON dd.product_id = p.id
+           WHERE dd.is_active = TRUE
+           ORDER BY dd.active_date DESC LIMIT 1`
+        );
+        return res.json({ success: true, drop: fallback.rows[0] || null });
+      }
+      var drop = result.rows[0];
+      var images = await pool.query("SELECT image_url FROM product_images WHERE product_id = $1 ORDER BY sort_order, id", [drop.product_id]);
+      drop.gallery_images = images.rows.map(function(i) { return i.image_url; });
+      res.json({ success: true, drop: drop });
+    } catch (err) {
+      console.error("Daily drop error:", err.message);
+      res.json({ success: true, drop: null });
+    }
+  });
+
+  app.post("/api/admin/daily-drop", verifyAdmin, async function (req, res) {
+    try {
+      var { product_id, active_date } = req.body;
+      if (!product_id) return res.status(400).json({ success: false, message: "Product ID required" });
+      var date = active_date || new Date().toISOString().slice(0, 10);
+      await pool.query("UPDATE daily_drops SET is_active = FALSE WHERE active_date = $1", [date]);
+      var result = await pool.query(
+        "INSERT INTO daily_drops (product_id, active_date, is_active) VALUES ($1, $2, TRUE) RETURNING *",
+        [product_id, date]
+      );
+      res.json({ success: true, drop: result.rows[0] });
+    } catch (err) {
+      res.status(500).json({ success: false, message: err.message });
+    }
+  });
+
+  app.get("/api/admin/daily-drops", verifyAdmin, async function (req, res) {
+    try {
+      var result = await pool.query(
+        `SELECT dd.*, p.name as product_name, p.price as product_price, p.image_url as product_image
+         FROM daily_drops dd
+         LEFT JOIN products p ON dd.product_id = p.id
+         ORDER BY dd.active_date DESC LIMIT 30`
+      );
+      res.json({ success: true, drops: result.rows });
+    } catch (err) {
+      res.status(500).json({ success: false, message: err.message });
+    }
+  });
+
+  // ===========================
+  // REWARDS API
+  // ===========================
+
+  app.get("/api/public/rewards/points", async function (req, res) {
+    try {
+      var authHeader = req.headers.authorization;
+      if (!authHeader || !authHeader.startsWith("Bearer ")) {
+        return res.json({ success: true, points: 0, tier: "bronze", history: [] });
+      }
+      var decoded;
+      try { decoded = jwt.verify(authHeader.slice(7), process.env.JWT_SECRET); } catch (e) { return res.json({ success: true, points: 0, tier: "bronze", history: [] }); }
+      if (!decoded || decoded.role !== "customer") return res.json({ success: true, points: 0, tier: "bronze", history: [] });
+
+      var cust = await pool.query("SELECT total_points, membership_tier, total_spent FROM customers WHERE id = $1", [decoded.id]);
+      if (cust.rows.length === 0) return res.json({ success: true, points: 0, tier: "bronze", history: [] });
+
+      var history = await pool.query(
+        "SELECT points, type, description, created_at FROM rewards WHERE customer_id = $1 ORDER BY created_at DESC LIMIT 20",
+        [decoded.id]
+      );
+
+      res.json({
+        success: true,
+        points: cust.rows[0].total_points || 0,
+        tier: cust.rows[0].membership_tier || "bronze",
+        total_spent: parseFloat(cust.rows[0].total_spent) || 0,
+        history: history.rows
+      });
+    } catch (err) {
+      res.json({ success: true, points: 0, tier: "bronze", history: [] });
+    }
+  });
+
+  async function addRewardPoints(customerId, points, type, description, orderId) {
+    try {
+      await pool.query(
+        "INSERT INTO rewards (customer_id, points, type, description, order_id) VALUES ($1, $2, $3, $4, $5)",
+        [customerId, points, type, description || "", orderId || null]
+      );
+      await pool.query("UPDATE customers SET total_points = total_points + $1 WHERE id = $2", [points, customerId]);
+      var cust = await pool.query("SELECT total_points FROM customers WHERE id = $1", [customerId]);
+      var totalPts = cust.rows[0] ? cust.rows[0].total_points : 0;
+      var tier = "bronze";
+      if (totalPts >= 5000) tier = "platinum";
+      else if (totalPts >= 2000) tier = "gold";
+      else if (totalPts >= 500) tier = "silver";
+      await pool.query("UPDATE customers SET membership_tier = $1 WHERE id = $2", [tier, customerId]);
+    } catch (e) { console.error("addRewardPoints error:", e.message); }
+  }
+
+  app.post("/api/public/rewards/redeem", async function (req, res) {
+    try {
+      var authHeader = req.headers.authorization;
+      if (!authHeader || !authHeader.startsWith("Bearer ")) return res.status(401).json({ success: false, message: "Auth required" });
+      var decoded = jwt.verify(authHeader.slice(7), process.env.JWT_SECRET);
+      if (!decoded || decoded.role !== "customer") return res.status(401).json({ success: false, message: "Auth required" });
+
+      var { points_to_redeem } = req.body;
+      points_to_redeem = parseInt(points_to_redeem) || 0;
+      if (points_to_redeem < 100) return res.status(400).json({ success: false, message: "Minimum 100 points to redeem" });
+
+      var cust = await pool.query("SELECT total_points FROM customers WHERE id = $1", [decoded.id]);
+      if (cust.rows.length === 0 || (cust.rows[0].total_points || 0) < points_to_redeem) {
+        return res.status(400).json({ success: false, message: "Insufficient points" });
+      }
+
+      await pool.query("UPDATE customers SET total_points = total_points - $1 WHERE id = $2", [points_to_redeem, decoded.id]);
+      await pool.query(
+        "INSERT INTO rewards (customer_id, points, type, description) VALUES ($1, $2, 'redeem', $3)",
+        [decoded.id, -points_to_redeem, "Redeemed " + points_to_redeem + " points"]
+      );
+
+      var discount = Math.floor(points_to_redeem / 100) * 10;
+      res.json({ success: true, discount: discount, message: "Rs. " + discount + " discount applied" });
+    } catch (err) {
+      res.status(500).json({ success: false, message: "Failed to redeem points" });
+    }
+  });
+
+  // ===========================
+  // SCRATCH CARD API
+  // ===========================
+
+  app.get("/api/public/scratch-cards", async function (req, res) {
+    try {
+      var authHeader = req.headers.authorization;
+      if (!authHeader || !authHeader.startsWith("Bearer ")) return res.json({ success: true, cards: [] });
+      var decoded;
+      try { decoded = jwt.verify(authHeader.slice(7), process.env.JWT_SECRET); } catch (e) { return res.json({ success: true, cards: [] }); }
+      if (!decoded || decoded.role !== "customer") return res.json({ success: true, cards: [] });
+
+      var cards = await pool.query(
+        `SELECT * FROM scratch_cards WHERE customer_id = $1 AND (is_revealed = FALSE OR (is_revealed = TRUE AND is_redeemed = FALSE AND expires_at > NOW()))
+         ORDER BY created_at DESC LIMIT 5`,
+        [decoded.id]
+      );
+      res.json({ success: true, cards: cards.rows });
+    } catch (err) {
+      res.json({ success: true, cards: [] });
+    }
+  });
+
+  app.post("/api/public/scratch-cards/:id/reveal", async function (req, res) {
+    try {
+      var authHeader = req.headers.authorization;
+      if (!authHeader || !authHeader.startsWith("Bearer ")) return res.status(401).json({ success: false, message: "Auth required" });
+      var decoded = jwt.verify(authHeader.slice(7), process.env.JWT_SECRET);
+      if (!decoded || decoded.role !== "customer") return res.status(401).json({ success: false, message: "Auth required" });
+
+      var card = await pool.query(
+        "SELECT * FROM scratch_cards WHERE id = $1 AND customer_id = $2 AND is_revealed = FALSE",
+        [req.params.id, decoded.id]
+      );
+      if (card.rows.length === 0) return res.status(404).json({ success: false, message: "Card not found or already revealed" });
+
+      await pool.query("UPDATE scratch_cards SET is_revealed = TRUE WHERE id = $1", [req.params.id]);
+      res.json({ success: true, card: card.rows[0] });
+    } catch (err) {
+      res.status(500).json({ success: false, message: err.message });
+    }
+  });
+
+  app.post("/api/public/scratch-cards/:id/redeem", async function (req, res) {
+    try {
+      var authHeader = req.headers.authorization;
+      if (!authHeader || !authHeader.startsWith("Bearer ")) return res.status(401).json({ success: false, message: "Auth required" });
+      var decoded = jwt.verify(authHeader.slice(7), process.env.JWT_SECRET);
+      if (!decoded || decoded.role !== "customer") return res.status(401).json({ success: false, message: "Auth required" });
+
+      var card = await pool.query(
+        "SELECT * FROM scratch_cards WHERE id = $1 AND customer_id = $2 AND is_revealed = TRUE AND is_redeemed = FALSE",
+        [req.params.id, decoded.id]
+      );
+      if (card.rows.length === 0) return res.status(404).json({ success: false, message: "Card not found or already redeemed" });
+
+      var c = card.rows[0];
+      if (c.expires_at && new Date(c.expires_at) < new Date()) {
+        return res.status(400).json({ success: false, message: "Card expired" });
+      }
+
+      await pool.query("UPDATE scratch_cards SET is_redeemed = TRUE WHERE id = $1", [req.params.id]);
+
+      if (c.reward_type === "points") {
+        await addRewardPoints(decoded.id, c.reward_value, "scratch_card", c.reward_text, c.order_id);
+      }
+
+      res.json({ success: true, message: "Reward redeemed: " + c.reward_text });
+    } catch (err) {
+      res.status(500).json({ success: false, message: err.message });
+    }
+  });
+
+  async function createScratchCard(customerId, orderId) {
+    try {
+      var rewards = [
+        { type: "points", value: 50, text: "50 Bonus Points!" },
+        { type: "points", value: 100, text: "100 Bonus Points!" },
+        { type: "points", value: 200, text: "200 Bonus Points!" },
+        { type: "discount", value: 10, text: "10% Off Next Order!" },
+        { type: "discount", value: 15, text: "15% Off Next Order!" },
+        { type: "points", value: 500, text: "500 Bonus Points!" },
+        { type: "freebie", value: 0, text: "Free Cap with Next Order!" },
+      ];
+      var pick = rewards[Math.floor(Math.random() * rewards.length)];
+      var expires = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
+      await pool.query(
+        `INSERT INTO scratch_cards (customer_id, order_id, reward_type, reward_value, reward_text, expires_at)
+         VALUES ($1, $2, $3, $4, $5, $6)`,
+        [customerId, orderId, pick.type, pick.value, pick.text, expires]
+      );
+    } catch (e) { console.error("createScratchCard error:", e.message); }
+  }
+
+  // ===========================
+  // COMING SOON API
+  // ===========================
+
+  app.get("/api/public/coming-soon", async function (req, res) {
+    try {
+      var result = await pool.query(
+        "SELECT * FROM coming_soon WHERE launch_date > NOW() OR launch_date IS NULL ORDER BY launch_date ASC NULLS LAST LIMIT 10"
+      );
+      res.json({ success: true, items: result.rows });
+    } catch (err) {
+      res.json({ success: true, items: [] });
+    }
+  });
+
+  app.post("/api/public/coming-soon/:id/notify", async function (req, res) {
+    try {
+      var { email } = req.body;
+      if (!email) return res.status(400).json({ success: false, message: "Email required" });
+      var result = await pool.query(
+        "UPDATE coming_soon SET notify_emails = notify_emails || $1::jsonb WHERE id = $2 RETURNING notify_emails",
+        [JSON.stringify([email]), req.params.id]
+      );
+      res.json({ success: true, message: "We'll notify you when it launches!" });
+    } catch (err) {
+      res.status(500).json({ success: false, message: err.message });
+    }
+  });
+
+  app.post("/api/admin/coming-soon", verifyAdmin, async function (req, res) {
+    try {
+      var { name, description, image_url, launch_date, category } = req.body;
+      if (!name) return res.status(400).json({ success: false, message: "Name required" });
+      var result = await pool.query(
+        "INSERT INTO coming_soon (name, description, image_url, launch_date, category) VALUES ($1,$2,$3,$4,$5) RETURNING *",
+        [name, description || null, image_url || null, launch_date || null, category || null]
+      );
+      res.status(201).json({ success: true, item: result.rows[0] });
+    } catch (err) {
+      res.status(500).json({ success: false, message: err.message });
+    }
+  });
+
+  app.delete("/api/admin/coming-soon/:id", verifyAdmin, async function (req, res) {
+    try {
+      await pool.query("DELETE FROM coming_soon WHERE id = $1", [req.params.id]);
+      res.json({ success: true });
+    } catch (err) {
+      res.status(500).json({ success: false, message: err.message });
+    }
+  });
+
+  // ===========================
+  // CUSTOMER GALLERY API
+  // ===========================
+
+  app.get("/api/public/gallery", async function (req, res) {
+    try {
+      var result = await pool.query(
+        `SELECT cg.*, p.name as product_name
+         FROM customer_gallery cg
+         LEFT JOIN products p ON cg.product_id = p.id
+         WHERE cg.is_approved = TRUE
+         ORDER BY cg.created_at DESC LIMIT 30`
+      );
+      res.json({ success: true, gallery: result.rows });
+    } catch (err) {
+      res.json({ success: true, gallery: [] });
+    }
+  });
+
+  app.post("/api/public/gallery", upload.single("image"), async function (req, res) {
+    try {
+      var authHeader = req.headers.authorization;
+      var customerId = null;
+      var customerName = "Anonymous";
+      if (authHeader && authHeader.startsWith("Bearer ")) {
+        try {
+          var decoded = jwt.verify(authHeader.slice(7), process.env.JWT_SECRET);
+          if (decoded && decoded.id && decoded.role === "customer") {
+            customerId = decoded.id;
+            var cust = await pool.query("SELECT name FROM customers WHERE id = $1", [decoded.id]);
+            if (cust.rows.length > 0) customerName = cust.rows[0].name;
+          }
+        } catch (e) {}
+      }
+
+      var imageUrl;
+      if (req.file) {
+        var cloudResult = await cloudinaryUpload.upload(req.file.path);
+        imageUrl = cloudResult.url;
+      } else if (req.body.image_url) {
+        imageUrl = req.body.image_url;
+      } else {
+        return res.status(400).json({ success: false, message: "Image required" });
+      }
+
+      var { product_id, caption } = req.body;
+      var result = await pool.query(
+        "INSERT INTO customer_gallery (customer_id, customer_name, image_url, product_id, caption) VALUES ($1,$2,$3,$4,$5) RETURNING *",
+        [customerId, customerName, imageUrl, product_id || null, caption || null]
+      );
+      res.status(201).json({ success: true, photo: result.rows[0] });
+    } catch (err) {
+      res.status(500).json({ success: false, message: err.message });
+    }
+  });
+
+  app.get("/api/admin/gallery", verifyAdmin, async function (req, res) {
+    try {
+      var result = await pool.query(
+        `SELECT cg.*, p.name as product_name FROM customer_gallery cg LEFT JOIN products p ON cg.product_id = p.id ORDER BY cg.created_at DESC`
+      );
+      res.json({ success: true, gallery: result.rows });
+    } catch (err) {
+      res.status(500).json({ success: false, message: err.message });
+    }
+  });
+
+  app.put("/api/admin/gallery/:id/approve", verifyAdmin, async function (req, res) {
+    try {
+      await pool.query("UPDATE customer_gallery SET is_approved = TRUE WHERE id = $1", [req.params.id]);
+      res.json({ success: true });
+    } catch (err) {
+      res.status(500).json({ success: false, message: err.message });
+    }
+  });
+
+  app.delete("/api/admin/gallery/:id", verifyAdmin, async function (req, res) {
+    try {
+      await pool.query("DELETE FROM customer_gallery WHERE id = $1", [req.params.id]);
+      res.json({ success: true });
+    } catch (err) {
+      res.status(500).json({ success: false, message: err.message });
+    }
+  });
+
+  // ===========================
+  // VAULT API
+  // ===========================
+
+  app.post("/api/public/vault/access", async function (req, res) {
+    try {
+      var { code } = req.body;
+      if (!code) return res.status(400).json({ success: false, message: "Code required" });
+      var result = await pool.query(
+        `SELECT vp.*, p.name, p.price, p.original_price, p.image_url, p.description, p.category
+         FROM vault_products vp
+         JOIN products p ON vp.product_id = p.id
+         WHERE vp.access_code = $1 AND vp.is_active = TRUE`,
+        [code.toUpperCase()]
+      );
+      if (result.rows.length === 0) return res.status(403).json({ success: false, message: "Invalid access code" });
+      res.json({ success: true, products: result.rows });
+    } catch (err) {
+      res.status(500).json({ success: false, message: err.message });
+    }
+  });
+
+  app.get("/api/admin/vault", verifyAdmin, async function (req, res) {
+    try {
+      var result = await pool.query(
+        `SELECT vp.*, p.name, p.price, p.image_url FROM vault_products vp LEFT JOIN products p ON vp.product_id = p.id ORDER BY vp.id DESC`
+      );
+      res.json({ success: true, products: result.rows });
+    } catch (err) {
+      res.status(500).json({ success: false, message: err.message });
+    }
+  });
+
+  app.post("/api/admin/vault", verifyAdmin, async function (req, res) {
+    try {
+      var { product_id, vault_price, access_code } = req.body;
+      if (!product_id || !vault_price) return res.status(400).json({ success: false, message: "Product and price required" });
+      var result = await pool.query(
+        "INSERT INTO vault_products (product_id, vault_price, access_code) VALUES ($1, $2, $3) RETURNING *",
+        [product_id, vault_price, (access_code || "PEHRAWA").toUpperCase()]
+      );
+      res.status(201).json({ success: true, product: result.rows[0] });
+    } catch (err) {
+      res.status(500).json({ success: false, message: err.message });
+    }
+  });
+
+  // ===========================
+  // ENHANCED SEARCH API
+  // ===========================
+
+  app.get("/api/public/search", async function (req, res) {
+    try {
+      var { q, category, color, min_price, max_price, sort } = req.query;
+      var query = "SELECT * FROM products WHERE 1=1";
+      var params = [];
+      var idx = 1;
+
+      if (q && q.trim()) {
+        query += " AND (LOWER(name) LIKE LOWER($" + idx + ") OR LOWER(description) LIKE LOWER($" + idx + ") OR LOWER(category) LIKE LOWER($" + idx + ") OR LOWER(name) LIKE LOWER($" + (idx + 1) + "))";
+        params.push("%" + q.trim() + "%", q.trim().split(/\s+/).join("%"));
+        idx += 2;
+      }
+      if (category && category !== "ALL") {
+        query += " AND LOWER(category) LIKE LOWER($" + idx + ")";
+        params.push("%" + category + "%");
+        idx++;
+      }
+      if (color) {
+        query += " AND LOWER(color) = LOWER($" + idx + ")";
+        params.push(color);
+        idx++;
+      }
+      if (min_price) {
+        query += " AND price >= $" + idx;
+        params.push(parseFloat(min_price));
+        idx++;
+      }
+      if (max_price) {
+        query += " AND price <= $" + idx;
+        params.push(parseFloat(max_price));
+        idx++;
+      }
+
+      if (sort === "price_asc") query += " ORDER BY price ASC";
+      else if (sort === "price_desc") query += " ORDER BY price DESC";
+      else if (sort === "oldest") query += " ORDER BY id ASC";
+      else query += " ORDER BY id DESC";
+
+      var result = await pool.query(query, params);
+      res.json({ success: true, products: result.rows, total: result.rows.length });
+    } catch (err) {
+      console.error("Search error:", err.message);
+      res.status(500).json({ success: false, message: "Search failed" });
+    }
+  });
+
+  // ===========================
+  // ENHANCED ORDER - add points + scratch card
+  // ===========================
+
+  // ===========================
+  // VAULT ACCESS CODE VALIDATION
+  // ===========================
+  app.get("/api/public/vault/validate", async function (req, res) {
+    try {
+      var { code } = req.query;
+      if (!code) return res.json({ success: false });
+      var result = await pool.query("SELECT id FROM vault_products WHERE access_code = $1 AND is_active = TRUE", [code.toUpperCase()]);
+      res.json({ success: result.rows.length > 0 });
+    } catch (err) {
+      res.json({ success: false });
+    }
+  });
+
+  console.log("All luxury fashion feature routes initialized");
 })();
+
+// ===========================
+// POST-ORDER REWARDS already handled in order POST route above
+// ===========================
 
 app.listen(PORT, HOST, function () {
   console.log("Pehrawa server running on " + HOST + ":" + PORT);

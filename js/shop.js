@@ -18,6 +18,7 @@
     var badges = "";
     if (product.stock_status === "out_of_stock") badges += '<span class="p-status p-out-of-stock">Out of Stock</span>';
     else if (product.stock_status === "limited_stock") badges += '<span class="p-status p-limited">Limited</span>';
+    else if (parseInt(product.stock) > 0 && parseInt(product.stock) <= 10) badges += '<span class="p-status p-limited">Only ' + product.stock + ' left</span>';
     if (product.is_new_arrival) badges += '<span class="p-status p-new">New</span>';
     if (product.is_trending) badges += '<span class="p-status p-trending">Trending</span>';
     if (product.is_hot_seller) badges += '<span class="p-status p-hot">Hot</span>';
