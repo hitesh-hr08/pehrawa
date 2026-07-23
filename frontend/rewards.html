@@ -75,15 +75,18 @@
         </ul>
       </nav>
       <div class="nav-right">
+        <div class="search-wrapper"><i class="fa-solid fa-magnifying-glass search-icon"></i><input type="text" class="search-input" placeholder="Search products..."></div>
         <div class="nav-icons">
           <a href="/wishlist"><i class="fa-regular fa-heart"></i><span>0</span></a>
           <a href="/cart"><i class="fa-solid fa-cart-shopping"></i><span>0</span></a>
         </div>
         <a href="/login" class="login-btn"><i class="fa-regular fa-user"></i><span class="login-text">LOGIN</span></a>
-        <div class="menu-btn"><i class="fa-solid fa-bars"></div>
+        <div class="menu-btn"><i class="fa-solid fa-bars"></i></div>
       </div>
     </div>
   </header>
+  <div class="mobile-menu-overlay" id="mobileOverlay"></div>
+  <div class="mobile-menu" id="mobileMenu"><button class="mobile-menu-close" id="mobileClose">&times;</button><ul><li><a href="/">HOME</a></li><li><a href="/shop">SHOP</a></li><li><a href="/collections">COLLECTIONS</a></li><li><span class="nav-disabled">CUSTOM PRINT<em class="cs-badge">Soon</em></span></li><li><a href="/about">ABOUT</a></li><li><a href="/contact">CONTACT</a></li></ul></div>
 
   <div class="container rd-page" id="rdPage">
     <div class="rd-empty" id="rdLoading">
@@ -93,12 +96,16 @@
   </div>
 
   <footer>
-    <div class="container footer-content">
-      <div class="footer-col"><h4>Pehrawa</h4><p>Premium menswear for the modern man. Crafted with care, designed for style.</p></div>
-      <div class="footer-col"><h4>Quick Links</h4><ul><li><a href="/shop">Shop</a></li><li><a href="/about">About</a></li><li><a href="/contact">Contact</a></li><li><a href="/rewards">Rewards</a></li></ul></div>
-      <div class="footer-col"><h4>Policies</h4><ul><li><a href="/privacy-policy">Privacy Policy</a></li><li><a href="/terms">Terms & Conditions</a></li><li><a href="/shipping-policy">Shipping Policy</a></li></ul></div>
+    <div class="container foot">
+      <div>
+        <a href="/" class="foot-logo"><img src="../images/logo.png" alt="Pehrawa"></a>
+        <p>Premium menswear for the modern man. Crafted with care, designed for style.</p>
+      </div>
+      <div><h4>Quick Links</h4><ul><li><a href="/shop">Shop</a></li><li><a href="/about">About</a></li><li><a href="/contact">Contact</a></li><li><a href="/collections">Collections</a></li></ul></div>
+      <div><h4>Policies</h4><ul><li><a href="/privacy-policy">Privacy Policy</a></li><li><a href="/terms">Terms & Conditions</a></li><li><a href="/shipping-policy">Shipping Policy</a></li><li><a href="/size-guide">Size Guide</a></li></ul></div>
+      <div><h4>Help</h4><ul><li><a href="/track-order">Track Order</a></li><li><a href="/rewards">Rewards</a></li><li><a href="/passport">Pehrawa Passport</a></li></ul></div>
     </div>
-    <div class="footer-bottom"><p>&copy; 2025 Pehrawa. All rights reserved.</p></div>
+    <div class="copyright"><p>&copy; 2026 Pehrawa. All Rights Reserved.</p></div>
   </footer>
 
   <script src="../js/customer-auth.js"></script>
@@ -109,7 +116,6 @@
     var tierColors = {bronze:"#cd7f32",silver:"#c0c0c0",gold:"#ffd700",black:"#333"};
     var tierNames = {bronze:"Bronze",silver:"Silver",gold:"Gold",black:"Black"};
     var tierEmoji = {bronze:"fa-medal",silver:"fa-award",gold:"fa-crown",black:"fa-gem"};
-
     function init(){
       if(!window.isCustomerLoggedIn || !window.isCustomerLoggedIn()){
         document.getElementById("rdPage").innerHTML = '<div class="rd-empty"><i class="fa-regular fa-user"></i><h3>Login to view your rewards</h3><p style="color:#888;margin:12px 0 20px;">Track your points, tier status, and exclusive benefits.</p><a href="/login" style="display:inline-block;padding:12px 32px;background:#ff6b00;color:#fff;text-decoration:none;border-radius:8px;font-weight:600;">Login Now</a></div>';
@@ -123,7 +129,6 @@
         })
         .catch(function(){ document.getElementById("rdPage").innerHTML = '<div class="rd-empty"><h3>Connection error</h3></div>'; });
     }
-
     function renderDashboard(d){
       var t = d.tier || "bronze";
       var b = d.tierBenefits || {};
@@ -132,8 +137,6 @@
       var sc = d.scratchCards || {};
       var color = b.color || tierColors[t] || "#cd7f32";
       var html = '';
-
-      // Hero
       html += '<div class="rd-hero">';
       html += '<div class="rd-tier-badge" style="background:'+color+';color:'+(t==='black'?'#fff':'#000')+'"><i class="fa-solid '+(tierEmoji[t]||'fa-medal')+'"></i> '+(b.name||'Bronze')+' MEMBER</div>';
       html += '<h1>Welcome back, '+(window.getCustomer?((window.getCustomer()||{}).name||'Member'):'Member')+'</h1>';
@@ -143,8 +146,6 @@
       html += '<div class="rd-point-box"><div class="num">'+(pts.lifetime||0)+'</div><div class="label">LIFETIME EARNED</div></div>';
       html += '<div class="rd-point-box"><div class="num">\u20b9'+Math.floor((pts.redeemable||0)/100)*10+'</div><div class="label">DISCOUNT VALUE</div></div>';
       html += '</div></div>';
-
-      // Tier Progress
       html += '<div class="rd-progress-section">';
       html += '<h3 style="color:#fff;margin-bottom:8px;"><i class="fa-solid fa-chart-line" style="color:#ff6b00;"></i> Tier Progress</h3>';
       html += '<div class="rd-progress-bar"><div class="rd-progress-fill" style="width:'+(p.progress||0)+'%;background:'+color+'"></div></div>';
@@ -152,8 +153,6 @@
       if(p.next) html += '<span>'+(p.needed||0)+' points to '+p.next+'</span>';
       else html += '<span>Max tier!</span>';
       html += '</div></div>';
-
-      // Stats
       html += '<div class="rd-stats-row">';
       html += '<div class="rd-stat"><div class="num">'+(d.orderCount||0)+'</div><div class="label">ORDERS</div></div>';
       html += '<div class="rd-stat"><div class="num">\u20b9'+Number(d.totalSpent||0).toLocaleString('en-IN')+'</div><div class="label">TOTAL SPENT</div></div>';
@@ -161,10 +160,7 @@
       html += '<div class="rd-stat"><div class="num">'+(sc.unrevealed||0)+'</div><div class="label">SCRATCH CARDS</div></div>';
       html += '<div class="rd-stat"><div class="num">'+(d.priceAlerts||0)+'</div><div class="label">PRICE ALERTS</div></div>';
       html += '</div>';
-
-      // Grid: Benefits + Tier Comparison
       html += '<div class="rd-grid">';
-      // Benefits card
       html += '<div class="rd-card"><h3><i class="fa-solid fa-star"></i> Your Benefits</h3>';
       html += '<ul class="rd-benefit-list">';
       html += '<li><i class="fa-solid '+(b.freeShipping?'fa-check':'fa-xmark')+'"></i> Free Shipping '+(b.freeShipping?'':'on all orders')+'</li>';
@@ -173,16 +169,9 @@
       html += '<li><i class="fa-solid fa-check"></i> '+(b.pointsMultiplier||1)+'x Points on Every Order</li>';
       html += '<li><i class="fa-solid fa-check"></i> Mystery Scratch Card Every Order</li>';
       html += '</ul></div>';
-
-      // Tier comparison
       html += '<div class="rd-card"><h3><i class="fa-solid fa-layer-group"></i> Membership Tiers</h3>';
       html += '<div class="rd-tier-grid">';
-      var tiers = [
-        {key:"bronze",min:"0 pts",perks:"1x Points"},
-        {key:"silver",min:"500 pts / \u20b95K",perks:"1.2x Pts, Free Ship"},
-        {key:"gold",min:"2000 pts / \u20b915K",perks:"1.5x Pts, Early Access"},
-        {key:"black",min:"5000 pts / \u20b950K",perks:"2x Pts, 10% Off"}
-      ];
+      var tiers = [{key:"bronze",min:"0 pts",perks:"1x Points"},{key:"silver",min:"500 pts / \u20b95K",perks:"1.2x Pts, Free Ship"},{key:"gold",min:"2000 pts / \u20b915K",perks:"1.5x Pts, Early Access"},{key:"black",min:"5000 pts / \u20b950K",perks:"2x Pts, 10% Off"}];
       tiers.forEach(function(tier){
         var isCurrent = tier.key === t;
         html += '<div class="rd-tier-item'+(isCurrent?' current':'')+'">';
@@ -193,8 +182,6 @@
         html += '</div>';
       });
       html += '</div></div>';
-
-      // History
       if(d.history && d.history.length > 0){
         html += '<div class="rd-card" style="grid-column:1/-1;"><h3><i class="fa-solid fa-clock-rotate-left"></i> Points History</h3>';
         d.history.slice(0,20).forEach(function(h){
@@ -207,22 +194,21 @@
         html += '</div>';
       }
       html += '</div>';
-
       document.getElementById("rdPage").innerHTML = html;
     }
-
     if(document.readyState==="loading") document.addEventListener("DOMContentLoaded",init);
     else init();
   })();
   </script>
-  <script src="../js/customer-auth.js"></script>
-  <script src="../js/script.js"></script>
   <script src="../js/luxury-animations.js"></script>
   <script src="../js/smart-search.js"></script>
   <script src="../js/scratch-card.js"></script>
   <script src="../js/vault.js"></script>
-<script src="../js/premium-loader.js"></script>
+  <script src="../js/premium-loader.js"></script>
   <script src="../js/ai-chatbot.js"></script>
   <script src="../js/wishlist.js"></script>
+  <div class="whatsapp-float" onclick="window.open('https://wa.me/919855707708','_blank')" role="button" tabindex="0" aria-label="Chat on WhatsApp">
+    <i class="fa-brands fa-whatsapp"></i><span class="wa-tooltip">Chat with us</span><span class="wa-badge"></span>
+  </div>
 </body>
 </html>
