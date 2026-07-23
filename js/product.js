@@ -1,6 +1,12 @@
 let selectedSize = "";
 let currentProduct = null;
 
+function switchProductImage(thumb, url) {
+  document.getElementById("productImage").src = url;
+  document.querySelectorAll("#productThumbs img").forEach(function(t) { t.classList.remove("active"); });
+  thumb.classList.add("active");
+}
+
 const API_URL = `${window.PEHRAWA_API_BASE || "http://localhost:5000"}/api/public/products`;
 const params = new URLSearchParams(window.location.search);
 const productId = params.get("id");
@@ -170,9 +176,14 @@ function renderProduct(product, images) {
   document.getElementById("productImage").src = allImages[0];
   document.getElementById("productImage").alt = product.name;
   var thumbsEl = document.getElementById("productThumbs");
-  thumbsEl.innerHTML = allImages.map(function(url, i){
-    return '<img src="' + url + '" style="width:70px;height:90px;object-fit:cover;cursor:pointer;border:' + (i === 0 ? '2px solid #ff6b00' : '1px solid #333') + ';border-radius:4px;" onclick="document.getElementById(\'productImage\').src=this.src;document.querySelectorAll(\'#productThumbs img\').forEach(function(t){t.style.border=\'1px solid #333\'});this.style.border=\'2px solid #ff6b00\'" onerror="this.style.display=\'none\'">';
-  }).join("");
+  if (allImages.length > 1) {
+    thumbsEl.style.display = "flex";
+    thumbsEl.innerHTML = allImages.map(function(url, i){
+      return '<img src="' + url + '" class="' + (i === 0 ? 'active' : '') + '" onclick="switchProductImage(this, \'' + url.replace(/'/g, "\\'") + '\')" onerror="this.style.display=\'none\'">';
+    }).join("");
+  } else {
+    thumbsEl.style.display = "none";
+  }
   document.getElementById("productName").innerText = product.name;
   var p = Number(product.price);
   var orig = product.original_price ? Number(product.original_price) : Math.round(p * 1.5);
