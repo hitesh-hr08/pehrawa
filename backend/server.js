@@ -1523,7 +1523,7 @@ var HOST = process.env.HOST || "0.0.0.0";
     await pool.query(`
       CREATE TABLE IF NOT EXISTS style_dna (
         id SERIAL PRIMARY KEY,
-        customer_id INTEGER REFERENCES customers(id) ON DELETE CASCADE,
+        customer_id INTEGER REFERENCES customers(id) ON DELETE CASCADE UNIQUE,
         style_type VARCHAR(50) NOT NULL,
         answers JSONB NOT NULL DEFAULT '{}'::jsonb,
         scores JSONB NOT NULL DEFAULT '{}'::jsonb,
@@ -1535,6 +1535,22 @@ var HOST = process.env.HOST || "0.0.0.0";
     console.log("Database migration: style_dna table created");
   } catch (err) {
     console.error("Style DNA migration error (non-fatal):", err.message);
+  }
+
+  // Ensure style_dna has UNIQUE on customer_id (for existing deployments)
+  try {
+    await pool.query(`
+      DO $$ BEGIN
+        IF NOT EXISTS (
+          SELECT 1 FROM pg_constraint WHERE conname = 'style_dna_customer_id_key'
+        ) THEN
+          ALTER TABLE style_dna ADD CONSTRAINT style_dna_customer_id_key UNIQUE (customer_id);
+        END IF;
+      END $$;
+    `);
+    console.log("Database migration: style_dna UNIQUE constraint verified");
+  } catch (err) {
+    console.error("Style DNA UNIQUE migration error (non-fatal):", err.message);
   }
 
   // AI analytics
