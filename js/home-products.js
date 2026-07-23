@@ -13,6 +13,7 @@
     if (p.is_new_arrival) badges += '<span class="p-status p-new">New</span>';
     if (p.is_trending) badges += '<span class="p-status p-trending">Trending</span>';
     if (p.is_hot_seller) badges += '<span class="p-status p-hot">Hot</span>';
+    if (p.is_limited_edition && p.edition_number && p.edition_total) badges += '<span class="p-status p-edition"><i class="fa-solid fa-gem"></i> #' + p.edition_number + ' of ' + p.edition_total + '</span>';
     return '<div class="product-card revealed">' +
       '<div class="product-image">' +
         '<span class="product-badge">-' + disc + '%</span>' +

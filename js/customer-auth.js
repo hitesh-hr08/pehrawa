@@ -298,6 +298,7 @@
           '<a class="dropdown-item" href="/my-profile"><i class="fa-regular fa-user"></i> My Profile</a>' +
           '<a class="dropdown-item" href="/passport"><i class="fa-solid fa-passport"></i> My Passport</a>' +
           '<a class="dropdown-item" href="/rewards"><i class="fa-solid fa-star"></i> Rewards Hub</a>' +
+          '<a class="dropdown-item" href="/vault"><i class="fa-solid fa-lock"></i> Pehrawa Vault</a>' +
           '<div class="dropdown-divider"></div>' +
           '<a class="dropdown-item logout-item" id="profileLogoutBtn" href="#"><i class="fa-solid fa-sign-out-alt"></i> Logout</a>' +
         '</div>';

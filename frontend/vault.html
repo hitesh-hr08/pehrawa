@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pehrawa Vault | Invite Only</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="stylesheet" href="../css/luxury.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+  <script src="../js/config.js"></script>
+  <script src="../js/tracking.js"></script>
+</head>
+<body>
+  <div class="top-bar">PEHRAWA VAULT — EXCLUSIVE ACCESS</div>
+  <header>
+    <div class="container nav">
+      <a href="/" class="logo"><img src="../images/logo.png" alt="Pehrawa Logo"></a>
+      <nav><ul><li><a href="/">HOME</a></li><li><a href="/shop">SHOP</a></li><li><a href="/collections">COLLECTIONS</a></li><li><span class="nav-disabled">CUSTOM PRINT<em class="cs-badge">Soon</em></span></li><li><a href="/about">ABOUT</a></li><li><a href="/contact">CONTACT</a></li></ul></nav>
+      <div class="nav-right">
+        <div class="search-wrapper"><i class="fa-solid fa-magnifying-glass search-icon"></i><input type="text" class="search-input" placeholder="Search products..."></div>
+        <div class="nav-icons"><a href="/wishlist"><i class="fa-regular fa-heart"></i><span>0</span></a><a href="/cart"><i class="fa-solid fa-cart-shopping"></i><span>0</span></a></div>
+        <a href="/login" class="login-btn"><i class="fa-regular fa-user"></i><span class="login-text">LOGIN</span></a>
+        <div class="menu-btn"><i class="fa-solid fa-bars"></i></div>
+      </div>
+    </div>
+  </header>
+  <div class="mobile-menu-overlay" id="mobileOverlay"></div>
+  <div class="mobile-menu" id="mobileMenu">
+    <button class="mobile-menu-close" id="mobileClose">&times;</button>
+    <ul><li><a href="/">HOME</a></li><li><a href="/shop">SHOP</a></li><li><a href="/collections">COLLECTIONS</a></li><li><span class="nav-disabled">CUSTOM PRINT<em class="cs-badge">Soon</em></span></li><li><a href="/about">ABOUT</a></li><li><a href="/contact">CONTACT</a></li></ul>
+  </div>
+
+  <!-- VAULT HERO -->
+  <div class="vault-hero">
+    <div class="vault-hero-inner">
+      <div class="vault-hero-icon"><i class="fa-solid fa-lock"></i></div>
+      <h1>PEHRAWA <span style="color:#ff6b00;">VAULT</span></h1>
+      <p>Exclusive access-only collection for our most valued members</p>
+    </div>
+  </div>
+
+  <!-- ACCESS GATE (shown for non-gold/black tiers) -->
+  <div id="vaultGate" class="vault-gate" style="display:none;">
+    <div class="vault-gate-inner">
+      <div class="vault-gate-icon"><i class="fa-solid fa-shield-halved"></i></div>
+      <h3>Vault Access Required</h3>
+      <p>The Vault is exclusive to <strong style="color:#ffd700">Gold</strong> and <strong style="color:#1a1a1a;border:1px solid #333;padding:2px 8px;border-radius:4px;">Black</strong> tier members. Earn points and spend to unlock access.</p>
+      <div class="vault-gate-tiers">
+        <div class="vault-gate-tier"><div class="vgc" style="background:#ffd700"></div><span>Gold — ₹15,000 spent</span></div>
+        <div class="vault-gate-tier"><div class="vgc" style="background:#1a1a1a;border:1px solid #333"></div><span>Black — ₹50,000 spent</span></div>
+      </div>
+      <div class="vault-gate-actions">
+        <a href="/shop" style="padding:14px 32px;background:#ff6b00;color:#fff;text-decoration:none;border-radius:8px;font-weight:700;">Shop to Earn Points</a>
+        <a href="/passport" style="padding:14px 32px;background:#1a1a1a;border:1px solid #333;color:#fff;text-decoration:none;border-radius:8px;font-weight:600;">View My Passport</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- NOT LOGGED IN -->
+  <div id="vaultNotLoggedIn" style="display:none;text-align:center;padding:60px 20px;">
+    <i class="fa-solid fa-lock" style="font-size:48px;color:#ff6b00;margin-bottom:16px;"></i>
+    <h3 style="color:#fff;">Login to Access the Vault</h3>
+    <p style="color:#888;margin-top:8px;">Exclusive collection for Gold & Black tier members</p>
+    <a href="/login" style="display:inline-block;margin-top:20px;padding:14px 32px;background:#ff6b00;color:#fff;text-decoration:none;border-radius:8px;font-weight:700;">Login Now</a>
+  </div>
+
+  <!-- CODE FALLBACK -->
+  <div id="vaultCodeSection" style="display:none;text-align:center;padding:20px;">
+    <p style="color:#888;margin-bottom:12px;">Or enter access code manually:</p>
+    <div style="display:flex;gap:8px;max-width:400px;margin:0 auto;">
+      <input type="text" id="vaultManualCode" placeholder="Enter code" style="flex:1;padding:14px;background:#0a0a0a;border:1px solid #333;color:#fff;border-radius:8px;font-size:15px;text-align:center;letter-spacing:4px;text-transform:uppercase;">
+      <button onclick="PehrawaVaultPage.enterCode()" style="padding:14px 24px;background:#333;color:#fff;border:none;border-radius:8px;font-weight:600;cursor:pointer;">Enter</button>
+    </div>
+  </div>
+
+  <!-- VAULT PRODUCTS -->
+  <div id="vaultProducts" class="vault-products-page" style="display:none;padding:0 0 60px;">
+    <div class="container">
+      <div id="vaultGrid" class="vault-grid"></div>
+    </div>
+  </div>
+
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-col"><h4>Shop</h4><ul><li><a href="/shop">All Products</a></li><li><a href="/collections">Collections</a></li><li><a href="/shop?sort=price_asc">Under ₹499</a></li></ul></div>
+        <div class="footer-col"><h4>Help</h4><ul><li><a href="/track-order">Track Order</a></li><li><a href="/contact">Contact Us</a></li><li><a href="/shipping-policy">Shipping Policy</a></li><li><a href="/size-guide">Size Guide</a></li></ul></div>
+        <div class="footer-col"><h4>Account</h4><ul><li><a href="/login">Login</a></li><li><a href="/my-profile">My Profile</a></li><li><a href="/my-orders">My Orders</a></li><li><a href="/rewards">Rewards</a></li></ul></div>
+        <div class="footer-col"><h4>Follow Us</h4><div class="footer-social"><a href="#"><i class="fa-brands fa-instagram"></i></a><a href="#"><i class="fa-brands fa-twitter"></i></a><a href="#"><i class="fa-brands fa-whatsapp"></i></a></div></div>
+      </div>
+      <div class="footer-bottom"><p>&copy; 2025 Pehrawa. All rights reserved.</p></div>
+    </div>
+  </footer>
+
+  <div id="toast" class="toast"></div>
+  <script src="../js/script.js"></script>
+  <script src="../js/animations.js"></script>
+  <script src="../js/customer-auth.js"></script>
+  <script src="../js/smart-search.js"></script>
+  <script>
+  (function () {
+    var api = (window.PEHRAWA_API_BASE || "http://localhost:5000") + "/api";
+    var token = window.getCustomerToken ? window.getCustomerToken() : "";
+
+    function init() {
+      if (!token) {
+        document.getElementById("vaultNotLoggedIn").style.display = "block";
+        document.getElementById("vaultCodeSection").style.display = "block";
+        return;
+      }
+      // Check tier-based access
+      fetch(api + "/user/vault/access", { headers: { "Authorization": "Bearer " + token } })
+        .then(function (r) { return r.json(); })
+        .then(function (data) {
+          if (data.success && data.hasAccess) {
+            showVaultProducts(data.products);
+          } else {
+            document.getElementById("vaultGate").style.display = "block";
+            document.getElementById("vaultCodeSection").style.display = "block";
+          }
+        })
+        .catch(function () {
+          document.getElementById("vaultCodeSection").style.display = "block";
+        });
+    }
+
+    function showVaultProducts(products) {
+      document.getElementById("vaultProducts").style.display = "block";
+      document.getElementById("vaultCodeSection").style.display = "none";
+      var grid = document.getElementById("vaultGrid");
+      var html = '<div class="tr-header"><h2 class="tr-title"><i class="fa-solid fa-gem"></i> VAULT COLLECTION</h2>';
+      html += '<p class="tr-sub">Exclusive products at member-only prices</p></div>';
+      html += '<div class="tr-grid">';
+      products.forEach(function (p) {
+        var img = p.image_url || "../images/product1.png";
+        var price = Number(p.vault_price) || Number(p.price) || 0;
+        var orig = p.original_price ? Number(p.original_price) : Math.round(price * 1.5);
+        var disc = orig > price ? Math.round((1 - price / orig) * 100) : 0;
+        html += '<a href="/product?id=' + p.product_id + '" class="tr-card">';
+        html += '<div class="tr-card-img"><img src="' + img + '" alt="' + p.name + '" loading="lazy">';
+        html += '<div class="tr-limited"><i class="fa-solid fa-lock"></i> VAULT</div>';
+        html += '</div>';
+        html += '<div class="tr-card-info"><h4>' + p.name + '</h4>';
+        html += '<div class="tr-card-price"><span class="tr-price">₹' + price.toFixed(0) + '</span>';
+        html += '<span class="tr-orig">₹' + orig + '</span>';
+        html += '<span class="tr-disc" style="display:inline-block">-' + disc + '%</span></div>';
+        html += '</div></a>';
+      });
+      html += '</div>';
+      grid.innerHTML = html;
+    }
+
+    window.PehrawaVaultPage = {
+      enterCode: function () {
+        var code = (document.getElementById("vaultManualCode").value || "").trim();
+        if (!code) { if (typeof showToast === "function") showToast("Enter access code"); return; }
+        fetch(api + "/public/vault/access", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ code: code })
+        })
+        .then(function (r) { return r.json(); })
+        .then(function (data) {
+          if (data.success && data.products && data.products.length > 0) {
+            showVaultProducts(data.products);
+          } else {
+            if (typeof showToast === "function") showToast("Invalid access code");
+          }
+        })
+        .catch(function () { if (typeof showToast === "function") showToast("Connection error"); });
+      }
+    };
+
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", init);
+    } else {
+      init();
+    }
+  })();
+  </script>
+  <script src="../js/scratch-card.js"></script>
+  <script src="../js/vault.js"></script>
+  <script src="../js/premium-loader.js"></script>
+  <div class="whatsapp-float" onclick="window.open('https://wa.me/919855707708','_blank')" role="button" tabindex="0" aria-label="Chat on WhatsApp">
+    <i class="fa-brands fa-whatsapp"></i><span class="wa-tooltip">Chat with us</span><span class="wa-badge"></span>
+  </div>
+</body>
+</html>

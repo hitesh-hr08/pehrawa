@@ -22,6 +22,7 @@
     if (product.is_new_arrival) badges += '<span class="p-status p-new">New</span>';
     if (product.is_trending) badges += '<span class="p-status p-trending">Trending</span>';
     if (product.is_hot_seller) badges += '<span class="p-status p-hot">Hot</span>';
+    if (product.is_limited_edition && product.edition_number && product.edition_total) badges += '<span class="p-status p-edition"><i class="fa-solid fa-gem"></i> #' + product.edition_number + ' of ' + product.edition_total + '</span>';
 
     return '<div class="product-card revealed">' +
       '<div class="product-image">' +

@@ -1486,6 +1486,19 @@ var HOST = process.env.HOST || "0.0.0.0";
     console.error("Product color/tags migration error (non-fatal):", err.message);
   }
 
+  // Add limited edition columns to products
+  try {
+    await pool.query(`
+      ALTER TABLE products
+        ADD COLUMN IF NOT EXISTS is_limited_edition BOOLEAN DEFAULT FALSE,
+        ADD COLUMN IF NOT EXISTS edition_number INTEGER DEFAULT NULL,
+        ADD COLUMN IF NOT EXISTS edition_total INTEGER DEFAULT NULL
+    `);
+    console.log("Database migration: product limited edition columns added");
+  } catch (err) {
+    console.error("Limited edition migration error (non-fatal):", err.message);
+  }
+
   // ===========================
   // DAILY DROP API
   // ===========================
@@ -2557,6 +2570,166 @@ var HOST = process.env.HOST || "0.0.0.0";
     } catch (err) {
       console.error("Passport error:", err.message);
       res.status(500).json({ success: false, message: "Failed to load passport" });
+    }
+  });
+
+  // ===========================
+  // TRENDING PRODUCTS API (real data from views + orders)
+  // ===========================
+  app.get("/api/public/trending", async function (req, res) {
+    try {
+      var limit = parseInt(req.query.limit) || 8;
+      // Score = recent views (7d) + orders (14d) weighted
+      var result = await pool.query(
+        `SELECT p.*,
+           COALESCE(v.view_score, 0) + COALESCE(o.order_score, 0) as trending_score
+         FROM products p
+         LEFT JOIN (
+           SELECT product_id, COUNT(*)::int * 2 as view_score
+           FROM product_views
+           WHERE viewed_at > NOW() - INTERVAL '7 days'
+           GROUP BY product_id
+         ) v ON p.id = v.product_id
+         LEFT JOIN (
+           SELECT
+             (jsonb_array_elements_text(
+               CASE WHEN items ~ '^\\[' THEN items::jsonb ELSE '[]'::jsonb END
+             )::json->>'id')::int as pid,
+             COUNT(*)::int * 5 as order_score
+           FROM orders
+           WHERE created_at > NOW() - INTERVAL '14 days' AND payment_status = 'paid'
+           GROUP BY pid
+         ) o ON p.id = o.pid
+         WHERE p.stock_status != 'out_of_stock'
+         ORDER BY trending_score DESC, p.created_at DESC
+         LIMIT $1`,
+        [limit]
+      );
+      res.json({ success: true, products: result.rows });
+    } catch (err) {
+      console.error("Trending error:", err.message);
+      // Fallback: just return newest products
+      try {
+        var fallback = await pool.query(
+          "SELECT *, 0 as trending_score FROM products WHERE stock_status != 'out_of_stock' ORDER BY created_at DESC LIMIT $1",
+          [parseInt(req.query.limit) || 8]
+        );
+        res.json({ success: true, products: fallback.rows });
+      } catch (e) {
+        res.json({ success: true, products: [] });
+      }
+    }
+  });
+
+  // ===========================
+  // PERSONALIZED RECOMMENDATIONS API
+  // ===========================
+  app.get("/api/user/recommendations", async function (req, res) {
+    try {
+      var customerId = verifyCustomerToken(req);
+      if (!customerId) return res.json({ success: true, products: [], personalized: false });
+
+      // Get viewed product categories
+      var viewed = await pool.query(
+        `SELECT p.category, COUNT(*)::int as views
+         FROM product_views pv
+         JOIN products p ON pv.product_id = p.id
+         WHERE pv.customer_id = $1 AND pv.viewed_at > NOW() - INTERVAL '30 days'
+         GROUP BY p.category ORDER BY views DESC LIMIT 3`,
+        [customerId]
+      );
+
+      // Get ordered categories
+      var ordered = await pool.query(
+        `SELECT p.category, COUNT(*)::int as cnt
+         FROM orders o, jsonb_array_elements_text(
+           CASE WHEN o.items ~ '^\\[' THEN o.items::jsonb ELSE '[]'::jsonb END
+         ) item
+         JOIN products p ON (item::json->>'id')::int = p.id
+         WHERE o.customer_id = $1 AND o.payment_status = 'paid'
+         GROUP BY p.category ORDER BY cnt DESC LIMIT 3`,
+        [customerId]
+      );
+
+      var categories = [];
+      viewed.rows.forEach(function (r) { if (r.category && categories.indexOf(r.category) === -1) categories.push(r.category); });
+      ordered.rows.forEach(function (r) { if (r.category && categories.indexOf(r.category) === -1) categories.push(r.category); });
+
+      if (categories.length === 0) return res.json({ success: true, products: [], personalized: false });
+
+      // Get viewed product IDs to exclude
+      var viewedIds = await pool.query(
+        "SELECT product_id FROM product_views WHERE customer_id = $1",
+        [customerId]
+      );
+      var excludeIds = viewedIds.rows.map(function (r) { return r.product_id; });
+      excludeIds.push(0); // safety
+
+      // Get recommended products from those categories, excluding already viewed
+      var result = await pool.query(
+        `SELECT * FROM products
+         WHERE category = ANY($1::text[]) AND stock_status != 'out_of_stock' AND id != ALL($2::int[])
+         ORDER BY RANDOM() LIMIT 12`,
+        [categories, excludeIds]
+      );
+
+      if (result.rows.length === 0) {
+        // Fallback: random products from preferred categories
+        result = await pool.query(
+          "SELECT * FROM products WHERE category = ANY($1::text[]) AND stock_status != 'out_of_stock' ORDER BY RANDOM() LIMIT 12",
+          [categories]
+        );
+      }
+
+      res.json({ success: true, products: result.rows, personalized: true, categories: categories });
+    } catch (err) {
+      console.error("Recommendations error:", err.message);
+      res.json({ success: true, products: [], personalized: false });
+    }
+  });
+
+  // ===========================
+  // ENHANCED VAULT - tier-based access + session persistence
+  // ===========================
+  app.get("/api/user/vault/access", async function (req, res) {
+    try {
+      var customerId = verifyCustomerToken(req);
+      if (!customerId) return res.json({ success: false, hasAccess: false });
+
+      var cust = await pool.query("SELECT membership_tier FROM customers WHERE id = $1", [customerId]);
+      if (cust.rows.length === 0) return res.json({ success: false, hasAccess: false });
+
+      var tier = cust.rows[0].membership_tier || "bronze";
+      var hasAccess = (tier === "gold" || tier === "black");
+
+      if (hasAccess) {
+        var products = await pool.query(
+          `SELECT vp.*, p.name, p.price, p.original_price, p.image_url, p.description, p.category
+           FROM vault_products vp JOIN products p ON vp.product_id = p.id
+           WHERE vp.is_active = TRUE`
+        );
+        return res.json({ success: true, hasAccess: true, products: products.rows, tier: tier });
+      }
+
+      res.json({ success: true, hasAccess: false, tier: tier });
+    } catch (err) {
+      res.json({ success: false, hasAccess: false });
+    }
+  });
+
+  // ===========================
+  // ADMIN: UPDATE PRODUCT LIMITED EDITION
+  // ===========================
+  app.put("/api/admin/products/:id/edition", verifyAdmin, async function (req, res) {
+    try {
+      var { is_limited_edition, edition_number, edition_total } = req.body;
+      await pool.query(
+        "UPDATE products SET is_limited_edition = $1, edition_number = $2, edition_total = $3 WHERE id = $4",
+        [is_limited_edition || false, edition_number || null, edition_total || null, req.params.id]
+      );
+      res.json({ success: true });
+    } catch (err) {
+      res.status(500).json({ success: false, message: err.message });
     }
   });
 
