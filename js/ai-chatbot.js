@@ -61,13 +61,13 @@
   }
 
   function toggleChat() {
-    var window = document.getElementById("aiChatWindow");
+    var chatWnd = document.getElementById("aiChatWindow");
     var btn = document.getElementById("aiChatBtn");
-    if (!window) return;
+    if (!chatWnd) return;
 
     isOpen = !isOpen;
     if (isOpen) {
-      window.classList.add("ai-chat-open");
+      chatWnd.classList.add("ai-chat-open");
       btn.classList.remove("ai-chat-pulse");
       var input = document.getElementById("aiChatInput");
       if (input) input.focus();
@@ -78,7 +78,7 @@
         ]);
       }
     } else {
-      window.classList.remove("ai-chat-open");
+      chatWnd.classList.remove("ai-chat-open");
     }
   }
 

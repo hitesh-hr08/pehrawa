@@ -774,7 +774,7 @@ async function placeBuyOrder() {
         if (data.success) {
           if (typeof showToast === "function") showToast("✅ Payment successful! Order placed.");
           document.getElementById("buyCheckoutOverlay").classList.remove("active");
-          setTimeout(function () { window.location.href = "my-orders.html"; }, 1500);
+          setTimeout(function () { window.location.href = "/my-orders"; }, 1500);
         } else {
           if (typeof showToast === "function") showToast(data.message || "Failed to place order");
         }

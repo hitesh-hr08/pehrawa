@@ -385,7 +385,7 @@ async function placeOrder() {
           appliedCoupon = null;
           couponDiscount = 0;
           if (typeof showToast === "function") showToast("✅ Payment successful! Order placed.");
-          setTimeout(function () { window.location.href = "my-orders.html"; }, 1500);
+          setTimeout(function () { window.location.href = "/my-orders"; }, 1500);
         } else {
           if (typeof showToast === "function") showToast(data.message || "Order failed");
         }
