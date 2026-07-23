@@ -2,7 +2,6 @@
   "public": ".",
   "buildCommand": "",
   "installCommand": "",
-  "framework": null,
   "outputDirectory": ".",
   "rewrites": [
     { "source": "/api/(.*)", "destination": "https://pehrawa-api.onrender.com/api/$1" },
