@@ -51,12 +51,29 @@ if (searchIcon && searchWrapper) {
 // ===============================
 
 const menuBtn = document.querySelector(".menu-btn");
-const navbar = document.querySelector(".navbar");
+const navbar = document.querySelector(".navbar") || document.querySelector(".mobile-menu");
+const mobileOverlay = document.getElementById("mobileOverlay");
+const mobileClose = document.getElementById("mobileClose");
+
+function openMobileMenu() {
+  if (navbar) navbar.classList.add("open");
+  if (mobileOverlay) mobileOverlay.classList.add("open");
+  document.body.style.overflow = "hidden";
+}
+function closeMobileMenu() {
+  if (navbar) navbar.classList.remove("open");
+  if (mobileOverlay) mobileOverlay.classList.remove("open");
+  document.body.style.overflow = "";
+}
 
 if (menuBtn) {
-  menuBtn.addEventListener("click", () => {
-    navbar.classList.toggle("active");
-  });
+  menuBtn.addEventListener("click", openMobileMenu);
+}
+if (mobileClose) {
+  mobileClose.addEventListener("click", closeMobileMenu);
+}
+if (mobileOverlay) {
+  mobileOverlay.addEventListener("click", closeMobileMenu);
 }
 
 // ===============================
@@ -149,7 +166,7 @@ function findProductInDOM(productId) {
       var btn = cards[i].querySelector('.buy-now-btn[data-id="' + productId + '"]');
       if (btn) { card = cards[i]; break; }
     }
-    if (!card) card = cards[0];
+    if (!card) return null;
   }
   if (!card) return null;
   var h3 = card.querySelector("h3");
@@ -449,7 +466,7 @@ if (checkoutForm) {
             showToast("✅ Payment successful! Order placed.");
             checkoutOverlay.classList.remove("active");
             checkoutForm.reset();
-            setTimeout(function () { window.location.href = "my-orders.html"; }, 1500);
+            setTimeout(function () { window.location.href = "/my-orders"; }, 1500);
           } else {
             showToast(data.message || "Failed to place order");
           }
@@ -467,8 +484,15 @@ if (checkoutForm) {
         }
       }
     };
-    var rzp = new Razorpay(options);
-    rzp.open();
+    var rzp;
+    if (typeof Razorpay !== "undefined") {
+      rzp = new Razorpay(options);
+      rzp.open();
+    } else {
+      showToast("Payment system loading. Please try again.");
+      btn.disabled = false;
+      btn.textContent = "Place Order";
+    }
   });
 }
 
@@ -481,7 +505,7 @@ document.addEventListener("click", function (e) {
   if (!buyBtn) return;
   e.preventDefault();
 
-  window.requireAuth(function (loggedIn) {
+  var doBuy = function (loggedIn) {
     if (!loggedIn) return;
     var card = buyBtn.closest(".product-card");
     if (!card) return;
@@ -502,7 +526,13 @@ document.addEventListener("click", function (e) {
       img = card.querySelector(".product-image img") ? card.querySelector(".product-image img").src : "../images/product1.png";
     }
     openCheckout(id || 0, name, price, img);
-  });
+  };
+
+  if (typeof window.requireAuth === "function") {
+    window.requireAuth(doBuy);
+  } else {
+    doBuy(true);
+  }
 });
 /* WhatsApp code temporary disable 
  ==========================

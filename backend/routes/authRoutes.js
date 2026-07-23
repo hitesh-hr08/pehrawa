@@ -62,19 +62,22 @@ router.get("/google", passport.authenticate("google", {
 }));
 
 router.get("/google/callback",
-  passport.authenticate("google", { session: false, failureRedirect: "/?auth=failed" }),
+  passport.authenticate("google", { session: false }),
   function (req, res) {
     if (!req.user) {
-      return res.redirect("/?auth=failed");
+      var fe = process.env.FRONTEND_URL || "https://pehrawa.store";
+      return res.redirect(fe + "/login?error=failed");
     }
 
     var token = makeToken(req.user);
     var hasPassword = req.user.password ? "true" : "false";
     var customer = JSON.stringify({ id: req.user.id, name: req.user.name, email: req.user.email, phone: req.user.phone || "" });
-    var redirect = req.query.state || "home.html";
-    if (redirect === "redirect" || !redirect) redirect = "home.html";
+    var redirect = req.query.state || "/";
+    if (redirect === "redirect" || !redirect || redirect === "home.html") redirect = "/";
 
-    res.redirect("/auth-callback.html?token=" + encodeURIComponent(token) + "&customer=" + encodeURIComponent(customer) + "&redirect=" + encodeURIComponent(redirect) + "&hasPassword=" + hasPassword);
+    var fe = process.env.FRONTEND_URL || "https://pehrawa.store";
+    var url = fe + "/auth-callback?token=" + encodeURIComponent(token) + "&customer=" + encodeURIComponent(customer) + "&redirect=" + encodeURIComponent(redirect) + "&hasPassword=" + hasPassword;
+    res.redirect(url);
   }
 );
 

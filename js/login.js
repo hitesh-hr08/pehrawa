@@ -24,7 +24,7 @@ async function login(event) {
     if (data.success) {
       localStorage.setItem("pehrawa_customer_token", data.token);
       localStorage.setItem("pehrawa_customer", JSON.stringify(data.customer));
-      window.location.href = "home.html";
+      window.location.href = "/";
     } else {
       if (data.message && data.message.includes("Google")) {
         messageBox.innerHTML = data.message + '</p><div class="set-pw-box"><p style="color:#aaa;margin:8px 0;">Set a password for your Google account to login directly:</p><input type="password" id="setPwInput" placeholder="New password (min 6 chars)" style="margin-bottom:8px"><button class="google-btn-inline" id="setPwBtn"><i class="fa-solid fa-key"></i> Set Password & Login</button></div>';

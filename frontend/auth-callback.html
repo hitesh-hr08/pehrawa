@@ -1,1 +1,66 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>Authenticating | Pehrawa</title><link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"><link rel="stylesheet" href="../css/style.css"><style>body{background:#050505;display:flex;align-items:center;justify-content:center;min-height:100vh;}.auth-box{text-align:center;color:#fff;}</style></head><body><div class="auth-box"><h2 style="color:#ff6b00;">Authenticating...</h2><p style="color:#aaa;margin-top:12px;">Please wait while we sign you in.</p></div><script src="../js/config.js"></script><script src="../js/tracking.js"></script><script>(async function(){  const params = new URLSearchParams(window.location.search);  const token = params.get("token");  if(token){    try {      const res = await fetch((window.PEHRAWA_API_BASE||"http://localhost:5000")+"/api/auth/verify?token="+token);      const data = await res.json();      if(data.success){        localStorage.setItem("pehrawa_customer_token",data.token||token);        localStorage.setItem("pehrawa_customer",JSON.stringify(data.user));        window.location.href = "/";      } else { window.location.href = "/login?error=verify_failed"; }    } catch(e) { window.location.href = "/login?error=server_error"; }  } else { window.location.href = "/login?error=no_token"; }})();</script><script src="../js/premium-loader.js"></script><script src="../js/ai-chatbot.js"></script></body></html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Authenticating | Pehrawa</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/style.css">
+  <style>
+    body { background: #050505; display: flex; align-items: center; justify-content: center; min-height: 100vh; }
+    .auth-box { text-align: center; color: #fff; }
+    .auth-box .spinner { width: 40px; height: 40px; border: 3px solid #222; border-top-color: #ff6b00; border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 16px; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+  </style>
+</head>
+<body>
+  <div class="auth-box">
+    <div class="spinner"></div>
+    <h2 style="color:#ff6b00;">Authenticating...</h2>
+    <p style="color:#aaa;margin-top:12px;">Please wait while we sign you in.</p>
+    <p id="error" style="color:#ff4d4d;margin-top:12px;display:none;"></p>
+  </div>
+  <script src="../js/config.js"></script>
+  <script>
+    (function () {
+      var params = new URLSearchParams(window.location.search);
+      var token = params.get("token");
+      var customerRaw = params.get("customer");
+      var redirect = params.get("redirect") || "/";
+      var hasPassword = params.get("hasPassword");
+
+      if (!token) {
+        window.location.href = "/login?error=no_token";
+        return;
+      }
+
+      try {
+        localStorage.setItem("pehrawa_customer_token", token);
+
+        if (customerRaw) {
+          var customer = JSON.parse(customerRaw);
+          localStorage.setItem("pehrawa_customer", JSON.stringify(customer));
+          if (customer.id) localStorage.setItem("customerId", String(customer.id));
+        }
+
+        if (redirect === "redirect" || redirect === "home.html") redirect = "/";
+
+        if (!redirect.startsWith("/") && !redirect.startsWith("http")) redirect = "/" + redirect;
+
+        if (hasPassword === "false") {
+          var setpwUrl = redirect.indexOf("?") > -1 ? redirect + "&setpw=1" : redirect + "?setpw=1";
+          setpwUrl += "&email=" + encodeURIComponent(customerRaw ? JSON.parse(customerRaw).email : "");
+          window.location.href = setpwUrl;
+        } else {
+          window.location.href = redirect;
+        }
+      } catch (e) {
+        document.getElementById("error").style.display = "block";
+        document.getElementById("error").textContent = "Authentication failed. Please try again.";
+        setTimeout(function () { window.location.href = "/login?error=parse_error"; }, 2000);
+      }
+    })();
+  </script>
+</body>
+</html>
