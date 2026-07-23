@@ -270,3 +270,63 @@ DAILY DROP RESPONSIVE
 WISHLIST PRICE DROP
 =========================== */
 .wishlist-drop-badge{display:inline-flex;align-items:center;gap:4px;padding:3px 8px;background:#36b37e;color:#000;font-size:9px;font-weight:700;border-radius:3px;margin-left:6px;}
+
+/* ===========================
+CART PROGRESS BAR
+=========================== */
+#cartProgressSection{padding:0 0 20px;}
+.cpb-bar-wrap{padding:0 4px;margin-bottom:12px;}
+.cpb-bar{position:relative;height:8px;background:#1a1a1a;border-radius:4px;overflow:visible;}
+.cpb-bar-fill{height:100%;background:linear-gradient(90deg,#ff6b00,#ff8c33);border-radius:4px;transition:width .6s ease;}
+.cpb-marker{position:absolute;top:50%;transform:translate(-50%,-50%);z-index:2;}
+.cpb-marker-dot{width:28px;height:28px;border-radius:50%;background:#1a1a1a;border:2px solid #333;display:flex;align-items:center;justify-content:center;font-size:11px;color:#666;transition:all .3s;}
+.cpb-unlocked .cpb-marker-dot{background:#22c55e;border-color:#22c55e;color:#fff;box-shadow:0 0 12px rgba(34,197,94,.4);}
+.cpb-milestones{display:flex;gap:16px;justify-content:center;margin:8px 0 4px;flex-wrap:wrap;}
+.cpb-milestone{display:flex;align-items:center;gap:6px;font-size:12px;color:#888;}
+.cpb-milestone i{font-size:14px;color:#555;}
+.cpb-milestone.cpb-unlocked{color:#22c55e;}
+.cpb-milestone.cpb-unlocked i{color:#22c55e;}
+.cpb-status{text-align:center;padding:10px;border-radius:8px;font-size:13px;font-weight:600;margin-top:8px;}
+.cpb-encourage{background:rgba(255,107,0,.08);color:#ff8c33;border:1px solid rgba(255,107,0,.2);}
+.cpb-shipping{background:rgba(34,197,94,.08);color:#22c55e;border:1px solid rgba(34,197,94,.2);}
+.cpb-all{background:linear-gradient(135deg,rgba(34,197,94,.1),rgba(255,107,0,.1));color:#fff;border:1px solid rgba(255,107,0,.2);}
+
+/* ===========================
+BUNDLE BUILDER
+=========================== */
+.bundle-section{padding:40px 0 20px;border-top:1px solid #121212;}
+.bundle-section-title{color:#fff;font-size:20px;font-weight:800;margin-bottom:4px;}
+.bundle-section-subtitle{color:#666;font-size:13px;margin-bottom:20px;}
+.bundle-header{margin-bottom:20px;}
+.bundle-title{font-size:18px;font-weight:800;color:#ff6b00;display:flex;align-items:center;gap:8px;margin-bottom:4px;}
+.bundle-subtitle{font-size:13px;color:#888;}
+.bundle-grid{display:flex;gap:12px;align-items:flex-start;margin-bottom:20px;flex-wrap:wrap;}
+.bundle-item{flex:1;min-width:140px;position:relative;}
+.bundle-item-img{position:relative;border-radius:10px;overflow:hidden;background:#111;border:1px solid #222;}
+.bundle-item-img img{width:100%;height:160px;object-fit:cover;display:block;}
+.bundle-item-badge{position:absolute;top:8px;left:8px;background:#ff6b00;color:#fff;font-size:9px;font-weight:700;padding:3px 8px;border-radius:4px;letter-spacing:.5px;}
+.bundle-item-info{padding:8px 0;}
+.bundle-item-info h4{color:#fff;font-size:13px;margin:0 0 4px;line-height:1.3;}
+.bundle-item-price{display:flex;align-items:center;gap:6px;}
+.bundle-price-current{color:#fff;font-weight:700;font-size:14px;}
+.bundle-price-original{color:#666;font-size:12px;text-decoration:line-through;}
+.bundle-plus{display:flex;align-items:center;justify-content:center;color:#ff6b00;font-size:16px;padding:8px 0;flex-shrink:0;}
+.bundle-summary{background:#111;border:1px solid #222;border-radius:10px;padding:20px;}
+.bundle-pricing{margin-bottom:16px;}
+.bundle-row{display:flex;justify-content:space-between;padding:6px 0;font-size:13px;color:#888;}
+.bundle-orig-total{text-decoration:line-through;color:#666;}
+.bundle-discount-row{color:#22c55e;}
+.bundle-disc-amount{color:#22c55e;font-weight:600;}
+.bundle-total-row{border-top:1px solid #222;padding-top:10px;margin-top:6px;font-weight:700;font-size:16px;color:#fff;}
+.bundle-final-total{color:#ff6b00;font-weight:800;}
+.bundle-cta{width:100%;padding:14px;background:#ff6b00;color:#fff;border:none;border-radius:8px;font-size:15px;font-weight:700;cursor:pointer;transition:background .2s;display:flex;align-items:center;justify-content:center;gap:8px;}
+.bundle-cta:hover{background:#e55d00;}
+.bundle-savings-text{text-align:center;color:#22c55e;font-size:12px;font-weight:600;margin-top:8px;}
+@media(max-width:768px){
+  .bundle-grid{flex-direction:column;}
+  .bundle-item-img img{height:200px;}
+  .bundle-plus{transform:rotate(90deg);padding:4px 0;}
+}
+@media(max-width:480px){
+  .cpb-milestones{flex-direction:column;align-items:center;gap:4px;}
+}
