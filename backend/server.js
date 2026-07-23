@@ -2563,38 +2563,55 @@ var HOST = process.env.HOST || "0.0.0.0";
       var redeemable = parseInt(c.redeemable_points) || 0;
       var spent = parseFloat(c.total_spent) || 0;
 
-      // Order stats
-      var orderStats = await pool.query(
-        `SELECT COUNT(*)::int as totalOrders, COALESCE(SUM(total_amount),0)::numeric as totalValue,
-         MIN(created_at) as firstOrder, MAX(created_at) as lastOrder
-         FROM orders WHERE customer_id = $1 AND payment_status = 'paid'`,
-        [customerId]
-      );
-      var os = orderStats.rows[0];
+      // Order stats — try both column names for safety
+      var os = { totalOrders: 0, totalValue: 0, firstOrder: null, lastOrder: null };
+      try {
+        var orderStats = await pool.query(
+          `SELECT COUNT(*)::int as totalOrders, COALESCE(SUM(total_amount),0)::numeric as totalValue,
+           MIN(created_at) as firstOrder, MAX(created_at) as lastOrder
+           FROM orders WHERE customer_id = $1 AND payment_status = 'paid'`,
+          [customerId]
+        );
+        os = orderStats.rows[0];
+      } catch (e) { console.error("Passport order stats error:", e.message); }
 
       // Reward history
-      var history = await pool.query(
-        "SELECT points, type, description, created_at FROM rewards WHERE customer_id = $1 ORDER BY created_at DESC LIMIT 30",
-        [customerId]
-      );
+      var rewardRows = [];
+      try {
+        var history = await pool.query(
+          "SELECT points, type, description, created_at FROM rewards WHERE customer_id = $1 ORDER BY created_at DESC LIMIT 30",
+          [customerId]
+        );
+        rewardRows = history.rows;
+      } catch (e) { console.error("Passport rewards error:", e.message); }
 
       // Scratch card stats
-      var scratchStats = await pool.query(
-        `SELECT
-           SUM(CASE WHEN is_revealed = FALSE THEN 1 ELSE 0 END)::int as unrevealed,
-           SUM(CASE WHEN is_revealed = TRUE AND is_redeemed = TRUE THEN 1 ELSE 0 END)::int as redeemed,
-           SUM(CASE WHEN is_revealed = TRUE AND is_redeemed = FALSE THEN 1 ELSE 0 END)::int as unredeemed
-         FROM scratch_cards WHERE customer_id = $1`,
-        [customerId]
-      );
-      var sc = scratchStats.rows[0];
+      var sc = { unrevealed: 0, redeemed: 0, unredeemed: 0 };
+      try {
+        var scratchStats = await pool.query(
+          `SELECT
+             SUM(CASE WHEN is_revealed = FALSE THEN 1 ELSE 0 END)::int as unrevealed,
+             SUM(CASE WHEN is_revealed = TRUE AND is_redeemed = TRUE THEN 1 ELSE 0 END)::int as redeemed,
+             SUM(CASE WHEN is_revealed = TRUE AND is_redeemed = FALSE THEN 1 ELSE 0 END)::int as unredeemed
+           FROM scratch_cards WHERE customer_id = $1`,
+          [customerId]
+        );
+        sc = scratchStats.rows[0] || sc;
+      } catch (e) { console.error("Passport scratch cards error:", e.message); }
 
       // Wishlist count
-      var wlCount = await pool.query("SELECT COUNT(*)::int as cnt FROM wishlists WHERE customer_id = $1", [customerId]);
+      var wishCount = 0;
+      try {
+        var wlCount = await pool.query("SELECT COUNT(*)::int as cnt FROM wishlists WHERE customer_id = $1", [customerId]);
+        wishCount = wlCount.rows[0].cnt || 0;
+      } catch (e) { console.error("Passport wishlist error:", e.message); }
 
       // Referral stats
-      var refCode = await pool.query("SELECT code, total_referrals, total_earned FROM referral_codes WHERE customer_id = $1 AND is_active = TRUE", [customerId]);
-      var ref = refCode.rows[0] || { code: null, total_referrals: 0, total_earned: 0 };
+      var ref = { code: null, total_referrals: 0, total_earned: 0 };
+      try {
+        var refCode = await pool.query("SELECT code, total_referrals, total_earned FROM referral_codes WHERE customer_id = $1 AND is_active = TRUE", [customerId]);
+        ref = refCode.rows[0] || ref;
+      } catch (e) { console.error("Passport referral error:", e.message); }
 
       // Calculate badges
       var badges = [];
@@ -2641,9 +2658,9 @@ var HOST = process.env.HOST || "0.0.0.0";
           },
           badges: badges,
           scratchCards: { unrevealed: sc.unrevealed || 0, unredeemed: sc.unredeemed || 0, redeemed: sc.redeemed || 0 },
-          history: history.rows,
+          history: rewardRows,
           referral: { code: ref.code, totalReferred: ref.total_referrals, totalEarned: parseFloat(ref.total_earned) || 0 },
-          wishlistCount: wlCount.rows[0].cnt || 0
+          wishlistCount: wishCount
         }
       });
     } catch (err) {
