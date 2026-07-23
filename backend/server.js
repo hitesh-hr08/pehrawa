@@ -2647,8 +2647,8 @@ var HOST = process.env.HOST || "0.0.0.0";
         }
       });
     } catch (err) {
-      console.error("Passport error:", err.message);
-      res.status(500).json({ success: false, message: "Failed to load passport" });
+      console.error("Passport error:", err.message, err.stack);
+      res.status(500).json({ success: false, message: "Failed to load passport", detail: err.message });
     }
   });
 
