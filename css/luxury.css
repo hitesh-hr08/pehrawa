@@ -8,7 +8,7 @@ Gallery, Vault, Coming Soon, Rewards, Smart Search
 DAILY DROP
 =========================== */
 .daily-drop{display:none;padding:60px 0 0;background:linear-gradient(180deg,#050505,#0a0a0a);border-top:1px solid #121212;}
-.dd-label{display:inline-flex;align-items:center;gap:8px;font-size:11px;letter-spacing:4px;color:#ff6b00;font-weight:700;margin-bottom:30px;padding:8px 16px;background:rgba(255,107,0,0.08);border:1px solid rgba(255,107,0,0.2);border-radius:30px;}
+.dd-label{display:inline-flex;align-items:center;gap:8px;font-size:11px;letter-spacing:4px;color:#fff;font-weight:700;margin-bottom:30px;padding:8px 16px;background:rgba(255,255,255,0.05);border:1px solid #333;border-radius:30px;}
 .dd-label i{font-size:12px;}
 .dd-grid{display:grid;grid-template-columns:1fr 1fr;gap:50px;align-items:center;}
 .dd-image{position:relative;border-radius:16px;overflow:hidden;background:#0a0a0a;border:1px solid #1a1a1a;}
@@ -25,7 +25,7 @@ DAILY DROP
 .dd-cd-item span{display:block;font-size:36px;font-weight:800;color:#fff;background:#111;border:1px solid #222;border-radius:8px;padding:8px 16px;min-width:64px;font-variant-numeric:tabular-nums;}
 .dd-cd-item small{display:block;font-size:10px;color:#666;margin-top:4px;text-transform:uppercase;letter-spacing:1px;}
 .dd-cd-sep{font-size:28px;font-weight:800;color:#444;padding-bottom:18px;}
-.dd-stock{display:flex;align-items:center;gap:8px;font-size:13px;color:#ff6b00;margin-bottom:24px;}
+.dd-stock{display:flex;align-items:center;gap:8px;font-size:13px;color:#fff;margin-bottom:24px;}
 .dd-stock i{animation:fireFlicker 1.5s infinite;}
 .dd-actions{display:flex;gap:12px;align-items:center;}
 .dd-buy{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:54px;padding:0 36px;background:#fff;color:#000;font-weight:700;font-size:14px;border-radius:4px;transition:.3s;letter-spacing:0.5px;}
@@ -66,11 +66,11 @@ SMART SEARCH
 .ss-thumb{width:44px;height:44px;object-fit:cover;border-radius:6px;flex-shrink:0;}
 .ss-item-info{display:flex;flex-direction:column;gap:2px;}
 .ss-item-name{font-size:13px;font-weight:500;color:#e0e0e0;}
-.ss-item-name mark{background:#ff6b00;color:#fff;border-radius:2px;padding:0 2px;}
+.ss-item-name mark{background:#333;color:#fff;border-radius:2px;padding:0 2px;}
 .ss-item-price{font-size:13px;font-weight:700;color:#fff;}
 .ss-item-cat{font-size:10px;color:#666;text-transform:uppercase;letter-spacing:1px;}
 .ss-empty{padding:20px;text-align:center;color:#666;font-size:13px;}
-.ss-view-all{display:block;padding:12px;text-align:center;color:#ff6b00;font-size:13px;font-weight:600;border-top:1px solid #1a1a1a;transition:.2s;}
+.ss-view-all{display:block;padding:12px;text-align:center;color:#fff;font-size:13px;font-weight:600;border-top:1px solid #1a1a1a;transition:.2s;}
 .ss-view-all:hover{background:#111;}
 
 /* ===========================
@@ -107,7 +107,7 @@ SCRATCH CARD
 =========================== */
 .sc-float{position:fixed;bottom:90px;left:24px;z-index:9998;opacity:0;transform:translateX(-120%);transition:.5s cubic-bezier(.34,1.56,.64,1);}
 .sc-float.sc-show{opacity:1;transform:translateX(0);}
-.sc-float-inner{display:flex;align-items:center;gap:10px;padding:12px 20px;background:linear-gradient(135deg,#ff6b00,#ff8c40);color:#fff;border-radius:30px;cursor:pointer;box-shadow:0 6px 24px rgba(255,107,0,0.4);animation:scPulse 2s infinite;font-size:13px;font-weight:600;white-space:nowrap;}
+.sc-float-inner{display:flex;align-items:center;gap:10px;padding:12px 20px;background:#222;color:#fff;border-radius:30px;cursor:pointer;box-shadow:0 6px 24px rgba(0,0,0,0.4);animation:scPulse 2s infinite;font-size:13px;font-weight:600;white-space:nowrap;}
 .sc-float-inner i{font-size:18px;}
 @keyframes scPulse{0%,100%{box-shadow:0 6px 24px rgba(255,107,0,0.4);}50%{box-shadow:0 6px 36px rgba(255,107,0,0.7);}}
 
@@ -340,7 +340,7 @@ PEHRAWA PASSPORT
 .pp-container{max-width:800px;margin:0 auto;padding:20px 16px 60px;}
 .pp-hero{background:linear-gradient(135deg,#1a1a1a,#222);border:1px solid #333;border-radius:16px;padding:40px 24px;text-align:center;margin-bottom:24px;position:relative;overflow:hidden;}
 .pp-hero::before{content:"";position:absolute;top:-50%;left:-50%;width:200%;height:200%;background:radial-gradient(circle at 30% 50%,rgba(255,107,0,.06),transparent 60%);pointer-events:none;}
-.pp-avatar{width:80px;height:80px;border-radius:50%;background:#ff6b00;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;font-size:36px;color:#fff;}
+.pp-avatar{width:80px;height:80px;border-radius:50%;background:#333;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;font-size:36px;color:#fff;}
 .pp-name{color:#fff;font-size:26px;font-weight:800;margin-bottom:8px;}
 .pp-tier-badge{display:inline-flex;align-items:center;gap:6px;color:#fff;padding:6px 16px;border-radius:20px;font-size:13px;font-weight:700;letter-spacing:.5px;}
 .pp-member-since{color:#888;font-size:12px;margin-top:10px;}
@@ -351,14 +351,14 @@ PEHRAWA PASSPORT
 .pp-stat-label{color:#888;font-size:11px;margin-top:2px;}
 .pp-tier-progress,.pp-badges-section,.pp-benefits-section,.pp-scratch-section{background:#111;border:1px solid #222;border-radius:12px;padding:20px;margin-bottom:16px;}
 .pp-tier-progress h3,.pp-badges-section h3,.pp-benefits-section h3,.pp-scratch-section h3{color:#fff;font-size:16px;margin-bottom:16px;}
-.pp-tier-progress h3 i,.pp-badges-section h3 i,.pp-benefits-section h3 i,.pp-scratch-section h3 i{color:#ff6b00;margin-right:8px;}
+.pp-tier-progress h3 i,.pp-badges-section h3 i,.pp-benefits-section h3 i,.pp-scratch-section h3 i{color:#fff;margin-right:8px;}
 .pp-tier-bar{position:relative;height:8px;background:#222;border-radius:4px;margin:20px 0 30px;}
 .pp-tier-bar-fill{height:100%;border-radius:4px;transition:width .6s ease;}
 .pp-tier-marker{position:absolute;top:-24px;transform:translateX(-50%);}
 .pp-tier-marker-label{font-size:10px;color:#888;white-space:nowrap;}
-.pp-tier-current .pp-tier-marker-label{color:#ff6b00;font-weight:700;}
+.pp-tier-current .pp-tier-marker-label{color:#fff;font-weight:700;}
 .pp-tier-next{color:#888;font-size:13px;text-align:center;}
-.pp-tier-next strong{color:#ff6b00;}
+.pp-tier-next strong{color:#fff;}
 .pp-badges-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px;}
 .pp-badge{border:2px solid #333;border-radius:12px;padding:16px 12px;text-align:center;transition:transform .2s;}
 .pp-badge:hover{transform:translateY(-2px);}
@@ -370,20 +370,20 @@ PEHRAWA PASSPORT
 .pp-benefit{background:#1a1a1a;border:1px solid #222;border-radius:10px;padding:14px 8px;text-align:center;opacity:.4;transition:opacity .2s;}
 .pp-benefit.pp-active{opacity:1;border-color:rgba(255,107,0,.3);}
 .pp-benefit i{font-size:22px;color:#555;display:block;margin-bottom:6px;}
-.pp-benefit.pp-active i{color:#ff6b00;}
+.pp-benefit.pp-active i{color:#fff;}
 .pp-benefit span{display:block;color:#fff;font-size:12px;font-weight:600;}
 .pp-benefit small{display:block;color:#666;font-size:10px;margin-top:2px;}
 .pp-scratch-stats{display:flex;gap:16px;flex-wrap:wrap;}
 .pp-scratch-stat{background:#1a1a1a;border-radius:8px;padding:10px 16px;color:#888;font-size:13px;}
 .pp-scratch-stat span{color:#fff;font-weight:700;margin-right:4px;}
 .pp-scratch-stat.pp-unrevealed{border:1px solid rgba(255,107,0,.3);color:#ff8c33;}
-.pp-scratch-stat.pp-unrevealed span{color:#ff6b00;}
+.pp-scratch-stat.pp-unrevealed span{color:#fff;}
 .pp-scratch-stat.pp-unredeemed{border:1px solid rgba(34,197,94,.3);color:#22c55e;}
 .pp-scratch-stat.pp-unredeemed span{color:#22c55e;}
 .pp-actions{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:16px;}
 .pp-action-btn{background:#1a1a1a;border:1px solid #222;border-radius:10px;padding:14px;text-align:center;color:#fff;text-decoration:none;font-size:13px;font-weight:600;transition:all .2s;}
-.pp-action-btn:hover{border-color:#ff6b00;color:#ff6b00;}
-.pp-action-btn i{display:block;font-size:20px;margin-bottom:6px;color:#ff6b00;}
+.pp-action-btn:hover{border-color:#fff;color:#fff;}
+.pp-action-btn i{display:block;font-size:20px;margin-bottom:6px;color:#fff;}
 
 /* ===========================
 REFERRAL PROGRAM
@@ -393,19 +393,19 @@ REFERRAL PROGRAM
 .ref-card::before{content:"";position:absolute;top:-30%;right:-20%;width:300px;height:300px;background:radial-gradient(circle,rgba(255,107,0,.08),transparent 70%);pointer-events:none;}
 .ref-header{margin-bottom:24px;}
 .ref-header h3{color:#fff;font-size:20px;font-weight:800;}
-.ref-header h3 i{color:#ff6b00;margin-right:8px;}
+.ref-header h3 i{color:#fff;margin-right:8px;}
 .ref-header p{color:#888;font-size:13px;margin-top:4px;}
 .ref-code-area,.ref-link-area{margin-bottom:16px;}
 .ref-code-label{color:#888;font-size:11px;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;}
 .ref-code-display{display:flex;align-items:center;gap:12px;}
-.ref-code{color:#ff6b00;font-size:28px;font-weight:800;letter-spacing:3px;font-family:monospace;}
-.ref-copy-btn{background:rgba(255,107,0,.15);color:#ff6b00;border:1px solid rgba(255,107,0,.3);padding:8px 16px;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;transition:background .2s;}
+.ref-code{color:#fff;font-size:28px;font-weight:800;letter-spacing:3px;font-family:monospace;}
+.ref-copy-btn{background:rgba(255,255,255,.08);color:#fff;border:1px solid #333;padding:8px 16px;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;transition:background .2s;}
 .ref-copy-btn:hover{background:rgba(255,107,0,.25);}
 .ref-link-display{display:flex;gap:8px;}
 .ref-link-input{flex:1;background:#0a0a0a;border:1px solid #333;border-radius:8px;padding:10px 14px;color:#ccc;font-size:12px;font-family:monospace;outline:none;}
 .ref-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:20px 0;}
 .ref-stat{text-align:center;background:rgba(255,107,0,.05);border:1px solid rgba(255,107,0,.15);border-radius:10px;padding:14px 8px;}
-.ref-stat-val{color:#ff6b00;font-size:24px;font-weight:800;}
+.ref-stat-val{color:#fff;font-size:24px;font-weight:800;}
 .ref-stat-label{color:#888;font-size:11px;margin-top:2px;}
 .ref-share{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px;}
 .ref-share-btn{display:inline-flex;align-items:center;gap:6px;padding:10px 16px;border-radius:8px;font-size:13px;font-weight:600;text-decoration:none;border:none;cursor:pointer;transition:opacity .2s;color:#fff;}
@@ -443,7 +443,7 @@ TRENDING PRODUCTS
 .tr-container{max-width:1200px;margin:0 auto;padding:0 16px;}
 .tr-header{margin-bottom:24px;}
 .tr-title{color:#fff;font-size:22px;font-weight:800;letter-spacing:1px;}
-.tr-title i{color:#ff6b00;margin-right:8px;}
+.tr-title i{color:#fff;margin-right:8px;}
 .tr-sub{color:#888;font-size:13px;margin-top:4px;}
 .tr-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;}
 .tr-card{background:#080808;border:1px solid #151515;border-radius:12px;overflow:hidden;text-decoration:none;transition:all .3s;}
@@ -457,7 +457,7 @@ TRENDING PRODUCTS
 .tr-card-info{padding:14px;}
 .tr-card-info h4{color:#fff;font-size:13px;font-weight:600;margin-bottom:6px;line-height:1.3;}
 .tr-card-price{display:flex;align-items:center;gap:8px;}
-.tr-price{color:#ff6b00;font-weight:700;font-size:16px;}
+.tr-price{color:#fff;font-weight:700;font-size:16px;}
 .tr-orig{color:#666;font-size:12px;text-decoration:line-through;}
 .tr-cat{color:#666;font-size:10px;text-transform:uppercase;letter-spacing:1px;margin-top:6px;}
 @media(max-width:991px){.tr-grid{grid-template-columns:repeat(2,1fr);}}
@@ -484,7 +484,7 @@ PERSONALIZED RECOMMENDATIONS
 .rec-card-info{padding:14px;}
 .rec-card-info h4{color:#fff;font-size:13px;font-weight:600;margin-bottom:6px;line-height:1.3;}
 .rec-card-price{display:flex;align-items:center;gap:8px;}
-.rec-price{color:#ff6b00;font-weight:700;font-size:16px;}
+.rec-price{color:#fff;font-weight:700;font-size:16px;}
 .rec-orig{color:#666;font-size:12px;text-decoration:line-through;}
 @media(max-width:991px){.rec-grid{grid-template-columns:repeat(2,1fr);}}
 @media(max-width:480px){.rec-grid{grid-template-columns:repeat(2,1fr);gap:10px;}.rec-card-img{height:180px;}}
@@ -500,11 +500,11 @@ VAULT PAGE
 =========================== */
 .vault-hero{text-align:center;padding:50px 20px 30px;background:linear-gradient(135deg,#0a0a0a,#111);border-bottom:1px solid #1a1a1a;}
 .vault-hero-inner{max-width:600px;margin:0 auto;}
-.vault-hero-icon{width:60px;height:60px;border-radius:50%;background:linear-gradient(135deg,#ff6b00,#ff8c33);display:flex;align-items:center;justify-content:center;margin:0 auto 16px;font-size:24px;color:#fff;}
+.vault-hero-icon{width:60px;height:60px;border-radius:50%;background:#222;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;font-size:24px;color:#fff;}
 .vault-hero h1{color:#fff;font-size:32px;font-weight:800;letter-spacing:4px;margin-bottom:8px;}
 .vault-hero p{color:#888;font-size:14px;}
 .vault-gate{max-width:500px;margin:0 auto;padding:40px 20px;text-align:center;}
-.vault-gate-icon{width:80px;height:80px;border-radius:50%;background:rgba(255,107,0,.1);border:2px solid rgba(255,107,0,.2);display:flex;align-items:center;justify-content:center;margin:0 auto 20px;font-size:32px;color:#ff6b00;}
+.vault-gate-icon{width:80px;height:80px;border-radius:50%;background:rgba(255,255,255,.05);border:2px solid #333;display:flex;align-items:center;justify-content:center;margin:0 auto 20px;font-size:32px;color:#fff;}
 .vault-gate h3{color:#fff;font-size:20px;margin-bottom:10px;}
 .vault-gate p{color:#888;font-size:14px;line-height:1.6;}
 .vault-gate-tiers{display:flex;flex-direction:column;gap:8px;margin:20px 0;}
@@ -584,12 +584,12 @@ STYLE DNA QUIZ
 .quiz-page{min-height:80vh;display:flex;align-items:center;justify-content:center;padding:40px 16px;}
 .quiz-container{max-width:600px;width:100%;}
 .quiz-start{text-align:center;background:#0a0a0a;border:1px solid #222;border-radius:16px;padding:40px 32px;}
-.quiz-start-icon{width:70px;height:70px;border-radius:50%;background:linear-gradient(135deg,#ff6b00,#9b59b6);display:flex;align-items:center;justify-content:center;margin:0 auto 20px;font-size:30px;color:#fff;}
+.quiz-start-icon{width:70px;height:70px;border-radius:50%;background:#222;display:flex;align-items:center;justify-content:center;margin:0 auto 20px;font-size:30px;color:#fff;}
 .quiz-start h2{color:#fff;font-size:26px;font-weight:800;margin-bottom:8px;}
 .quiz-start p{color:#888;font-size:14px;line-height:1.6;margin-bottom:24px;}
 .quiz-start-features{display:flex;justify-content:center;gap:24px;margin-bottom:28px;flex-wrap:wrap;}
 .quiz-feature{display:flex;align-items:center;gap:6px;color:#aaa;font-size:13px;}
-.quiz-feature i{color:#ff6b00;}
+.quiz-feature i{color:#fff;}
 .quiz-start-btn{padding:14px 40px;background:linear-gradient(135deg,#ff6b00,#e55d00);color:#fff;border:none;border-radius:10px;font-size:16px;font-weight:700;cursor:pointer;transition:all .3s;font-family:Poppins,sans-serif;}
 .quiz-start-btn:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(255,107,0,.4);}
 .quiz-progress-bar{height:4px;background:#1a1a1a;border-radius:2px;margin-bottom:8px;overflow:hidden;}
@@ -599,9 +599,9 @@ STYLE DNA QUIZ
 .quiz-question h3{color:#fff;font-size:20px;font-weight:700;text-align:center;margin-bottom:24px;line-height:1.4;}
 .quiz-options{display:flex;flex-direction:column;gap:10px;}
 .quiz-option{background:#111;border:1px solid #333;border-radius:10px;padding:14px 18px;text-align:left;color:#ccc;font-size:14px;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:space-between;font-family:Poppins,sans-serif;}
-.quiz-option:hover{border-color:#ff6b00;color:#fff;background:#151515;}
-.quiz-option.quiz-selected{border-color:#ff6b00;background:rgba(255,107,0,.1);color:#fff;}
-.quiz-check{color:#ff6b00;opacity:0;transition:opacity .2s;font-size:14px;}
+.quiz-option:hover{border-color:#fff;color:#fff;background:#151515;}
+.quiz-option.quiz-selected{border-color:#fff;background:rgba(255,255,255,.08);color:#fff;}
+.quiz-check{color:#fff;opacity:0;transition:opacity .2s;font-size:14px;}
 .quiz-option.quiz-selected .quiz-check{opacity:1;}
 .quiz-nav{display:flex;justify-content:space-between;margin-top:20px;}
 .quiz-prev{background:#1a1a1a;border:1px solid #333;color:#aaa;padding:12px 24px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;transition:all .2s;font-family:Poppins,sans-serif;}
@@ -610,7 +610,7 @@ STYLE DNA QUIZ
 .quiz-next:hover{background:#e55d00;}
 .quiz-next:disabled{opacity:.4;cursor:not-allowed;}
 .quiz-loading{text-align:center;padding:60px 20px;}
-.quiz-loading-spinner{width:50px;height:50px;border:3px solid #1a1a1a;border-top-color:#ff6b00;border-radius:50%;margin:0 auto 16px;animation:spin 1s linear infinite;}
+.quiz-loading-spinner{width:50px;height:50px;border:3px solid #1a1a1a;border-top-color:#fff;border-radius:50%;margin:0 auto 16px;animation:spin 1s linear infinite;}
 @keyframes spin{to{transform:rotate(360deg);}}
 .quiz-loading p{color:#888;font-size:14px;}
 .quiz-error{text-align:center;padding:60px 20px;color:#888;}
@@ -639,12 +639,12 @@ STYLE DNA QUIZ
 .quiz-prod-disc{position:absolute;top:6px;right:6px;background:#ff3f3f;color:#fff;font-size:10px;font-weight:700;padding:2px 6px;border-radius:3px;}
 .quiz-prod-info{padding:10px;}
 .quiz-prod-name{display:block;color:#fff;font-size:12px;font-weight:600;margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.quiz-prod-price{color:#ff6b00;font-size:14px;font-weight:700;}
+.quiz-prod-price{color:#fff;font-size:14px;font-weight:700;}
 .quiz-actions{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;}
 .quiz-action-primary{padding:14px 32px;background:#ff6b00;color:#fff;text-decoration:none;border-radius:10px;font-weight:700;font-size:14px;transition:all .2s;}
 .quiz-action-primary:hover{background:#e55d00;}
 .quiz-action-secondary{padding:14px 32px;background:#1a1a1a;border:1px solid #333;color:#ccc;text-decoration:none;border-radius:10px;font-weight:600;font-size:14px;cursor:pointer;transition:all .2s;font-family:Poppins,sans-serif;}
-.quiz-action-secondary:hover{border-color:#ff6b00;color:#fff;}
+.quiz-action-secondary:hover{border-color:#fff;color:#fff;}
 @media(max-width:768px){
   .quiz-products-grid{grid-template-columns:repeat(2,1fr);}
   .quiz-question{padding:24px 20px;}
