@@ -18,13 +18,21 @@
 
   function loadPassport() {
     fetch(api, { headers: { "Authorization": "Bearer " + getToken() } })
-      .then(function (r) { return r.json(); })
+      .then(function (r) {
+        if (r.status === 401) {
+          if (typeof showToast === "function") showToast("Session expired. Please login again.");
+          if (container) container.innerHTML = '<div style="text-align:center;padding:60px 20px;color:#888;"><i class="fa-solid fa-lock" style="font-size:40px;color:#ff6b00;margin-bottom:16px;display:block;"></i><h3 style="color:#fff;margin-bottom:8px;">Session Expired</h3><p>Your session has expired. Please login again.</p><a href="/login" style="display:inline-block;margin-top:16px;padding:12px 24px;background:#ff6b00;color:#fff;border-radius:8px;text-decoration:none;font-weight:700;">Login Now</a></div>';
+          return null;
+        }
+        return r.json();
+      })
       .then(function (data) {
+        if (!data) return;
         if (data.success && data.passport) renderPassport(data.passport);
-        else if (typeof showToast === "function") showToast("Failed to load passport");
+        else if (typeof showToast === "function") showToast(data.message || "Failed to load passport");
       })
       .catch(function () {
-        if (typeof showToast === "function") showToast("Error loading passport");
+        if (typeof showToast === "function") showToast("Error loading passport. Please try again.");
       });
   }
 

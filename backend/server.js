@@ -2565,7 +2565,7 @@ var HOST = process.env.HOST || "0.0.0.0";
 
       // Order stats
       var orderStats = await pool.query(
-        `SELECT COUNT(*)::int as totalOrders, COALESCE(SUM(total),0)::numeric as totalValue,
+        `SELECT COUNT(*)::int as totalOrders, COALESCE(SUM(total_amount),0)::numeric as totalValue,
          MIN(created_at) as firstOrder, MAX(created_at) as lastOrder
          FROM orders WHERE customer_id = $1 AND payment_status = 'paid'`,
         [customerId]
