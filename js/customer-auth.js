@@ -299,6 +299,7 @@
           '<a class="dropdown-item" href="/passport"><i class="fa-solid fa-passport"></i> My Passport</a>' +
           '<a class="dropdown-item" href="/rewards"><i class="fa-solid fa-star"></i> Rewards Hub</a>' +
           '<a class="dropdown-item" href="/vault"><i class="fa-solid fa-lock"></i> Pehrawa Vault</a>' +
+          '<a class="dropdown-item" href="/style-quiz"><i class="fa-solid fa-wand-magic-sparkles"></i> Style DNA</a>' +
           '<div class="dropdown-divider"></div>' +
           '<a class="dropdown-item logout-item" id="profileLogoutBtn" href="#"><i class="fa-solid fa-sign-out-alt"></i> Logout</a>' +
         '</div>';

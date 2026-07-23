@@ -1499,6 +1499,69 @@ var HOST = process.env.HOST || "0.0.0.0";
     console.error("Limited edition migration error (non-fatal):", err.message);
   }
 
+  // Chat logs for AI assistant
+  try {
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS chat_logs (
+        id SERIAL PRIMARY KEY,
+        customer_id INTEGER REFERENCES customers(id) ON DELETE SET NULL,
+        session_id VARCHAR(50) NOT NULL,
+        message TEXT NOT NULL,
+        response TEXT NOT NULL,
+        intent VARCHAR(50),
+        products_recommended JSONB DEFAULT '[]'::jsonb,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      )
+    `);
+    console.log("Database migration: chat_logs table created");
+  } catch (err) {
+    console.error("Chat logs migration error (non-fatal):", err.message);
+  }
+
+  // Style DNA profiles
+  try {
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS style_dna (
+        id SERIAL PRIMARY KEY,
+        customer_id INTEGER REFERENCES customers(id) ON DELETE CASCADE,
+        style_type VARCHAR(50) NOT NULL,
+        answers JSONB NOT NULL DEFAULT '{}'::jsonb,
+        scores JSONB NOT NULL DEFAULT '{}'::jsonb,
+        recommended_categories JSONB DEFAULT '[]'::jsonb,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      )
+    `);
+    console.log("Database migration: style_dna table created");
+  } catch (err) {
+    console.error("Style DNA migration error (non-fatal):", err.message);
+  }
+
+  // AI analytics
+  try {
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS ai_analytics (
+        id SERIAL PRIMARY KEY,
+        feature VARCHAR(50) NOT NULL,
+        event_type VARCHAR(50) NOT NULL,
+        customer_id INTEGER REFERENCES customers(id) ON DELETE SET NULL,
+        metadata JSONB DEFAULT '{}'::jsonb,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      )
+    `);
+    console.log("Database migration: ai_analytics table created");
+  } catch (err) {
+    console.error("AI analytics migration error (non-fatal):", err.message);
+  }
+
+  // Style DNA columns on customers
+  try {
+    await pool.query(`ALTER TABLE customers ADD COLUMN IF NOT EXISTS style_dna_type VARCHAR(50) DEFAULT NULL`);
+    console.log("Database migration: customer style_dna_type column added");
+  } catch (err) {
+    console.error("Customer style_dna_type migration error (non-fatal):", err.message);
+  }
+
   // ===========================
   // DAILY DROP API
   // ===========================
@@ -2730,6 +2793,477 @@ var HOST = process.env.HOST || "0.0.0.0";
       res.json({ success: true });
     } catch (err) {
       res.status(500).json({ success: false, message: err.message });
+    }
+  });
+
+  // ===========================
+  // AI ANALYTICS HELPER
+  // ===========================
+  async function logAiEvent(feature, eventType, customerId, metadata) {
+    try {
+      await pool.query(
+        "INSERT INTO ai_analytics (feature, event_type, customer_id, metadata) VALUES ($1, $2, $3, $4)",
+        [feature, eventType, customerId || null, JSON.stringify(metadata || {})]
+      );
+    } catch (e) { /* non-fatal */ }
+  }
+
+  // ===========================
+  // AI FASHION ASSISTANT CHATBOT
+  // ===========================
+
+  // Rule-based fashion knowledge base
+  var fashionKB = {
+    greetings: ["hey", "hi", "hello", "yo", "sup", "good morning", "good evening"],
+    greetings_response: "Hey! Welcome to Pehrawa. I'm your style assistant. Ask me anything about our products, sizing, styling tips, or deals!",
+    size_help: ["size", "sizing", "fit", "measurement", "too big", "too small", "which size"],
+    size_response: "For our tees, go true to size for a regular fit. Size up for an oversized look. Check our Size Guide for exact measurements. What's your usual size?",
+    shipping_help: ["shipping", "delivery", "when", "track", "dispatch", "ship"],
+    shipping_response: "We offer free shipping on orders above ₹999! Standard delivery takes 3-5 business days. You can track your order at /track-order with your order ID.",
+    price_help: ["price", "cost", "cheap", "affordable", "budget", "deal", "discount", "offer"],
+    price_response: "Our tees start at ₹399! Plus, buy 2 tees and get 10% off. Check our Daily Drop for exclusive deals. Want me to suggest something in your budget?",
+    trending_help: ["trending", "popular", "best", "selling", "hot", "favourite", "favorite"],
+    trending_response: "Our most popular categories are Oversized Tees and Graphic Tees! Want me to show you what's trending right now?",
+    category_help: ["t-shirt", "tee", "hoodie", "jeans", "oversized", "graphic", "plain", "pant"],
+    category_response: "We have Premium Tees, Oversized Tees, Graphic Tees, Hoodies, and Jeans. Each category is crafted for quality and comfort. Which one interests you?",
+    return_help: ["return", "exchange", "refund", "wrong", "damaged"],
+    return_response: "We offer easy returns within 7 days of delivery. Contact us at heypehrawa@gmail.com or WhatsApp at +91 98557 07708 for instant support.",
+    about_help: ["about", "brand", "who", "story", "pehrawa"],
+    about_response: "Pehrawa is a premium menswear brand — 'Home of HM' (Handmade). We focus on quality prints, comfort fabric, and designs that stand out. Made in India, for India.",
+    gift_help: ["gift", "surprise", "present", "birthday"],
+    gift_response: "Great choice! Our gift options include our best-selling Graphic Tees and Hoodies. Orders above ₹1999 include a free gift! Need help picking something?",
+    care_help: ["wash", "care", "maintain", "shrink", "fade"],
+    care_response: "Wash inside out in cold water. Avoid bleach. Tumble dry low or hang dry. Our tees are pre-shrunk so they maintain fit wash after wash!",
+    coupon_help: ["coupon", "code", "promo", "voucher"],
+    coupon_response: "Check your email for exclusive promo codes after signup! Scratch cards after purchase also have hidden discounts. Want to join our rewards program?"
+  };
+
+  function detectIntent(message) {
+    var lower = message.toLowerCase();
+    for (var key in fashionKB) {
+      if (key.endsWith("_help")) {
+        var patterns = fashionKB[key];
+        for (var i = 0; i < patterns.length; i++) {
+          if (lower.indexOf(patterns[i]) !== -1) return key.replace("_help", "");
+        }
+      }
+    }
+    return "general";
+  }
+
+  function getChatResponse(intent, message) {
+    var responseKey = intent + "_response";
+    if (fashionKB[responseKey]) return fashionKB[responseKey];
+
+    // General fallback
+    var lower = message.toLowerCase();
+    if (lower.indexOf("?") !== -1 || lower.indexOf("help") !== -1) {
+      return "I can help with sizing, shipping, products, prices, returns, and styling tips. What would you like to know?";
+    }
+    if (lower.indexOf("thank") !== -1 || lower.indexOf("thanks") !== -1) {
+      return "You're welcome! Happy to help. Anything else you'd like to know?";
+    }
+    if (lower.indexOf("bye") !== -1 || lower.indexOf("goodbye") !== -1) {
+      return "Goodbye! Shop at pehrawa.store and stay stylish!";
+    }
+    return "I'm not sure about that, but I can help with sizing, shipping, products, prices, and styling. What would you like to know?";
+  }
+
+  async function getRecommendedProducts(intent, message) {
+    try {
+      var products = [];
+      var lower = message.toLowerCase();
+      if (intent === "trending") {
+        var result = await pool.query(
+          "SELECT id, name, price, image_url, category FROM products WHERE stock_status != 'out_of_stock' ORDER BY created_at DESC LIMIT 4"
+        );
+        products = result.rows;
+      } else if (intent === "category") {
+        var cat = "T-Shirt";
+        if (lower.indexOf("hoodie") !== -1) cat = "Hoodie";
+        else if (lower.indexOf("jean") !== -1) cat = "Jeans";
+        else if (lower.indexOf("oversized") !== -1) cat = "Oversized T-Shirt";
+        var result = await pool.query(
+          "SELECT id, name, price, image_url, category FROM products WHERE LOWER(category) LIKE '%' || $1 || '%' AND stock_status != 'out_of_stock' LIMIT 4",
+          [cat.toLowerCase()]
+        );
+        products = result.rows;
+      } else if (intent === "price") {
+        var result = await pool.query(
+          "SELECT id, name, price, image_url, category FROM products WHERE stock_status != 'out_of_stock' ORDER BY price ASC LIMIT 4"
+        );
+        products = result.rows;
+      }
+      return products;
+    } catch (e) { return []; }
+  }
+
+  app.post("/api/public/chatbot", async function (req, res) {
+    try {
+      var { message, session_id } = req.body;
+      if (!message || !message.trim()) return res.status(400).json({ success: false, message: "Message required" });
+
+      var customerId = null;
+      var authHeader = req.headers.authorization;
+      if (authHeader && authHeader.startsWith("Bearer ")) {
+        try {
+          var decoded = jwt.verify(authHeader.slice(7), process.env.JWT_SECRET);
+          if (decoded && decoded.id && decoded.role === "customer") customerId = decoded.id;
+        } catch (e) {}
+      }
+
+      var intent = detectIntent(message);
+      var response = getChatResponse(intent, message);
+      var products = await getRecommendedProducts(intent, message);
+      var sid = session_id || "sess_" + Date.now() + "_" + Math.random().toString(36).slice(2, 8);
+
+      // Log chat
+      var token = req.headers.authorization && req.headers.authorization.startsWith("Bearer ") ? req.headers.authorization.slice(7) : null;
+      logAiEvent("chatbot", "message", customerId, {
+        session_id: sid, intent: intent, message_len: message.length,
+        products_recommended: products.map(function(p) { return p.id; })
+      }).catch(function() {});
+
+      // Save to chat_logs
+      pool.query(
+        "INSERT INTO chat_logs (customer_id, session_id, message, response, intent, products_recommended) VALUES ($1, $2, $3, $4, $5, $6)",
+        [customerId, sid, message, response, intent, JSON.stringify(products.map(function(p) { return p.id; }))]
+      ).catch(function() {});
+
+      res.json({
+        success: true,
+        response: response,
+        intent: intent,
+        products: products,
+        session_id: sid,
+        suggestions: intent === "trending" ? ["Show me trending", "What's new?"] :
+          intent === "category" ? ["Show hoodies", "Show jeans", "Show tees"] :
+          ["Sizing help", "Shipping info", "Best deals"]
+      });
+    } catch (err) {
+      console.error("Chatbot error:", err.message);
+      res.json({ success: true, response: "I'm having trouble right now. Try again or WhatsApp us at +91 98557 07708!", intent: "error", products: [], session_id: "err" });
+    }
+  });
+
+  // ===========================
+  // STYLE DNA QUIZ
+  // ===========================
+  var styleProfiles = {
+    minimal: { name: "Clean Minimalist", description: "You love clean lines, solid colors, and understated elegance. Less is more for you.", icon: "fa-minus", color: "#888", categories: ["Plain T-Shirt", "Oversized T-Shirt", "Jeans"] },
+    bold: { name: "Bold Trendsetter", description: "You stand out with eye-catching prints and vibrant energy. Fashion is your expression.", icon: "fa-fire", color: "#ff6b00", categories: ["Graphic T-Shirt", "Oversized T-Shirt", "Hoodie"] },
+    classic: { name: "Classic Gentleman", description: "Timeless style that never goes out of fashion. Quality over trends.", icon: "fa-crown", color: "#ffd700", categories: ["Plain T-Shirt", "Hoodie", "Jeans"] },
+    street: { name: "Street Style King", description: "Urban, relaxed, effortlessly cool. You set the streetwear trends.", icon: "fa-city", color: "#3498db", categories: ["Oversized T-Shirt", "Graphic T-Shirt", "Hoodie"] },
+    sporty: { name: "Active Athlete", description: "Comfort meets performance. You need clothes that keep up with your lifestyle.", icon: "fa-person-running", color: "#2ecc71", categories: ["Oversized T-Shirt", "Plain T-Shirt", "Hoodie"] }
+  };
+
+  var quizQuestions = [
+    { id: "q1", text: "Pick a vibe for your perfect weekend:", options: [
+      { label: "Minimal café & clean aesthetics", styles: { minimal: 3, classic: 1 } },
+      { label: "Festival / concert with friends", styles: { bold: 3, street: 2 } },
+      { label: "Rooftop party, dress to impress", styles: { bold: 2, classic: 2 } },
+      { label: "Street shopping & street food", styles: { street: 3, sporty: 1 } },
+      { label: "Gym / sports activity", styles: { sporty: 3, street: 1 } }
+    ]},
+    { id: "q2", text: "Your wardrobe color palette:", options: [
+      { label: "Black, white, grey — monochrome only", styles: { minimal: 3, classic: 2 } },
+      { label: "Bold reds, oranges, neons", styles: { bold: 3, street: 1 } },
+      { label: "Navy, olive, earth tones", styles: { classic: 3, street: 1 } },
+      { label: "Mix of everything — no rules", styles: { street: 2, bold: 2, sporty: 1 } },
+      { label: "Athletic colors — black, blue, grey with accents", styles: { sporty: 3, minimal: 1 } }
+    ]},
+    { id: "q3", text: "How do you like your tees to fit?", options: [
+      { label: "Slim / Regular — clean and fitted", styles: { minimal: 2, classic: 3 } },
+      { label: "Oversized / Baggy — relaxed vibe", styles: { street: 3, bold: 2 } },
+      { label: "Boxy / Drop shoulder — modern edge", styles: { bold: 2, street: 2 } },
+      { label: "Whatever's comfortable", styles: { sporty: 3, minimal: 1 } }
+    ]},
+    { id: "q4", text: "Pick your hero piece:", options: [
+      { label: "Plain white tee — classic", styles: { minimal: 3, classic: 3 } },
+      { label: "Bold graphic print tee", styles: { bold: 3, street: 2 } },
+      { label: "Premium hoodie for layering", styles: { classic: 2, street: 2 } },
+      { label: "Statement oversized tee", styles: { street: 3, bold: 1 } }
+    ]},
+    { id: "q5", text: "Your go-to footwear:", options: [
+      { label: "White sneakers — always", styles: { minimal: 3, classic: 2 } },
+      { label: "Chunky sneakers / Jordans", styles: { street: 3, bold: 2 } },
+      { label: "Chelsea boots / loafers", styles: { classic: 3, minimal: 1 } },
+      { label: "Running shoes / sports shoes", styles: { sporty: 3, street: 1 } }
+    ]}
+  ];
+
+  app.get("/api/public/style-quiz/questions", async function (req, res) {
+    try {
+      logAiEvent("style_quiz", "quiz_started", null, {}).catch(function() {});
+      res.json({ success: true, questions: quizQuestions });
+    } catch (err) {
+      res.json({ success: true, questions: quizQuestions });
+    }
+  });
+
+  app.post("/api/public/style-quiz/submit", async function (req, res) {
+    try {
+      var { answers, session_id } = req.body;
+      if (!answers || typeof answers !== "object") return res.status(400).json({ success: false, message: "Answers required" });
+
+      // Calculate scores
+      var scores = { minimal: 0, bold: 0, classic: 0, street: 0, sporty: 0 };
+      quizQuestions.forEach(function (q) {
+        var answerIdx = answers[q.id];
+        if (answerIdx !== undefined && q.options[answerIdx]) {
+          var optStyles = q.options[answerIdx].styles;
+          for (var style in optStyles) {
+            scores[style] = (scores[style] || 0) + optStyles[style];
+          }
+        }
+      });
+
+      // Find top style
+      var topStyle = "minimal";
+      var topScore = 0;
+      for (var style in scores) {
+        if (scores[style] > topScore) {
+          topScore = scores[style];
+          topStyle = style;
+        }
+      }
+
+      var profile = styleProfiles[topStyle];
+      var recommendedProducts = [];
+
+      // Get products from recommended categories
+      if (profile && profile.categories && profile.categories.length > 0) {
+        try {
+          var result = await pool.query(
+            "SELECT id, name, price, image_url, category, original_price FROM products WHERE stock_status != 'out_of_stock' ORDER BY RANDOM() LIMIT 8"
+          );
+          recommendedProducts = result.rows;
+        } catch (e) {}
+      }
+
+      // Save for logged-in user
+      var customerId = null;
+      var authHeader = req.headers.authorization;
+      if (authHeader && authHeader.startsWith("Bearer ")) {
+        try {
+          var decoded = jwt.verify(authHeader.slice(7), process.env.JWT_SECRET);
+          if (decoded && decoded.id && decoded.role === "customer") {
+            customerId = decoded.id;
+            // Upsert style DNA
+            await pool.query(
+              `INSERT INTO style_dna (customer_id, style_type, answers, scores, recommended_categories)
+               VALUES ($1, $2, $3, $4, $5)
+               ON CONFLICT (customer_id) DO UPDATE SET
+                 style_type = $2, answers = $3, scores = $4, recommended_categories = $5, updated_at = NOW()`,
+              [customerId, topStyle, JSON.stringify(answers), JSON.stringify(scores), JSON.stringify(profile.categories)]
+            ).catch(function() {});
+            // Update customer style_dna_type
+            await pool.query("UPDATE customers SET style_dna_type = $1 WHERE id = $2", [topStyle, customerId]).catch(function() {});
+          }
+        } catch (e) {}
+      }
+
+      logAiEvent("style_quiz", "quiz_completed", customerId, {
+        style_type: topStyle, scores: scores, session_id: session_id
+      }).catch(function() {});
+
+      res.json({
+        success: true,
+        result: {
+          styleType: topStyle,
+          profile: profile,
+          scores: scores,
+          products: recommendedProducts
+        }
+      });
+    } catch (err) {
+      console.error("Style quiz error:", err.message);
+      res.status(500).json({ success: false, message: "Failed to process quiz" });
+    }
+  });
+
+  // Get saved style DNA
+  app.get("/api/user/style-dna", async function (req, res) {
+    try {
+      var customerId = verifyCustomerToken(req);
+      if (!customerId) return res.json({ success: true, dna: null });
+
+      var result = await pool.query(
+        "SELECT style_type, scores, recommended_categories, created_at FROM style_dna WHERE customer_id = $1 ORDER BY created_at DESC LIMIT 1",
+        [customerId]
+      );
+      if (result.rows.length === 0) return res.json({ success: true, dna: null });
+
+      var dna = result.rows[0];
+      var profile = styleProfiles[dna.style_type] || styleProfiles.minimal;
+      res.json({
+        success: true,
+        dna: {
+          styleType: dna.style_type,
+          profile: profile,
+          scores: dna.scores,
+          categories: dna.recommended_categories,
+          completedAt: dna.created_at
+        }
+      });
+    } catch (err) {
+      res.json({ success: true, dna: null });
+    }
+  });
+
+  // ===========================
+  // ENHANCED AI PRODUCT SUGGESTIONS
+  // ===========================
+  app.get("/api/public/ai-suggestions", async function (req, res) {
+    try {
+      var customerId = null;
+      var authHeader = req.headers.authorization;
+      if (authHeader && authHeader.startsWith("Bearer ")) {
+        try {
+          var decoded = jwt.verify(authHeader.slice(7), process.env.JWT_SECRET);
+          if (decoded && decoded.id && decoded.role === "customer") customerId = decoded.id;
+        } catch (e) {}
+      }
+
+      var styleType = null;
+      if (customerId) {
+        var cust = await pool.query("SELECT style_dna_type FROM customers WHERE id = $1", [customerId]);
+        if (cust.rows.length > 0) styleType = cust.rows[0].style_dna_type;
+      }
+
+      var products = [];
+      var reason = "popular";
+
+      if (styleType && styleProfiles[styleType]) {
+        // Style-based recommendations
+        var cats = styleProfiles[styleType].categories;
+        var result = await pool.query(
+          "SELECT *, 0 as score FROM products WHERE stock_status != 'out_of_stock' ORDER BY RANDOM() LIMIT 12"
+        );
+        products = result.rows.map(function(p) {
+          var score = 0;
+          if (cats.indexOf(p.category) !== -1) score += 3;
+          if (styleType === "bold" && p.is_new_arrival) score += 2;
+          if (styleType === "street" && p.is_trending) score += 2;
+          if (styleType === "minimal" && p.category && p.category.toLowerCase().indexOf("plain") !== -1) score += 3;
+          if (styleType === "classic" && p.category && p.category.toLowerCase().indexOf("hoodie") !== -1) score += 2;
+          if (styleType === "sporty" && p.category && p.category.toLowerCase().indexOf("oversized") !== -1) score += 2;
+          p._score = score;
+          return p;
+        });
+        products.sort(function(a, b) { return b._score - a._score; });
+        reason = "style_" + styleType;
+      } else {
+        // Fallback: trending products
+        var result = await pool.query(
+          "SELECT *, 0 as _score FROM products WHERE stock_status != 'out_of_stock' ORDER BY created_at DESC LIMIT 12"
+        );
+        products = result.rows;
+        reason = "trending";
+      }
+
+      logAiEvent("ai_suggestions", "suggestions_shown", customerId, {
+        style_type: styleType, product_count: products.length, reason: reason
+      }).catch(function() {});
+
+      res.json({ success: true, products: products, reason: reason, styleType: styleType });
+    } catch (err) {
+      console.error("AI suggestions error:", err.message);
+      res.json({ success: true, products: [], reason: "error" });
+    }
+  });
+
+  // ===========================
+  // ADMIN: AI ANALYTICS
+  // ===========================
+  app.get("/api/admin/ai-analytics", verifyAdmin, async function (req, res) {
+    try {
+      var { feature, days } = req.query;
+      var d = parseInt(days) || 7;
+      var where = "created_at > NOW() - ($1 || ' days')::interval";
+      var params = [d];
+      if (feature) {
+        where += " AND feature = $2";
+        params.push(feature);
+      }
+
+      var totalChats = await pool.query(
+        "SELECT COUNT(*)::int as total FROM chat_logs WHERE " + where.replace("AND feature = $2", "AND customer_id IS NOT NULL"),
+        params
+      );
+
+      var byFeature = await pool.query(
+        "SELECT feature, COUNT(*)::int as count FROM ai_analytics WHERE " + where + " GROUP BY feature ORDER BY count DESC",
+        params
+      );
+
+      var byIntent = await pool.query(
+        "SELECT intent, COUNT(*)::int as count FROM chat_logs WHERE " + where + " AND intent IS NOT NULL GROUP BY intent ORDER BY count DESC",
+        params
+      );
+
+      var quizCompletions = await pool.query(
+        "SELECT COUNT(*)::int as total FROM ai_analytics WHERE feature = 'style_quiz' AND event_type = 'quiz_completed' AND " + where.replace("created_at > NOW() - ($1 || ' days')::interval", "created_at > NOW() - ($1 || ' days')::interval"),
+        params
+      );
+
+      var styleDistribution = await pool.query(
+        "SELECT style_type, COUNT(*)::int as count FROM style_dna GROUP BY style_type ORDER BY count DESC"
+      );
+
+      var dailyUsage = await pool.query(
+        "SELECT DATE(created_at) as day, feature, COUNT(*)::int as count FROM ai_analytics WHERE " + where + " GROUP BY day, feature ORDER BY day",
+        params
+      );
+
+      res.json({
+        success: true,
+        analytics: {
+          totalChats: totalChats.rows[0].total,
+          byFeature: byFeature.rows,
+          topIntents: byIntent.rows,
+          quizCompletions: quizCompletions.rows[0].total,
+          styleDistribution: styleDistribution.rows,
+          dailyUsage: dailyUsage.rows,
+          period: d + " days"
+        }
+      });
+    } catch (err) {
+      console.error("AI analytics error:", err.message);
+      res.json({ success: true, analytics: {} });
+    }
+  });
+
+  // Admin: list chat logs
+  app.get("/api/admin/chat-logs", verifyAdmin, async function (req, res) {
+    try {
+      var { limit, session_id } = req.query;
+      var q = "SELECT cl.*, c.name as customer_name FROM chat_logs cl LEFT JOIN customers c ON cl.customer_id = c.id";
+      var params = [];
+      if (session_id) {
+        q += " WHERE cl.session_id = $1";
+        params.push(session_id);
+      }
+      q += " ORDER BY cl.created_at DESC LIMIT $" + (params.length + 1);
+      params.push(parseInt(limit) || 50);
+      var result = await pool.query(q, params);
+      res.json({ success: true, logs: result.rows });
+    } catch (err) {
+      res.json({ success: true, logs: [] });
+    }
+  });
+
+  // Admin: list style DNA results
+  app.get("/api/admin/style-dna", verifyAdmin, async function (req, res) {
+    try {
+      var result = await pool.query(
+        `SELECT sd.*, c.name as customer_name, c.email as customer_email
+         FROM style_dna sd LEFT JOIN customers c ON sd.customer_id = c.id
+         ORDER BY sd.created_at DESC LIMIT 100`
+      );
+      res.json({ success: true, results: result.rows });
+    } catch (err) {
+      res.json({ success: true, results: [] });
     }
   });
 

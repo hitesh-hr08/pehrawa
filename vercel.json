@@ -26,6 +26,7 @@
     { "source": "/passport", "destination": "/frontend/passport.html" },
     { "source": "/coming-soon", "destination": "/frontend/coming-soon.html" },
     { "source": "/vault", "destination": "/frontend/vault.html" },
+    { "source": "/style-quiz", "destination": "/frontend/style-quiz.html" },
     { "source": "/reset-password", "destination": "/frontend/reset-password.html" },
     { "source": "/auth-callback", "destination": "/frontend/auth-callback.html" },
     { "source": "/admin/login", "destination": "/frontend/admin/login.html" },

@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Coming Soon | Pehrawa</title>
+  <title>Style DNA Quiz | Pehrawa</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../css/style.css">
@@ -13,7 +13,7 @@
   <script src="../js/tracking.js"></script>
 </head>
 <body>
-  <div class="top-bar">FREE SHIPPING ABOVE &#8377;999</div>
+  <div class="top-bar">DISCOVER YOUR STYLE DNA</div>
   <header>
     <div class="container nav">
       <a href="/" class="logo"><img src="../images/logo.png" alt="Pehrawa Logo"></a>
@@ -32,26 +32,10 @@
     <ul><li><a href="/">HOME</a></li><li><a href="/shop">SHOP</a></li><li><a href="/collections">COLLECTIONS</a></li><li><span class="nav-disabled">CUSTOM PRINT<em class="cs-badge">Soon</em></span></li><li><a href="/about">ABOUT</a></li><li><a href="/contact">CONTACT</a></li></ul>
   </div>
 
-  <div class="coming-soon-hero">
-    <div class="container">
-      <h1 class="cs-hero-title">COMING <span style="color:#ff6b00;">SOON</span></h1>
-      <p class="cs-hero-sub">New drops loading. Be the first to know.</p>
+  <div class="quiz-page">
+    <div id="quizContainer" class="quiz-container">
+      <!-- Rendered by style-quiz.js -->
     </div>
-  </div>
-
-  <!-- COMING SOON PRODUCTS -->
-  <section id="comingSoonSection" style="display:none;padding:0 0 60px;">
-    <div class="container cs-container">
-      <div class="cs-grid"></div>
-    </div>
-  </section>
-
-  <!-- EMPTY STATE -->
-  <div id="csEmpty" style="display:none;text-align:center;padding:60px 20px;">
-    <i class="fa-solid fa-hourglass-half" style="font-size:48px;color:#333;margin-bottom:16px;"></i>
-    <h3 style="color:#666;">Nothing yet, but stay tuned!</h3>
-    <p style="color:#888;font-size:14px;margin-top:8px;">We're cooking up something special. Check back soon or follow us on Instagram.</p>
-    <a href="https://instagram.com/pehrawa.store" target="_blank" style="display:inline-block;margin-top:16px;padding:12px 24px;background:linear-gradient(135deg,#833ab4,#fd1d1d,#fcb045);color:#fff;text-decoration:none;border-radius:8px;font-weight:600;"><i class="fa-brands fa-instagram"></i> Follow @pehrawa.store</a>
   </div>
 
   <footer class="site-footer">
@@ -71,21 +55,10 @@
   <script src="../js/animations.js"></script>
   <script src="../js/customer-auth.js"></script>
   <script src="../js/smart-search.js"></script>
-  <script src="../js/coming-soon.js"></script>
+  <script src="../js/style-quiz.js"></script>
   <script src="../js/scratch-card.js"></script>
   <script src="../js/vault.js"></script>
   <script src="../js/premium-loader.js"></script>
-  <script src="../js/ai-chatbot.js"></script>
-  <script>
-    // Show empty state if no items
-    setTimeout(function() {
-      var section = document.getElementById("comingSoonSection");
-      var empty = document.getElementById("csEmpty");
-      if (section && section.style.display === "none" && empty) {
-        empty.style.display = "block";
-      }
-    }, 3000);
-  </script>
   <div class="whatsapp-float" onclick="window.open('https://wa.me/919855707708','_blank')" role="button" tabindex="0" aria-label="Chat on WhatsApp">
     <i class="fa-brands fa-whatsapp"></i><span class="wa-tooltip">Chat with us</span><span class="wa-badge"></span>
   </div>
