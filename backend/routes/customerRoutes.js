@@ -125,6 +125,18 @@ router.post("/register", async (req, res) => {
     );
     const customer = result.rows[0];
 
+    // Apply referral if provided
+    const referralCode = String(req.body.referral_code || "").trim().toUpperCase();
+    if (referralCode) {
+      try {
+        const refCode = await pool.query("SELECT id, customer_id FROM referral_codes WHERE code = $1 AND is_active = TRUE", [referralCode]);
+        if (refCode.rows.length > 0 && refCode.rows[0].customer_id !== customer.id) {
+          await pool.query("INSERT INTO referrals (referrer_id, referred_id, referral_code) VALUES ($1, $2, $3)", [refCode.rows[0].customer_id, customer.id, referralCode]);
+          await pool.query("UPDATE referral_codes SET total_referrals = total_referrals + 1 WHERE id = $1", [refCode.rows[0].id]);
+        }
+      } catch (e) { /* non-fatal */ }
+    }
+
     res.status(201).json({
       success: true,
       message: "Customer account created",

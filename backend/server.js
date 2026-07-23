@@ -424,6 +424,21 @@ app.post("/api/public/orders", async (req, res) => {
         pool.query("UPDATE customers SET total_spent = total_spent + $1 WHERE id = $2", [Number(total_amount) || 0, customerId]).catch(function() {});
         addRewardPoints(customerId, rewardPts, "order", "Order #" + order.id + " reward", order.id).catch(function() {});
         createScratchCard(customerId, order.id).catch(function() {});
+        // Referral reward if this customer was referred
+        pool.query("SELECT id FROM referrals WHERE referred_id = $1 AND reward_given = FALSE", [customerId]).then(function(r) {
+          if (r.rows.length > 0) {
+            var ref = r.rows[0];
+            pool.query("UPDATE referrals SET reward_given = TRUE, order_id = $1 WHERE id = $2", [order.id, ref.id]).catch(function() {});
+            addRewardPoints(customerId, 100, "referral_bonus", "Welcome referral bonus for first order", order.id).catch(function() {});
+            pool.query("UPDATE referral_codes rc SET total_earned = total_earned + 200 FROM referrals r WHERE r.referral_code = rc.code AND r.id = $1", [ref.id]).catch(function() {});
+            // Also reward the referrer
+            pool.query("SELECT referrer_id FROM referrals WHERE id = $1", [ref.id]).then(function(ri) {
+              if (ri.rows.length > 0) {
+                addRewardPoints(ri.rows[0].referrer_id, 200, "referral", "Referral reward for bringing a friend", order.id).catch(function() {});
+              }
+            }).catch(function() {});
+          }
+        }).catch(function() {});
       }
     }
   } catch (err) {
@@ -1402,6 +1417,50 @@ var HOST = process.env.HOST || "0.0.0.0";
     console.error("Vault migration error (non-fatal):", err.message);
   }
 
+  // Referral codes table
+  try {
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS referral_codes (
+        id SERIAL PRIMARY KEY,
+        customer_id INTEGER REFERENCES customers(id) ON DELETE CASCADE,
+        code VARCHAR(20) UNIQUE NOT NULL,
+        total_referrals INTEGER DEFAULT 0,
+        total_earned NUMERIC(10,2) DEFAULT 0,
+        is_active BOOLEAN DEFAULT TRUE,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      )
+    `);
+    console.log("Database migration: referral_codes table created");
+  } catch (err) {
+    console.error("Referral codes migration error (non-fatal):", err.message);
+  }
+
+  // Referral tracking table
+  try {
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS referrals (
+        id SERIAL PRIMARY KEY,
+        referrer_id INTEGER REFERENCES customers(id) ON DELETE SET NULL,
+        referred_id INTEGER REFERENCES customers(id) ON DELETE SET NULL,
+        referral_code VARCHAR(20) NOT NULL,
+        reward_given BOOLEAN DEFAULT FALSE,
+        order_id INTEGER,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      )
+    `);
+    console.log("Database migration: referrals table created");
+  } catch (err) {
+    console.error("Referrals migration error (non-fatal):", err.message);
+  }
+
+  // Add referral_code column to customers
+  try {
+    await pool.query(`ALTER TABLE customers ADD COLUMN IF NOT EXISTS referral_code VARCHAR(20)`);
+    console.log("Database migration: customer referral_code column added");
+  } catch (err) {
+    console.error("Customer referral_code migration error (non-fatal):", err.message);
+  }
+
   // Add membership/tier columns to customers
   try {
     await pool.query(`
@@ -2271,6 +2330,236 @@ var HOST = process.env.HOST || "0.0.0.0";
   });
 
   console.log("All luxury fashion feature routes initialized");
+
+  // ===========================
+  // REFERRAL PROGRAM API
+  // ===========================
+
+  function generateReferralCode(name) {
+    var base = (name || "USER").replace(/[^a-zA-Z]/g, "").toUpperCase().slice(0, 5);
+    var suffix = Math.random().toString(36).toUpperCase().slice(2, 6);
+    return base + suffix;
+  }
+
+  // Get or create referral code for customer
+  app.get("/api/user/referral-code", async function (req, res) {
+    try {
+      var customerId = verifyCustomerToken(req);
+      if (!customerId) return res.status(401).json({ success: false, message: "Auth required" });
+
+      var existing = await pool.query("SELECT * FROM referral_codes WHERE customer_id = $1 AND is_active = TRUE", [customerId]);
+      if (existing.rows.length > 0) {
+        var code = existing.rows[0];
+        var stats = await pool.query(
+          "SELECT COUNT(*)::int as referred, COUNT(CASE WHEN r.reward_given THEN 1 END)::int as rewarded FROM referrals r WHERE r.referral_code = $1",
+          [code.code]
+        );
+        var s = stats.rows[0];
+        return res.json({ success: true, code: code.code, totalReferred: s.referred, totalRewarded: s.rewarded, totalEarned: parseFloat(code.total_earned) || 0 });
+      }
+
+      var cust = await pool.query("SELECT name FROM customers WHERE id = $1", [customerId]);
+      var code = generateReferralCode(cust.rows[0] && cust.rows[0].name);
+      await pool.query("INSERT INTO referral_codes (customer_id, code) VALUES ($1, $2)", [customerId, code]);
+      await pool.query("UPDATE customers SET referral_code = $1 WHERE id = $2", [code, customerId]);
+      res.json({ success: true, code: code, totalReferred: 0, totalRewarded: 0, totalEarned: 0 });
+    } catch (err) {
+      console.error("Referral code error:", err.message);
+      res.status(500).json({ success: false, message: "Failed to get referral code" });
+    }
+  });
+
+  // Apply referral on signup (called from customer registration)
+  app.post("/api/public/referral/apply", async function (req, res) {
+    try {
+      var { referralCode, newCustomerId } = req.body;
+      if (!referralCode || !newCustomerId) return res.json({ success: false, message: "Missing data" });
+
+      var refCode = await pool.query("SELECT * FROM referral_codes WHERE code = $1 AND is_active = TRUE", [referralCode.toUpperCase()]);
+      if (refCode.rows.length === 0) return res.json({ success: false, message: "Invalid referral code" });
+
+      var rc = refCode.rows[0];
+      if (rc.customer_id === newCustomerId) return res.json({ success: false, message: "Cannot refer yourself" });
+
+      var alreadyReferred = await pool.query("SELECT id FROM referrals WHERE referred_id = $1", [newCustomerId]);
+      if (alreadyReferred.rows.length > 0) return res.json({ success: false, message: "Already referred" });
+
+      await pool.query("INSERT INTO referrals (referrer_id, referred_id, referral_code) VALUES ($1, $2, $3)", [rc.customer_id, newCustomerId, referralCode.toUpperCase()]);
+      await pool.query("UPDATE referral_codes SET total_referrals = total_referrals + 1 WHERE id = $1", [rc.id]);
+      res.json({ success: true, message: "Referral recorded" });
+    } catch (err) {
+      console.error("Referral apply error:", err.message);
+      res.json({ success: false, message: "Failed to apply referral" });
+    }
+  });
+
+  // Reward referrer after referred user's first order
+  app.post("/api/public/referral/reward", async function (req, res) {
+    try {
+      var { orderId, customerId } = req.body;
+      if (!orderId || !customerId) return res.json({ success: false });
+
+      var ref = await pool.query("SELECT * FROM referrals WHERE referred_id = $1 AND reward_given = FALSE LIMIT 1", [customerId]);
+      if (ref.rows.length === 0) return res.json({ success: false });
+
+      var r = ref.rows[0];
+      var REWARD_POINTS = 200;
+      var REFERRED_DISCOUNT = 100;
+
+      // Reward referrer
+      await addRewardPoints(r.referrer_id, REWARD_POINTS, "referral", "Referral reward for bringing a friend", orderId);
+
+      // Discount for referred customer
+      await pool.query("UPDATE customers SET redeemable_points = redeemable_points + $1 WHERE id = $2", [REFERRED_DISCOUNT, customerId]);
+      await pool.query("INSERT INTO rewards (customer_id, points, type, description, order_id) VALUES ($1, $2, 'referral_bonus', 'Welcome referral bonus', $3)", [customerId, REFERRED_DISCOUNT, orderId]);
+
+      await pool.query("UPDATE referrals SET reward_given = TRUE, order_id = $1 WHERE id = $2", [orderId, r.id]);
+      await pool.query("UPDATE referral_codes SET total_earned = total_earned + $1 WHERE id = $2", [REWARD_POINTS, r.referrer_id]);
+
+      res.json({ success: true });
+    } catch (err) {
+      console.error("Referral reward error:", err.message);
+      res.json({ success: false });
+    }
+  });
+
+  // Get referral stats
+  app.get("/api/user/referral-stats", async function (req, res) {
+    try {
+      var customerId = verifyCustomerToken(req);
+      if (!customerId) return res.status(401).json({ success: false, message: "Auth required" });
+
+      var codeRow = await pool.query("SELECT * FROM referral_codes WHERE customer_id = $1 AND is_active = TRUE", [customerId]);
+      if (codeRow.rows.length === 0) return res.json({ success: true, code: null, referrals: [], stats: { total: 0, rewarded: 0, earned: 0 } });
+
+      var code = codeRow.rows[0];
+      var referrals = await pool.query(
+        `SELECT r.created_at, r.reward_given, c.name as referred_name
+         FROM referrals r LEFT JOIN customers c ON r.referred_id = c.id
+         WHERE r.referral_code = $1 ORDER BY r.created_at DESC LIMIT 20`,
+        [code.code]
+      );
+      var stats = await pool.query(
+        "SELECT COUNT(*)::int as total, COUNT(CASE WHEN reward_given THEN 1 END)::int as rewarded FROM referrals WHERE referral_code = $1",
+        [code.code]
+      );
+      var s = stats.rows[0];
+      res.json({ success: true, code: code.code, referrals: referrals.rows, stats: { total: s.total, rewarded: s.rewarded, earned: parseFloat(code.total_earned) || 0 } });
+    } catch (err) {
+      console.error("Referral stats error:", err.message);
+      res.status(500).json({ success: false, message: "Failed to load stats" });
+    }
+  });
+
+  // ===========================
+  // PEHRAWA PASSPORT API
+  // ===========================
+  app.get("/api/user/passport", async function (req, res) {
+    try {
+      var customerId = verifyCustomerToken(req);
+      if (!customerId) return res.status(401).json({ success: false, message: "Auth required" });
+
+      var cust = await pool.query(
+        "SELECT name, email, phone, membership_tier, lifetime_points, redeemable_points, total_spent, created_at FROM customers WHERE id = $1",
+        [customerId]
+      );
+      if (cust.rows.length === 0) return res.status(404).json({ success: false, message: "Customer not found" });
+      var c = cust.rows[0];
+
+      var tier = c.membership_tier || "bronze";
+      var lifetime = parseInt(c.lifetime_points) || 0;
+      var redeemable = parseInt(c.redeemable_points) || 0;
+      var spent = parseFloat(c.total_spent) || 0;
+
+      // Order stats
+      var orderStats = await pool.query(
+        `SELECT COUNT(*)::int as totalOrders, COALESCE(SUM(total),0)::numeric as totalValue,
+         MIN(created_at) as firstOrder, MAX(created_at) as lastOrder
+         FROM orders WHERE customer_id = $1 AND payment_status = 'paid'`,
+        [customerId]
+      );
+      var os = orderStats.rows[0];
+
+      // Reward history
+      var history = await pool.query(
+        "SELECT points, type, description, created_at FROM rewards WHERE customer_id = $1 ORDER BY created_at DESC LIMIT 30",
+        [customerId]
+      );
+
+      // Scratch card stats
+      var scratchStats = await pool.query(
+        `SELECT
+           SUM(CASE WHEN is_revealed = FALSE THEN 1 ELSE 0 END)::int as unrevealed,
+           SUM(CASE WHEN is_revealed = TRUE AND is_redeemed = TRUE THEN 1 ELSE 0 END)::int as redeemed,
+           SUM(CASE WHEN is_revealed = TRUE AND is_redeemed = FALSE THEN 1 ELSE 0 END)::int as unredeemed
+         FROM scratch_cards WHERE customer_id = $1`,
+        [customerId]
+      );
+      var sc = scratchStats.rows[0];
+
+      // Wishlist count
+      var wlCount = await pool.query("SELECT COUNT(*)::int as cnt FROM wishlists WHERE customer_id = $1", [customerId]);
+
+      // Referral stats
+      var refCode = await pool.query("SELECT code, total_referrals, total_earned FROM referral_codes WHERE customer_id = $1 AND is_active = TRUE", [customerId]);
+      var ref = refCode.rows[0] || { code: null, total_referrals: 0, total_earned: 0 };
+
+      // Calculate badges
+      var badges = [];
+      if (os.totalOrders >= 1) badges.push({ id: "first_order", name: "First Purchase", icon: "fa-bag-shopping", color: "#ff6b00", desc: "Made your first order" });
+      if (os.totalOrders >= 5) badges.push({ id: "loyal_5", name: "Loyal Customer", icon: "fa-heart", color: "#e74c3c", desc: "Completed 5 orders" });
+      if (os.totalOrders >= 10) badges.push({ id: "loyal_10", name: "Pehrawa Legend", icon: "fa-crown", color: "#ffd700", desc: "Completed 10 orders" });
+      if (spent >= 5000) badges.push({ id: "big_spender_5k", name: "Big Spender", icon: "fa-gem", color: "#9b59b6", desc: "Spent over ₹5,000" });
+      if (spent >= 15000) badges.push({ id: "big_spender_15k", name: "VIP Shopper", icon: "fa-star", color: "#f39c12", desc: "Spent over ₹15,000" });
+      if (spent >= 50000) badges.push({ id: "big_spender_50k", name: "Pehrawa Royalty", icon: "fa-trophy", color: "#1a1a1a", desc: "Spent over ₹50,000" });
+      if (ref.total_referrals >= 1) badges.push({ id: "ref_1", name: "First Referral", icon: "fa-user-plus", color: "#3498db", desc: "Referred your first friend" });
+      if (ref.total_referrals >= 5) badges.push({ id: "ref_5", name: "Brand Ambassador", icon: "fa-share-nodes", color: "#2ecc71", desc: "Referred 5 friends" });
+      if (lifetime >= 500) badges.push({ id: "pts_500", name: "Point Collector", icon: "fa-coins", color: "#f1c40f", desc: "Earned 500 lifetime points" });
+      if (lifetime >= 2000) badges.push({ id: "pts_2k", name: "Points Master", icon: "fa-coins", color: "#e67e22", desc: "Earned 2,000 lifetime points" });
+      if (sc.redeemed >= 3) badges.push({ id: "scratch_3", name: "Lucky Streak", icon: "fa-dice", color: "#1abc9c", desc: "Redeemed 3 scratch cards" });
+      if (tier === "silver") badges.push({ id: "tier_silver", name: "Silver Member", icon: "fa-medal", color: "#c0c0c0", desc: "Reached Silver tier" });
+      if (tier === "gold") badges.push({ id: "tier_gold", name: "Gold Member", icon: "fa-medal", color: "#ffd700", desc: "Reached Gold tier" });
+      if (tier === "black") badges.push({ id: "tier_black", name: "Black Member", icon: "fa-medal", color: "#1a1a1a", desc: "Reached Black tier" });
+
+      // Days since first order
+      var memberDays = 0;
+      if (os.firstOrder) {
+        memberDays = Math.floor((Date.now() - new Date(os.firstOrder).getTime()) / 86400000);
+      }
+
+      // Estimated savings from discounts applied
+      var totalSavings = Math.round(spent * (getTierBenefits(tier).discount || 0) / 100);
+
+      res.json({
+        success: true,
+        passport: {
+          customer: { name: c.name, email: c.email, phone: c.phone },
+          tier: tier,
+          tierBenefits: getTierBenefits(tier),
+          tierProgress: getTierProgress(lifetime, spent),
+          points: { lifetime: lifetime, redeemable: redeemable },
+          stats: {
+            totalOrders: os.totalOrders,
+            totalSpent: spent,
+            totalSavings: totalSavings,
+            memberDays: memberDays,
+            memberSince: c.created_at,
+            firstOrder: os.firstOrder,
+            lastOrder: os.lastOrder
+          },
+          badges: badges,
+          scratchCards: { unrevealed: sc.unrevealed || 0, unredeemed: sc.unredeemed || 0, redeemed: sc.redeemed || 0 },
+          history: history.rows,
+          referral: { code: ref.code, totalReferred: ref.total_referrals, totalEarned: parseFloat(ref.total_earned) || 0 },
+          wishlistCount: wlCount.rows[0].cnt || 0
+        }
+      });
+    } catch (err) {
+      console.error("Passport error:", err.message);
+      res.status(500).json({ success: false, message: "Failed to load passport" });
+    }
+  });
+
 })();
 
 // ===========================

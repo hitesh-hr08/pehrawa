@@ -51,7 +51,7 @@
     }
 
     html += '<div class="rw-actions"><button class="rw-redeem-btn" onclick="PehrawaRewards.showRedeemModal()">Redeem Points</button>' +
-      '<a href="/my-profile" class="rw-dashboard-link">View Full Dashboard</a></div>';
+      '<a href="/passport" class="rw-dashboard-link">View Full Dashboard</a></div>';
 
     if (data.history && data.history.length > 0) {
       html += '<div class="rw-history"><h4>Recent Activity</h4>';

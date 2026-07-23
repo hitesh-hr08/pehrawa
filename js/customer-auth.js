@@ -226,10 +226,11 @@
       }
       try {
         var api = window.PEHRAWA_API_BASE || "http://localhost:5000";
+        var refCode = new URLSearchParams(window.location.search).get("ref") || "";
         var res = await fetch(api + "/api/customers/register", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ name: name, email: email, phone: phone, password: password })
+          body: JSON.stringify({ name: name, email: email, phone: phone, password: password, referral_code: refCode })
         });
         var data = await res.json();
         if (data.success) {
@@ -295,6 +296,8 @@
           '<a class="dropdown-item" href="/my-orders"><i class="fa-solid fa-box"></i> My Orders</a>' +
           '<a class="dropdown-item" href="/wishlist"><i class="fa-regular fa-heart"></i> My Wishlist</a>' +
           '<a class="dropdown-item" href="/my-profile"><i class="fa-regular fa-user"></i> My Profile</a>' +
+          '<a class="dropdown-item" href="/passport"><i class="fa-solid fa-passport"></i> My Passport</a>' +
+          '<a class="dropdown-item" href="/rewards"><i class="fa-solid fa-star"></i> Rewards Hub</a>' +
           '<div class="dropdown-divider"></div>' +
           '<a class="dropdown-item logout-item" id="profileLogoutBtn" href="#"><i class="fa-solid fa-sign-out-alt"></i> Logout</a>' +
         '</div>';

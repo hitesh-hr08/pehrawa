@@ -77,6 +77,9 @@ SMART SEARCH
 COMING SOON
 =========================== */
 .coming-soon{display:none;padding:60px 0 0;}
+.coming-soon-hero{text-align:center;padding:40px 0 20px;}
+.cs-hero-title{font-size:36px;font-weight:800;letter-spacing:8px;margin-bottom:8px;}
+.cs-hero-sub{color:#888;font-size:14px;}
 .cs-title{font-size:18px;letter-spacing:6px;font-weight:500;text-align:center;margin-bottom:30px;}
 .cs-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;}
 .cs-grid-item{background:#080808;border:1px solid #151515;border-radius:12px;overflow:hidden;transition:.3s;}
@@ -329,4 +332,106 @@ BUNDLE BUILDER
 }
 @media(max-width:480px){
   .cpb-milestones{flex-direction:column;align-items:center;gap:4px;}
+}
+
+/* ===========================
+PEHRAWA PASSPORT
+=========================== */
+.pp-container{max-width:800px;margin:0 auto;padding:20px 16px 60px;}
+.pp-hero{background:linear-gradient(135deg,#1a1a1a,#222);border:1px solid #333;border-radius:16px;padding:40px 24px;text-align:center;margin-bottom:24px;position:relative;overflow:hidden;}
+.pp-hero::before{content:"";position:absolute;top:-50%;left:-50%;width:200%;height:200%;background:radial-gradient(circle at 30% 50%,rgba(255,107,0,.06),transparent 60%);pointer-events:none;}
+.pp-avatar{width:80px;height:80px;border-radius:50%;background:#ff6b00;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;font-size:36px;color:#fff;}
+.pp-name{color:#fff;font-size:26px;font-weight:800;margin-bottom:8px;}
+.pp-tier-badge{display:inline-flex;align-items:center;gap:6px;color:#fff;padding:6px 16px;border-radius:20px;font-size:13px;font-weight:700;letter-spacing:.5px;}
+.pp-member-since{color:#888;font-size:12px;margin-top:10px;}
+.pp-stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:24px;}
+.pp-stat-card{background:#111;border:1px solid #222;border-radius:12px;padding:16px 12px;text-align:center;}
+.pp-stat-icon{width:36px;height:36px;border-radius:10px;display:inline-flex;align-items:center;justify-content:center;font-size:16px;margin-bottom:8px;}
+.pp-stat-val{color:#fff;font-size:20px;font-weight:800;}
+.pp-stat-label{color:#888;font-size:11px;margin-top:2px;}
+.pp-tier-progress,.pp-badges-section,.pp-benefits-section,.pp-scratch-section{background:#111;border:1px solid #222;border-radius:12px;padding:20px;margin-bottom:16px;}
+.pp-tier-progress h3,.pp-badges-section h3,.pp-benefits-section h3,.pp-scratch-section h3{color:#fff;font-size:16px;margin-bottom:16px;}
+.pp-tier-progress h3 i,.pp-badges-section h3 i,.pp-benefits-section h3 i,.pp-scratch-section h3 i{color:#ff6b00;margin-right:8px;}
+.pp-tier-bar{position:relative;height:8px;background:#222;border-radius:4px;margin:20px 0 30px;}
+.pp-tier-bar-fill{height:100%;border-radius:4px;transition:width .6s ease;}
+.pp-tier-marker{position:absolute;top:-24px;transform:translateX(-50%);}
+.pp-tier-marker-label{font-size:10px;color:#888;white-space:nowrap;}
+.pp-tier-current .pp-tier-marker-label{color:#ff6b00;font-weight:700;}
+.pp-tier-next{color:#888;font-size:13px;text-align:center;}
+.pp-tier-next strong{color:#ff6b00;}
+.pp-badges-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px;}
+.pp-badge{border:2px solid #333;border-radius:12px;padding:16px 12px;text-align:center;transition:transform .2s;}
+.pp-badge:hover{transform:translateY(-2px);}
+.pp-badge-icon{width:44px;height:44px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;color:#fff;font-size:20px;margin-bottom:8px;}
+.pp-badge-name{color:#fff;font-size:13px;font-weight:700;margin-bottom:2px;}
+.pp-badge-desc{color:#888;font-size:11px;}
+.pp-empty{color:#666;font-size:13px;text-align:center;padding:20px 0;}
+.pp-benefits-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;}
+.pp-benefit{background:#1a1a1a;border:1px solid #222;border-radius:10px;padding:14px 8px;text-align:center;opacity:.4;transition:opacity .2s;}
+.pp-benefit.pp-active{opacity:1;border-color:rgba(255,107,0,.3);}
+.pp-benefit i{font-size:22px;color:#555;display:block;margin-bottom:6px;}
+.pp-benefit.pp-active i{color:#ff6b00;}
+.pp-benefit span{display:block;color:#fff;font-size:12px;font-weight:600;}
+.pp-benefit small{display:block;color:#666;font-size:10px;margin-top:2px;}
+.pp-scratch-stats{display:flex;gap:16px;flex-wrap:wrap;}
+.pp-scratch-stat{background:#1a1a1a;border-radius:8px;padding:10px 16px;color:#888;font-size:13px;}
+.pp-scratch-stat span{color:#fff;font-weight:700;margin-right:4px;}
+.pp-scratch-stat.pp-unrevealed{border:1px solid rgba(255,107,0,.3);color:#ff8c33;}
+.pp-scratch-stat.pp-unrevealed span{color:#ff6b00;}
+.pp-scratch-stat.pp-unredeemed{border:1px solid rgba(34,197,94,.3);color:#22c55e;}
+.pp-scratch-stat.pp-unredeemed span{color:#22c55e;}
+.pp-actions{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:16px;}
+.pp-action-btn{background:#1a1a1a;border:1px solid #222;border-radius:10px;padding:14px;text-align:center;color:#fff;text-decoration:none;font-size:13px;font-weight:600;transition:all .2s;}
+.pp-action-btn:hover{border-color:#ff6b00;color:#ff6b00;}
+.pp-action-btn i{display:block;font-size:20px;margin-bottom:6px;color:#ff6b00;}
+
+/* ===========================
+REFERRAL PROGRAM
+=========================== */
+.pp-referral-wrap{max-width:800px;margin:0 auto;padding:0 16px 60px;}
+.ref-card{background:linear-gradient(135deg,#1a1a1a,#222);border:1px solid #333;border-radius:16px;padding:28px 24px;overflow:hidden;position:relative;}
+.ref-card::before{content:"";position:absolute;top:-30%;right:-20%;width:300px;height:300px;background:radial-gradient(circle,rgba(255,107,0,.08),transparent 70%);pointer-events:none;}
+.ref-header{margin-bottom:24px;}
+.ref-header h3{color:#fff;font-size:20px;font-weight:800;}
+.ref-header h3 i{color:#ff6b00;margin-right:8px;}
+.ref-header p{color:#888;font-size:13px;margin-top:4px;}
+.ref-code-area,.ref-link-area{margin-bottom:16px;}
+.ref-code-label{color:#888;font-size:11px;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;}
+.ref-code-display{display:flex;align-items:center;gap:12px;}
+.ref-code{color:#ff6b00;font-size:28px;font-weight:800;letter-spacing:3px;font-family:monospace;}
+.ref-copy-btn{background:rgba(255,107,0,.15);color:#ff6b00;border:1px solid rgba(255,107,0,.3);padding:8px 16px;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;transition:background .2s;}
+.ref-copy-btn:hover{background:rgba(255,107,0,.25);}
+.ref-link-display{display:flex;gap:8px;}
+.ref-link-input{flex:1;background:#0a0a0a;border:1px solid #333;border-radius:8px;padding:10px 14px;color:#ccc;font-size:12px;font-family:monospace;outline:none;}
+.ref-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:20px 0;}
+.ref-stat{text-align:center;background:rgba(255,107,0,.05);border:1px solid rgba(255,107,0,.15);border-radius:10px;padding:14px 8px;}
+.ref-stat-val{color:#ff6b00;font-size:24px;font-weight:800;}
+.ref-stat-label{color:#888;font-size:11px;margin-top:2px;}
+.ref-share{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px;}
+.ref-share-btn{display:inline-flex;align-items:center;gap:6px;padding:10px 16px;border-radius:8px;font-size:13px;font-weight:600;text-decoration:none;border:none;cursor:pointer;transition:opacity .2s;color:#fff;}
+.ref-whatsapp{background:#25d366;}
+.ref-twitter{background:#1da1f2;}
+.ref-more{background:#333;}
+.ref-share-btn:hover{opacity:.85;}
+.ref-reward-info{border-top:1px solid #333;padding-top:16px;}
+.ref-reward-info h4{color:#fff;font-size:14px;margin-bottom:10px;}
+.ref-reward-info ul{list-style:none;padding:0;}
+.ref-reward-info li{color:#aaa;font-size:13px;padding:4px 0;}
+.ref-reward-info li i{color:#22c55e;margin-right:8px;font-size:12px;}
+.ref-reward-info li strong{color:#fff;}
+
+/* ===========================
+PASSPORT RESPONSIVE
+=========================== */
+@media(max-width:768px){
+  .pp-stats-row{grid-template-columns:repeat(2,1fr);}
+  .pp-benefits-grid{grid-template-columns:repeat(2,1fr);}
+  .pp-actions{grid-template-columns:1fr;}
+}
+@media(max-width:480px){
+  .pp-hero{padding:28px 16px;}
+  .pp-name{font-size:22px;}
+  .ref-code{font-size:22px;}
+  .ref-stats{grid-template-columns:1fr;}
+  .pp-badges-grid{grid-template-columns:repeat(2,1fr);}
 }
