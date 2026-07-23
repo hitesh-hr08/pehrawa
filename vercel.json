@@ -22,6 +22,7 @@
     { "source": "/privacy-policy", "destination": "/frontend/privacy-policy.html" },
     { "source": "/shipping-policy", "destination": "/frontend/shipping-policy.html" },
     { "source": "/size-guide", "destination": "/frontend/size-guide.html" },
+    { "source": "/rewards", "destination": "/frontend/rewards.html" },
     { "source": "/reset-password", "destination": "/frontend/reset-password.html" },
     { "source": "/auth-callback", "destination": "/frontend/auth-callback.html" },
     { "source": "/admin/login", "destination": "/frontend/admin/login.html" },

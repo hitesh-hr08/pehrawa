@@ -27,7 +27,8 @@
       '<div class="product-image">' +
         '<span class="product-badge">-' + discount + '%</span>' +
         badges +
-        '<a href="product.html?id=' + product.id + '">' +
+        '<button class="card-wishlist-btn" onclick="event.preventDefault();event.stopPropagation();if(window.PehrawaWishlist){PehrawaWishlist.toggle(' + product.id + ',\'' + product.name.replace(/'/g, "\\'") + '\',' + price + ',\'' + imageUrl.replace(/'/g, "\\'") + '\')}" style="position:absolute;top:8px;right:8px;z-index:5;background:rgba(0,0,0,0.5);border:none;color:#fff;width:32px;height:32px;border-radius:50%;cursor:pointer;font-size:14px;"><i class="fa-regular fa-heart"></i></button>' +
+        '<a href="/product?id=' + product.id + '">' +
           '<img src="' + imageUrl + '" alt="' + product.name + '">' +
         '</a>' +
       '</div>' +

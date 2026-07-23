@@ -279,15 +279,22 @@
       var avatarHtml = customer.image_url
         ? '<img class="profile-avatar" src="' + customer.image_url + '?t=' + Date.now() + '" alt="avatar">'
         : '<div class="profile-avatar">' + getInitials(customer.name) + '</div>';
+
+      var tierBadge = '';
+      var tierName = customer.membership_tier || 'bronze';
+      var tierColors = { bronze: '#cd7f32', silver: '#c0c0c0', gold: '#ffd700', black: '#333' };
+      var tierNames = { bronze: 'Bronze', silver: 'Silver', gold: 'Gold', black: 'Black' };
+      tierBadge = '<span style="display:inline-block;padding:2px 8px;border-radius:10px;font-size:10px;font-weight:700;color:' + (tierName === 'black' ? '#fff' : '#000') + ';background:' + (tierColors[tierName] || '#cd7f32') + ';margin-left:8px;">' + (tierNames[tierName] || 'Bronze') + '</span>';
+
       container.innerHTML = avatarHtml +
         '<div class="profile-dropdown" id="profileDropdown">' +
             '<div class="dropdown-header">' +
-            '<div class="dropdown-name">' + (customer.name || "Customer") + '</div>' +
+            '<div class="dropdown-name">' + (customer.name || "Customer") + tierBadge + '</div>' +
             '<div class="dropdown-email">' + customer.email + '</div>' +
           '</div>' +
-          '<a class="dropdown-item" href="my-orders.html"><i class="fa-solid fa-box"></i> My Orders</a>' +
-          '<a class="dropdown-item" href="wishlist.html"><i class="fa-regular fa-heart"></i> My Wishlist</a>' +
-          '<a class="dropdown-item" href="my-profile.html"><i class="fa-regular fa-user"></i> My Profile</a>' +
+          '<a class="dropdown-item" href="/my-orders"><i class="fa-solid fa-box"></i> My Orders</a>' +
+          '<a class="dropdown-item" href="/wishlist"><i class="fa-regular fa-heart"></i> My Wishlist</a>' +
+          '<a class="dropdown-item" href="/my-profile"><i class="fa-regular fa-user"></i> My Profile</a>' +
           '<div class="dropdown-divider"></div>' +
           '<a class="dropdown-item logout-item" id="profileLogoutBtn" href="#"><i class="fa-solid fa-sign-out-alt"></i> Logout</a>' +
         '</div>';

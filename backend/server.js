@@ -421,6 +421,7 @@ app.post("/api/public/orders", async (req, res) => {
     if (customerId) {
       var rewardPts = Math.floor(Number(total_amount) || 0);
       if (rewardPts > 0) {
+        pool.query("UPDATE customers SET total_spent = total_spent + $1 WHERE id = $2", [Number(total_amount) || 0, customerId]).catch(function() {});
         addRewardPoints(customerId, rewardPts, "order", "Order #" + order.id + " reward", order.id).catch(function() {});
         createScratchCard(customerId, order.id).catch(function() {});
       }
@@ -1198,10 +1199,96 @@ var HOST = process.env.HOST || "0.0.0.0";
   }
 
   // ===========================
-  // LUXURY FASHION FEATURES
+  // WISHLIST TABLE
   // ===========================
+  try {
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS wishlists (
+        id SERIAL PRIMARY KEY,
+        customer_id INTEGER REFERENCES customers(id) ON DELETE CASCADE,
+        product_id INTEGER REFERENCES products(id) ON DELETE CASCADE,
+        price_when_added NUMERIC(10,2),
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        UNIQUE(customer_id, product_id)
+      )
+    `);
+    console.log("Database migration: wishlists table created");
+  } catch (err) {
+    console.error("Wishlists migration error (non-fatal):", err.message);
+  }
 
-  // Daily Drop table
+  // ===========================
+  // PRICE ALERTS TABLE
+  // ===========================
+  try {
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS price_alerts (
+        id SERIAL PRIMARY KEY,
+        customer_id INTEGER REFERENCES customers(id) ON DELETE CASCADE,
+        product_id INTEGER REFERENCES products(id) ON DELETE CASCADE,
+        target_price NUMERIC(10,2),
+        is_active BOOLEAN DEFAULT TRUE,
+        notified_at TIMESTAMP DEFAULT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        UNIQUE(customer_id, product_id)
+      )
+    `);
+    console.log("Database migration: price_alerts table created");
+  } catch (err) {
+    console.error("Price alerts migration error (non-fatal):", err.message);
+  }
+
+  // ===========================
+  // RECENTLY VIEWED TABLE
+  // ===========================
+  try {
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS product_views (
+        id SERIAL PRIMARY KEY,
+        customer_id INTEGER REFERENCES customers(id) ON DELETE CASCADE,
+        product_id INTEGER REFERENCES products(id) ON DELETE CASCADE,
+        viewed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      )
+    `);
+    await pool.query(`
+      CREATE INDEX IF NOT EXISTS idx_product_views_customer ON product_views(customer_id, viewed_at DESC)
+    `);
+    console.log("Database migration: product_views table created");
+  } catch (err) {
+    console.error("Product views migration error (non-fatal):", err.message);
+  }
+
+  // ===========================
+  // ADD redeemable_points to customers
+  // ===========================
+  try {
+    await pool.query(`
+      ALTER TABLE customers
+        ADD COLUMN IF NOT EXISTS redeemable_points INTEGER DEFAULT 0,
+        ADD COLUMN IF NOT EXISTS lifetime_points INTEGER DEFAULT 0,
+        ADD COLUMN IF NOT EXISTS tier_upgraded_at TIMESTAMP DEFAULT NULL
+    `);
+    console.log("Database migration: customer points/tier columns added");
+  } catch (err) {
+    console.error("Customer points columns migration error (non-fatal):", err.message);
+  }
+
+  // ===========================
+  // MIGRATE existing total_points to lifetime_points + redeemable_points
+  // ===========================
+  try {
+    await pool.query(`
+      UPDATE customers SET lifetime_points = total_points, redeemable_points = total_points
+      WHERE lifetime_points = 0 AND total_points > 0
+    `);
+    console.log("Database migration: migrated existing points to lifetime/redeemable");
+  } catch (err) {
+    console.error("Points migration error (non-fatal):", err.message);
+  }
+
+  // ===========================
+  // DAILY DROP TABLE
+  // ===========================
   try {
     await pool.query(`
       CREATE TABLE IF NOT EXISTS daily_drops (
@@ -1216,6 +1303,10 @@ var HOST = process.env.HOST || "0.0.0.0";
   } catch (err) {
     console.error("Daily drops migration error (non-fatal):", err.message);
   }
+
+  // ===========================
+  // LUXURY FASHION FEATURES
+  // ===========================
 
   // Rewards / Points table
   try {
@@ -1415,7 +1506,7 @@ var HOST = process.env.HOST || "0.0.0.0";
       try { decoded = jwt.verify(authHeader.slice(7), process.env.JWT_SECRET); } catch (e) { return res.json({ success: true, points: 0, tier: "bronze", history: [] }); }
       if (!decoded || decoded.role !== "customer") return res.json({ success: true, points: 0, tier: "bronze", history: [] });
 
-      var cust = await pool.query("SELECT total_points, membership_tier, total_spent FROM customers WHERE id = $1", [decoded.id]);
+      var cust = await pool.query("SELECT total_points, redeemable_points, lifetime_points, membership_tier, total_spent FROM customers WHERE id = $1", [decoded.id]);
       if (cust.rows.length === 0) return res.json({ success: true, points: 0, tier: "bronze", history: [] });
 
       var history = await pool.query(
@@ -1423,11 +1514,19 @@ var HOST = process.env.HOST || "0.0.0.0";
         [decoded.id]
       );
 
+      var c = cust.rows[0];
+      var pts = parseInt(c.total_points) || 0;
+      var spent = parseFloat(c.total_spent) || 0;
+
       res.json({
         success: true,
-        points: cust.rows[0].total_points || 0,
-        tier: cust.rows[0].membership_tier || "bronze",
-        total_spent: parseFloat(cust.rows[0].total_spent) || 0,
+        points: pts,
+        redeemable_points: parseInt(c.redeemable_points) || pts,
+        lifetime_points: parseInt(c.lifetime_points) || pts,
+        tier: c.membership_tier || "bronze",
+        tierBenefits: getTierBenefits(c.membership_tier || "bronze"),
+        progress: getTierProgress(pts, spent),
+        total_spent: spent,
         history: history.rows
       });
     } catch (err) {
@@ -1441,15 +1540,53 @@ var HOST = process.env.HOST || "0.0.0.0";
         "INSERT INTO rewards (customer_id, points, type, description, order_id) VALUES ($1, $2, $3, $4, $5)",
         [customerId, points, type, description || "", orderId || null]
       );
-      await pool.query("UPDATE customers SET total_points = total_points + $1 WHERE id = $2", [points, customerId]);
-      var cust = await pool.query("SELECT total_points FROM customers WHERE id = $1", [customerId]);
-      var totalPts = cust.rows[0] ? cust.rows[0].total_points : 0;
-      var tier = "bronze";
-      if (totalPts >= 5000) tier = "platinum";
-      else if (totalPts >= 2000) tier = "gold";
-      else if (totalPts >= 500) tier = "silver";
-      await pool.query("UPDATE customers SET membership_tier = $1 WHERE id = $2", [tier, customerId]);
+      await pool.query("UPDATE customers SET total_points = total_points + $1, lifetime_points = lifetime_points + $1, redeemable_points = redeemable_points + $1 WHERE id = $2", [points, customerId]);
+      await updateCustomerTier(customerId);
     } catch (e) { console.error("addRewardPoints error:", e.message); }
+  }
+
+  async function updateCustomerTier(customerId) {
+    try {
+      var cust = await pool.query("SELECT total_points, lifetime_points, redeemable_points, total_spent, membership_tier FROM customers WHERE id = $1", [customerId]);
+      if (cust.rows.length === 0) return;
+      var c = cust.rows[0];
+      var pts = parseInt(c.total_points) || 0;
+      var spent = parseFloat(c.total_spent) || 0;
+      var tier = "bronze";
+      if (pts >= 5000 || spent >= 50000) tier = "black";
+      else if (pts >= 2000 || spent >= 15000) tier = "gold";
+      else if (pts >= 500 || spent >= 5000) tier = "silver";
+      if (tier !== c.membership_tier) {
+        await pool.query("UPDATE customers SET membership_tier = $1, tier_upgraded_at = NOW() WHERE id = $2", [tier, customerId]);
+      }
+    } catch (e) { console.error("updateCustomerTier error:", e.message); }
+  }
+
+  function getTierBenefits(tier) {
+    var benefits = {
+      bronze: { name: "Bronze", color: "#cd7f32", pointsMultiplier: 1, freeShipping: false, earlyAccess: false, discount: 0, nextTier: "Silver", nextThreshold: "500 points or \u20b95,000 spent" },
+      silver: { name: "Silver", color: "#c0c0c0", pointsMultiplier: 1.2, freeShipping: true, earlyAccess: false, discount: 3, nextTier: "Gold", nextThreshold: "2,000 points or \u20b915,000 spent" },
+      gold: { name: "Gold", color: "#ffd700", pointsMultiplier: 1.5, freeShipping: true, earlyAccess: true, discount: 5, nextTier: "Black", nextThreshold: "5,000 points or \u20b950,000 spent" },
+      black: { name: "Black", color: "#1a1a1a", pointsMultiplier: 2, freeShipping: true, earlyAccess: true, discount: 10, nextTier: null, nextThreshold: null }
+    };
+    return benefits[tier] || benefits.bronze;
+  }
+
+  function getTierProgress(pts, spent) {
+    var current = "bronze";
+    var next = "silver";
+    var currentMax = 0;
+    var nextMin = 500;
+    var spentNextMin = 5000;
+    if (pts >= 5000 || spent >= 50000) return { current: "black", next: null, progress: 100, needed: 0 };
+    if (pts >= 2000 || spent >= 15000) { current = "gold"; next = "black"; nextMin = 5000; spentNextMin = 50000; }
+    else if (pts >= 500 || spent >= 5000) { current = "silver"; next = "gold"; nextMin = 2000; spentNextMin = 15000; }
+    else { current = "bronze"; next = "silver"; nextMin = 500; spentNextMin = 5000; }
+    var ptsProgress = Math.min(100, (pts / nextMin) * 100);
+    var spentProgress = Math.min(100, (spent / spentNextMin) * 100);
+    var progress = Math.max(ptsProgress, spentProgress);
+    var needed = Math.max(0, nextMin - pts);
+    return { current: current, next: next, progress: Math.round(progress), needed: needed };
   }
 
   app.post("/api/public/rewards/redeem", async function (req, res) {
@@ -1463,16 +1600,17 @@ var HOST = process.env.HOST || "0.0.0.0";
       points_to_redeem = parseInt(points_to_redeem) || 0;
       if (points_to_redeem < 100) return res.status(400).json({ success: false, message: "Minimum 100 points to redeem" });
 
-      var cust = await pool.query("SELECT total_points FROM customers WHERE id = $1", [decoded.id]);
-      if (cust.rows.length === 0 || (cust.rows[0].total_points || 0) < points_to_redeem) {
-        return res.status(400).json({ success: false, message: "Insufficient points" });
+      var cust = await pool.query("SELECT redeemable_points, total_points FROM customers WHERE id = $1", [decoded.id]);
+      if (cust.rows.length === 0 || (cust.rows[0].redeemable_points || 0) < points_to_redeem) {
+        return res.status(400).json({ success: false, message: "Insufficient redeemable points" });
       }
 
-      await pool.query("UPDATE customers SET total_points = total_points - $1 WHERE id = $2", [points_to_redeem, decoded.id]);
+      await pool.query("UPDATE customers SET redeemable_points = redeemable_points - $1, total_points = total_points - $1 WHERE id = $2", [points_to_redeem, decoded.id]);
       await pool.query(
         "INSERT INTO rewards (customer_id, points, type, description) VALUES ($1, $2, 'redeem', $3)",
         [decoded.id, -points_to_redeem, "Redeemed " + points_to_redeem + " points"]
       );
+      await updateCustomerTier(decoded.id);
 
       var discount = Math.floor(points_to_redeem / 100) * 10;
       res.json({ success: true, discount: discount, message: "Rs. " + discount + " discount applied" });
@@ -1810,7 +1948,312 @@ var HOST = process.env.HOST || "0.0.0.0";
   });
 
   // ===========================
-  // ENHANCED ORDER - add points + scratch card
+  // DAILY DROP AUTO-ROTATION
+  // ===========================
+  async function autoAssignDailyDrop() {
+    try {
+      var today = new Date().toISOString().slice(0, 10);
+      var existing = await pool.query(
+        "SELECT id FROM daily_drops WHERE active_date = $1 AND is_active = TRUE",
+        [today]
+      );
+      if (existing.rows.length > 0) return;
+      var recentDrops = await pool.query("SELECT product_id FROM daily_drops ORDER BY active_date DESC LIMIT 10");
+      var excludeIds = recentDrops.rows.map(function(r) { return r.product_id; });
+      var excludeClause = excludeIds.length > 0 ? "AND id NOT IN (" + excludeIds.join(",") + ")" : "";
+      var candidates = await pool.query(
+        "SELECT id FROM products WHERE stock > 0 AND stock_status != 'out_of_stock' " + excludeClause + " ORDER BY RANDOM() LIMIT 1"
+      );
+      if (candidates.rows.length === 0) {
+        candidates = await pool.query("SELECT id FROM products WHERE stock > 0 ORDER BY RANDOM() LIMIT 1");
+      }
+      if (candidates.rows.length === 0) return;
+      await pool.query(
+        "INSERT INTO daily_drops (product_id, active_date, is_active) VALUES ($1, $2, TRUE)",
+        [candidates.rows[0].id, today]
+      );
+      console.log("Auto-assigned daily drop for " + today + ": product " + candidates.rows[0].id);
+    } catch (e) { console.error("autoAssignDailyDrop error:", e.message); }
+  }
+
+  autoAssignDailyDrop();
+  setInterval(function () {
+    var now = new Date();
+    if (now.getHours() === 0 && now.getMinutes() === 0) autoAssignDailyDrop();
+  }, 60000);
+
+  // ===========================
+  // WISHLIST API
+  // ===========================
+  function verifyCustomerToken(req) {
+    var authHeader = req.headers.authorization;
+    if (!authHeader || !authHeader.startsWith("Bearer ")) return null;
+    try {
+      var decoded = jwt.verify(authHeader.slice(7), process.env.JWT_SECRET);
+      if (decoded && decoded.id && decoded.role === "customer") return decoded.id;
+    } catch (e) {}
+    return null;
+  }
+
+  app.get("/api/user/wishlist", async function (req, res) {
+    try {
+      var customerId = verifyCustomerToken(req);
+      if (!customerId) return res.json({ success: true, wishlist: [] });
+      var result = await pool.query(
+        `SELECT w.id, w.product_id, w.price_when_added, w.created_at,
+                p.name, p.price, p.original_price, p.image_url, p.stock_status
+         FROM wishlists w
+         JOIN products p ON w.product_id = p.id
+         WHERE w.customer_id = $1 ORDER BY w.created_at DESC`,
+        [customerId]
+      );
+      res.json({ success: true, wishlist: result.rows });
+    } catch (err) {
+      res.json({ success: true, wishlist: [] });
+    }
+  });
+
+  app.post("/api/user/wishlist", async function (req, res) {
+    try {
+      var customerId = verifyCustomerToken(req);
+      if (!customerId) return res.status(401).json({ success: false, message: "Auth required" });
+      var { product_id } = req.body;
+      if (!product_id) return res.status(400).json({ success: false, message: "Product ID required" });
+      var product = await pool.query("SELECT id, price FROM products WHERE id = $1", [product_id]);
+      if (product.rows.length === 0) return res.status(404).json({ success: false, message: "Product not found" });
+      var result = await pool.query(
+        `INSERT INTO wishlists (customer_id, product_id, price_when_added)
+         VALUES ($1, $2, $3)
+         ON CONFLICT (customer_id, product_id) DO NOTHING
+         RETURNING *`,
+        [customerId, product_id, product.rows[0].price]
+      );
+      res.json({ success: true, message: "Added to wishlist", item: result.rows[0] || null });
+    } catch (err) {
+      res.status(500).json({ success: false, message: "Failed to add to wishlist" });
+    }
+  });
+
+  app.delete("/api/user/wishlist/:productId", async function (req, res) {
+    try {
+      var customerId = verifyCustomerToken(req);
+      if (!customerId) return res.status(401).json({ success: false, message: "Auth required" });
+      await pool.query("DELETE FROM wishlists WHERE customer_id = $1 AND product_id = $2", [customerId, req.params.productId]);
+      res.json({ success: true, message: "Removed from wishlist" });
+    } catch (err) {
+      res.status(500).json({ success: false, message: "Failed to remove from wishlist" });
+    }
+  });
+
+  app.get("/api/user/wishlist/check/:productId", async function (req, res) {
+    try {
+      var customerId = verifyCustomerToken(req);
+      if (!customerId) return res.json({ success: true, inWishlist: false });
+      var result = await pool.query("SELECT id FROM wishlists WHERE customer_id = $1 AND product_id = $2", [customerId, req.params.productId]);
+      res.json({ success: true, inWishlist: result.rows.length > 0 });
+    } catch (err) {
+      res.json({ success: true, inWishlist: false });
+    }
+  });
+
+  // ===========================
+  // RECENTLY VIEWED API
+  // ===========================
+  app.post("/api/user/recently-viewed", async function (req, res) {
+    try {
+      var customerId = verifyCustomerToken(req);
+      if (!customerId) return res.json({ success: true });
+      var { product_id } = req.body;
+      if (!product_id) return res.json({ success: true });
+      await pool.query("DELETE FROM product_views WHERE customer_id = $1 AND product_id = $2", [customerId, product_id]);
+      await pool.query("INSERT INTO product_views (customer_id, product_id) VALUES ($1, $2)", [customerId, product_id]);
+      await pool.query(
+        "DELETE FROM product_views WHERE id NOT IN (SELECT id FROM product_views WHERE customer_id = $1 ORDER BY viewed_at DESC LIMIT 50)",
+        [customerId]
+      );
+      res.json({ success: true });
+    } catch (err) {
+      res.json({ success: true });
+    }
+  });
+
+  app.get("/api/user/recently-viewed", async function (req, res) {
+    try {
+      var customerId = verifyCustomerToken(req);
+      if (!customerId) return res.json({ success: true, products: [] });
+      var result = await pool.query(
+        `SELECT pv.viewed_at, p.id, p.name, p.price, p.original_price, p.image_url, p.stock_status
+         FROM product_views pv
+         JOIN products p ON pv.product_id = p.id
+         WHERE pv.customer_id = $1
+         ORDER BY pv.viewed_at DESC LIMIT 12`,
+        [customerId]
+      );
+      res.json({ success: true, products: result.rows });
+    } catch (err) {
+      res.json({ success: true, products: [] });
+    }
+  });
+
+  // ===========================
+  // PRICE ALERTS API
+  // ===========================
+  app.post("/api/user/price-alerts", async function (req, res) {
+    try {
+      var customerId = verifyCustomerToken(req);
+      if (!customerId) return res.status(401).json({ success: false, message: "Auth required" });
+      var { product_id } = req.body;
+      if (!product_id) return res.status(400).json({ success: false, message: "Product ID required" });
+      var product = await pool.query("SELECT id, price FROM products WHERE id = $1", [product_id]);
+      if (product.rows.length === 0) return res.status(404).json({ success: false, message: "Product not found" });
+      var currentPrice = parseFloat(product.rows[0].price);
+      var result = await pool.query(
+        `INSERT INTO price_alerts (customer_id, product_id, target_price)
+         VALUES ($1, $2, $3)
+         ON CONFLICT (customer_id, product_id) DO UPDATE SET target_price = $3, is_active = TRUE
+         RETURNING *`,
+        [customerId, product_id, currentPrice]
+      );
+      res.json({ success: true, message: "Price alert set! We'll notify you when the price drops." });
+    } catch (err) {
+      res.status(500).json({ success: false, message: "Failed to set price alert" });
+    }
+  });
+
+  app.get("/api/user/price-alerts", async function (req, res) {
+    try {
+      var customerId = verifyCustomerToken(req);
+      if (!customerId) return res.json({ success: true, alerts: [] });
+      var result = await pool.query(
+        `SELECT pa.*, p.name, p.price, p.image_url
+         FROM price_alerts pa
+         JOIN products p ON pa.product_id = p.id
+         WHERE pa.customer_id = $1 AND pa.is_active = TRUE
+         ORDER BY pa.created_at DESC`,
+        [customerId]
+      );
+      res.json({ success: true, alerts: result.rows });
+    } catch (err) {
+      res.json({ success: true, alerts: [] });
+    }
+  });
+
+  app.delete("/api/user/price-alerts/:id", async function (req, res) {
+    try {
+      var customerId = verifyCustomerToken(req);
+      if (!customerId) return res.status(401).json({ success: false, message: "Auth required" });
+      await pool.query("DELETE FROM price_alerts WHERE id = $1 AND customer_id = $2", [req.params.id, customerId]);
+      res.json({ success: true, message: "Price alert cancelled" });
+    } catch (err) {
+      res.status(500).json({ success: false, message: "Failed to cancel alert" });
+    }
+  });
+
+  app.get("/api/user/price-alerts/check/:productId", async function (req, res) {
+    try {
+      var customerId = verifyCustomerToken(req);
+      if (!customerId) return res.json({ success: true, hasAlert: false });
+      var result = await pool.query("SELECT id FROM price_alerts WHERE customer_id = $1 AND product_id = $2 AND is_active = TRUE", [customerId, req.params.productId]);
+      res.json({ success: true, hasAlert: result.rows.length > 0 });
+    } catch (err) {
+      res.json({ success: true, hasAlert: false });
+    }
+  });
+
+  // ===========================
+  // REWARD DASHBOARD API
+  // ===========================
+  app.get("/api/user/reward-dashboard", async function (req, res) {
+    try {
+      var customerId = verifyCustomerToken(req);
+      if (!customerId) return res.json({
+        success: true, dashboard: {
+          tier: "bronze", tierBenefits: getTierBenefits("bronze"),
+          points: { lifetime: 0, redeemable: 0 },
+          progress: getTierProgress(0, 0),
+          history: [], scratchCards: { unrevealed: 0, unredeemed: 0 },
+          priceAlerts: 0, wishlistCount: 0, orderCount: 0, totalSpent: 0
+        }
+      });
+
+      var cust = await pool.query(
+        "SELECT total_points, lifetime_points, redeemable_points, membership_tier, total_spent, tier_upgraded_at, created_at FROM customers WHERE id = $1",
+        [customerId]
+      );
+      if (cust.rows.length === 0) return res.json({ success: true, dashboard: null });
+      var c = cust.rows[0];
+      var tier = c.membership_tier || "bronze";
+      var pts = parseInt(c.total_points) || 0;
+      var spent = parseFloat(c.total_spent) || 0;
+
+      var history = await pool.query(
+        "SELECT points, type, description, created_at FROM rewards WHERE customer_id = $1 ORDER BY created_at DESC LIMIT 30",
+        [customerId]
+      );
+
+      var scratchStats = await pool.query(
+        `SELECT
+           SUM(CASE WHEN is_revealed = FALSE THEN 1 ELSE 0 END)::int as unrevealed,
+           SUM(CASE WHEN is_revealed = TRUE AND is_redeemed = FALSE THEN 1 ELSE 0 END)::int as unredeemed
+         FROM scratch_cards WHERE customer_id = $1`,
+        [customerId]
+      );
+
+      var alertCount = await pool.query("SELECT COUNT(*)::int as cnt FROM price_alerts WHERE customer_id = $1 AND is_active = TRUE", [customerId]);
+      var wishlistCount = await pool.query("SELECT COUNT(*)::int as cnt FROM wishlists WHERE customer_id = $1", [customerId]);
+      var orderCount = await pool.query("SELECT COUNT(*)::int as cnt FROM orders WHERE customer_id = $1 AND payment_status = 'paid'", [customerId]);
+
+      res.json({
+        success: true,
+        dashboard: {
+          tier: tier,
+          tierBenefits: getTierBenefits(tier),
+          points: {
+            lifetime: parseInt(c.lifetime_points) || pts,
+            redeemable: parseInt(c.redeemable_points) || pts,
+            current: pts
+          },
+          progress: getTierProgress(pts, spent),
+          tierUpgradedAt: c.tier_upgraded_at,
+          memberSince: c.created_at,
+          history: history.rows,
+          scratchCards: {
+            unrevealed: scratchStats.rows[0].unrevealed || 0,
+            unredeemed: scratchStats.rows[0].unredeemed || 0
+          },
+          priceAlerts: alertCount.rows[0].cnt || 0,
+          wishlistCount: wishlistCount.rows[0].cnt || 0,
+          orderCount: orderCount.rows[0].cnt || 0,
+          totalSpent: spent
+        }
+      });
+    } catch (err) {
+      console.error("Reward dashboard error:", err.message);
+      res.json({ success: true, dashboard: null });
+    }
+  });
+
+  // ===========================
+  // TIER INFO API (public, no auth needed)
+  // ===========================
+  app.get("/api/public/tier-info", async function (req, res) {
+    try {
+      res.json({
+        success: true,
+        tiers: {
+          bronze: { name: "Bronze", color: "#cd7f32", pointsMultiplier: 1, freeShipping: false, earlyAccess: false, discount: 0, minPoints: 0, minSpent: 0 },
+          silver: { name: "Silver", color: "#c0c0c0", pointsMultiplier: 1.2, freeShipping: true, earlyAccess: false, discount: 3, minPoints: 500, minSpent: 5000 },
+          gold: { name: "Gold", color: "#ffd700", pointsMultiplier: 1.5, freeShipping: true, earlyAccess: true, discount: 5, minPoints: 2000, minSpent: 15000 },
+          black: { name: "Black", color: "#1a1a1a", pointsMultiplier: 2, freeShipping: true, earlyAccess: true, discount: 10, minPoints: 5000, minSpent: 50000 }
+        }
+      });
+    } catch (err) {
+      res.json({ success: true, tiers: {} });
+    }
+  });
+
+  // ===========================
+  // ENHANCED ORDER - add points + scratch card (already handled in order POST)
   // ===========================
 
   // ===========================

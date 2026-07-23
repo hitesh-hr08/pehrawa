@@ -26,12 +26,37 @@
   function renderRecentlyViewed() {
     var el = document.getElementById("recentlyViewedSection");
     if (!el) return;
+
+    if (window.isCustomerLoggedIn && window.isCustomerLoggedIn()) {
+      var api = (window.PEHRAWA_API_BASE || "http://localhost:5000") + "/api/user/recently-viewed";
+      fetch(api, { headers: { "Authorization": "Bearer " + (window.getCustomerToken ? window.getCustomerToken() : "") } })
+        .then(function (r) { return r.json(); })
+        .then(function (data) {
+          if (data.success && data.products && data.products.length > 0) {
+            renderGrid(el, data.products.map(function (p) {
+              return { id: p.id, name: p.name, price: Number(p.price) || 0, original_price: p.original_price ? Number(p.original_price) : null, image: p.image_url || "../images/product1.png" };
+            }));
+          } else {
+            renderFromLocal(el);
+          }
+        })
+        .catch(function () { renderFromLocal(el); });
+    } else {
+      renderFromLocal(el);
+    }
+  }
+
+  function renderFromLocal(el) {
     var items = getRecentlyViewed().filter(function (i) {
       return Date.now() - i.timestamp < 7 * 24 * 60 * 60 * 1000;
     });
     if (items.length === 0) { el.style.display = "none"; return; }
-    el.style.display = "block";
+    renderGrid(el, items);
+  }
 
+  function renderGrid(el, items) {
+    if (items.length === 0) { el.style.display = "none"; return; }
+    el.style.display = "block";
     var html = '<div class="rv-grid">';
     items.slice(0, 8).forEach(function (item) {
       var orig = item.original_price || Math.round(item.price * 1.5);
@@ -46,7 +71,8 @@
         '</div></div></a>';
     });
     html += '</div>';
-    el.querySelector(".rv-container").innerHTML = html;
+    var container = el.querySelector(".rv-container") || el;
+    container.innerHTML = html;
   }
 
   window.PehrawaRecentlyViewed = { add: addRecentlyViewed, render: renderRecentlyViewed };

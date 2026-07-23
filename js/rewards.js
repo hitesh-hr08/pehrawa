@@ -29,21 +29,29 @@
     var widget = document.getElementById("rewardsWidget");
     if (!widget) return;
 
-    var tierColors = { bronze: "#cd7f32", silver: "#c0c0c0", gold: "#ffd700", platinum: "#e5e4e2" };
-    var tierNames = { bronze: "Bronze", silver: "Silver", gold: "Gold", platinum: "Platinum" };
     var tier = data.tier || "bronze";
-    var color = tierColors[tier] || "#cd7f32";
-    var nextTier = tier === "bronze" ? "Silver" : tier === "silver" ? "Gold" : tier === "gold" ? "Platinum" : null;
-    var nextThreshold = tier === "bronze" ? 500 : tier === "silver" ? 2000 : tier === "gold" ? 5000 : null;
-    var progress = nextThreshold ? Math.min(100, (data.points / nextThreshold) * 100) : 100;
+    var benefits = data.tierBenefits || { color: "#cd7f32", name: "Bronze" };
+    var color = benefits.color || "#cd7f32";
+    var progress = data.progress || { next: "Silver", progress: 0, needed: 0 };
 
     var html = '<div class="rw-card">' +
-      '<div class="rw-header"><div class="rw-tier-badge" style="background:' + color + '">' + (tierNames[tier] || "Bronze") + '</div>' +
-      '<div class="rw-points-display"><span class="rw-points-num">' + data.points + '</span><span class="rw-points-label">PEHRAWA POINTS</span></div></div>' +
-      '<div class="rw-progress-wrap"><div class="rw-progress-bar"><div class="rw-progress-fill" style="width:' + progress + '%;background:' + color + '"></div></div>' +
-      (nextTier ? '<div class="rw-progress-label">' + data.points + ' / ' + nextThreshold + ' points to ' + nextTier + '</div>' : '<div class="rw-progress-label">Max tier reached!</div>') +
-      '</div>' +
-      '<div class="rw-actions"><button class="rw-redeem-btn" onclick="PehrawaRewards.showRedeemModal()">Redeem Points</button></div>';
+      '<div class="rw-header"><div class="rw-tier-badge" style="background:' + color + '">' + benefits.name + '</div>' +
+      '<div class="rw-points-display"><span class="rw-points-num">' + (data.redeemable_points || data.points || 0) + '</span><span class="rw-points-label">REDEEMABLE POINTS</span></div></div>' +
+      '<div class="rw-progress-wrap"><div class="rw-progress-bar"><div class="rw-progress-fill" style="width:' + (progress.progress || 0) + '%;background:' + color + '"></div></div>' +
+      (progress.next ? '<div class="rw-progress-label">' + (progress.needed || 0) + ' points to ' + progress.next + '</div>' : '<div class="rw-progress-label">Max tier reached!</div>') +
+      '</div>';
+
+    if (benefits.freeShipping || benefits.earlyAccess || benefits.discount > 0) {
+      html += '<div class="rw-benefits">';
+      if (benefits.freeShipping) html += '<span class="rw-benefit"><i class="fa-solid fa-truck"></i> Free Shipping</span>';
+      if (benefits.earlyAccess) html += '<span class="rw-benefit"><i class="fa-solid fa-clock"></i> Early Access</span>';
+      if (benefits.discount > 0) html += '<span class="rw-benefit"><i class="fa-solid fa-percent"></i> ' + benefits.discount + '% Extra Off</span>';
+      html += '<span class="rw-benefit"><i class="fa-solid fa-star"></i> ' + (benefits.pointsMultiplier || 1) + 'x Points</span>';
+      html += '</div>';
+    }
+
+    html += '<div class="rw-actions"><button class="rw-redeem-btn" onclick="PehrawaRewards.showRedeemModal()">Redeem Points</button>' +
+      '<a href="/my-profile" class="rw-dashboard-link">View Full Dashboard</a></div>';
 
     if (data.history && data.history.length > 0) {
       html += '<div class="rw-history"><h4>Recent Activity</h4>';
@@ -66,7 +74,7 @@
       fetch(api + "/points", { headers: { "Authorization": "Bearer " + getToken() } })
         .then(function (r) { return r.json(); })
         .then(function (data) {
-          points = data.points || 0;
+          points = data.redeemable_points || data.points || 0;
           var discount = Math.floor(points / 100) * 10;
           var overlay = document.createElement("div");
           overlay.className = "checkout-overlay active";
@@ -74,7 +82,7 @@
           overlay.innerHTML = '<div class="checkout-modal">' +
             '<span class="checkout-close" onclick="document.getElementById(\'redeemOverlay\').remove()">&times;</span>' +
             '<h3>Redeem Points</h3>' +
-            '<p style="color:#aaa;margin-bottom:16px;">You have <strong style="color:#fff;">' + points + ' points</strong> (≈ Rs. ' + discount + ' discount)</p>' +
+            '<p style="color:#aaa;margin-bottom:16px;">You have <strong style="color:#fff;">' + points + ' redeemable points</strong> (≈ Rs. ' + discount + ' discount)</p>' +
             '<div style="margin-bottom:16px;"><label style="color:#888;font-size:13px;">Points to redeem</label>' +
             '<input type="number" id="redeemPoints" min="100" max="' + points + '" step="100" value="100" style="width:100%;padding:12px;background:#0b0b0b;border:1px solid #333;color:#fff;border-radius:6px;margin-top:6px;font-size:14px;"></div>' +
             '<p style="color:#888;font-size:13px;">Discount: Rs. <span id="redeemDiscount">10</span></p>' +

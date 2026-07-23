@@ -49,6 +49,49 @@ async function loadProductDetails() {
     currentProduct = data.product;
     renderProduct(currentProduct, data.images || []);
     if (window.PehrawaRecentlyViewed) PehrawaRecentlyViewed.add(currentProduct);
+
+    // Sync recently viewed to backend if logged in
+    if (window.isCustomerLoggedIn && window.isCustomerLoggedIn()) {
+      var api2 = (window.PEHRAWA_API_BASE || "http://localhost:5000") + "/api/user/recently-viewed";
+      fetch(api2, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "Authorization": "Bearer " + (window.getCustomerToken ? window.getCustomerToken() : "") },
+        body: JSON.stringify({ product_id: currentProduct.id })
+      }).catch(function () {});
+    }
+
+    // Check wishlist status
+    var wishlistBtn = document.getElementById("wishlistToggleBtn");
+    if (wishlistBtn && window.PehrawaWishlist) {
+      window.PehrawaWishlist.check(currentProduct.id, function (inWishlist) {
+        var icon = document.getElementById("wishlistHeartIcon");
+        var text = document.getElementById("wishlistBtnText");
+        if (inWishlist) {
+          if (icon) { icon.classList.add("fa-solid"); icon.classList.remove("fa-regular"); icon.style.color = "#e74c3c"; }
+          if (text) text.textContent = "Wishlisted";
+          wishlistBtn.style.borderColor = "#e74c3c";
+          wishlistBtn.style.color = "#e74c3c";
+        }
+      });
+      wishlistBtn.addEventListener("click", function () {
+        window.PehrawaWishlist.toggle(currentProduct.id, currentProduct.name, currentProduct.price, currentProduct.image_url);
+        window.PehrawaWishlist.check(currentProduct.id, function (inWishlist) {
+          var icon = document.getElementById("wishlistHeartIcon");
+          var text = document.getElementById("wishlistBtnText");
+          if (inWishlist) {
+            if (icon) { icon.classList.add("fa-solid"); icon.classList.remove("fa-regular"); icon.style.color = "#e74c3c"; }
+            if (text) text.textContent = "Wishlisted";
+            wishlistBtn.style.borderColor = "#e74c3c";
+            wishlistBtn.style.color = "#e74c3c";
+          } else {
+            if (icon) { icon.classList.remove("fa-solid"); icon.classList.add("fa-regular"); icon.style.color = ""; }
+            if (text) text.textContent = "Wishlist";
+            wishlistBtn.style.borderColor = "#333";
+            wishlistBtn.style.color = "#ccc";
+          }
+        });
+      });
+    }
   } catch (err) {
     document.getElementById("productName").innerText = "Server Not Connected";
     document.getElementById("productDescription").innerText = "Could not load product. Please check your connection and try again.";
