@@ -369,7 +369,7 @@
 .product-secondary-actions{
   display:flex;
   gap:10px;
-  margin-top:4px;
+  margin:8px 0;
 }
 .product-secondary-actions button{
   flex:1;
