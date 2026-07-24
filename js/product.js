@@ -73,8 +73,8 @@ async function loadProductDetails() {
         }
       });
       wishlistBtn.addEventListener("click", function () {
-        window.PehrawaWishlist.toggle(currentProduct.id, currentProduct.name, currentProduct.price, currentProduct.image_url);
-        window.PehrawaWishlist.check(currentProduct.id, function (inWishlist) {
+        window.PehrawaWishlist.toggle(currentProduct.id, currentProduct.name, currentProduct.price, currentProduct.image_url, function (inWishlist) {
+          if (inWishlist === null) return;
           var icon = document.getElementById("wishlistHeartIcon");
           var text = document.getElementById("wishlistBtnText");
           if (inWishlist) {
@@ -86,6 +86,8 @@ async function loadProductDetails() {
             if (text) text.textContent = "Wishlist";
             wishlistBtn.classList.remove("active");
           }
+        });
+      });
         });
       });
     }

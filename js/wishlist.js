@@ -10,14 +10,16 @@
   }
 
   window.PehrawaWishlist = {
-    toggle: function (productId, productName, productPrice, productImage) {
+    toggle: function (productId, productName, productPrice, productImage, callback) {
+      var self = this;
       if (isLoggedIn()) {
-        this.toggleServer(productId);
+        this.toggleServer(productId, callback);
       } else {
-        this.toggleLocal(productId, productName, productPrice, productImage);
+        this.toggleLocal(productId, productName, productPrice, productImage, callback);
       }
     },
-    toggleServer: function (productId) {
+    toggleServer: function (productId, callback) {
+      var self = this;
       fetch(api + "/check/" + productId, {
         headers: { "Authorization": "Bearer " + getToken() }
       })
@@ -30,7 +32,8 @@
             }).then(function () {
               updateWishlistIcons(productId, false);
               if (typeof showToast === "function") showToast("Removed from wishlist");
-            });
+              if (callback) callback(false);
+            }).catch(function () { if (callback) callback(null); });
           } else {
             fetch(api, {
               method: "POST",
@@ -39,21 +42,24 @@
             }).then(function () {
               updateWishlistIcons(productId, true);
               if (typeof showToast === "function") showToast("Added to wishlist");
-            });
+              if (callback) callback(true);
+            }).catch(function () { if (callback) callback(null); });
           }
-        });
+        }).catch(function () { if (callback) callback(null); });
     },
-    toggleLocal: function (productId, name, price, image) {
+    toggleLocal: function (productId, name, price, image, callback) {
       var items = JSON.parse(localStorage.getItem("wishlist")) || [];
       var idx = items.findIndex(function (i) { return i.id == productId; });
       if (idx > -1) {
         items.splice(idx, 1);
         updateWishlistIcons(productId, false);
         if (typeof showToast === "function") showToast("Removed from wishlist");
+        if (callback) callback(false);
       } else {
         items.push({ id: productId, name: name || "Product", price: Number(price) || 0, image: image || "../images/product1.png" });
         updateWishlistIcons(productId, true);
         if (typeof showToast === "function") showToast("Added to wishlist");
+        if (callback) callback(true);
       }
       localStorage.setItem("wishlist", JSON.stringify(items));
       updateWishlistCount();
