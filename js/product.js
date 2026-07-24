@@ -372,6 +372,7 @@ function renderProduct(product, images) {
   var availableSizes = product.sizes;
   if (typeof availableSizes === "string") { try { availableSizes = JSON.parse(availableSizes); } catch(e) { availableSizes = null; } }
   if (!availableSizes || !availableSizes.length) availableSizes = config.sizes;
+  var isClothingCategory = config.sizes.length > 0;
   if (availableSizes.length > 0) {
     sizeSection.style.display = "block";
     sizeLabel.innerText = config.sizeLabel || "Select Size";
@@ -395,6 +396,17 @@ function renderProduct(product, images) {
   } else {
     sizeSection.style.display = "none";
     selectedSize = "ONE";
+  }
+
+  // Hide AI size recommendation & size guide for non-clothing categories (perfume, watches, etc.)
+  var aiSizeRec = document.querySelector(".size-rec-trigger");
+  var sgLink2 = document.querySelector(".size-guide-link");
+  if (!isClothingCategory) {
+    if (aiSizeRec) aiSizeRec.style.display = "none";
+    if (sgLink2) sgLink2.style.display = "none";
+  } else {
+    if (aiSizeRec) aiSizeRec.style.display = "";
+    if (sgLink2) sgLink2.style.display = "";
   }
 
   // Features
