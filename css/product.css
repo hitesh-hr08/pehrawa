@@ -2,7 +2,7 @@
 #productDetail { visibility: hidden; }
 #productDetail.visible { visibility: visible; }
 .product-section{
-  padding:130px 0 80px;
+  padding:110px 0 40px;
   position:relative;
 }
 

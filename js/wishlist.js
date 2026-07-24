@@ -29,20 +29,24 @@
             fetch(api + "/" + productId, {
               method: "DELETE",
               headers: { "Authorization": "Bearer " + getToken() }
-            }).then(function () {
-              updateWishlistIcons(productId, false);
-              if (typeof showToast === "function") showToast("Removed from wishlist");
-              if (callback) callback(false);
+            }).then(function (r) { return r.json(); }).then(function (d) {
+              if (d.success) {
+                updateWishlistIcons(productId, false);
+                if (typeof showToast === "function") showToast("Removed from wishlist");
+                if (callback) callback(false);
+              } else { if (callback) callback(null); }
             }).catch(function () { if (callback) callback(null); });
           } else {
             fetch(api, {
               method: "POST",
               headers: { "Content-Type": "application/json", "Authorization": "Bearer " + getToken() },
               body: JSON.stringify({ product_id: productId })
-            }).then(function () {
-              updateWishlistIcons(productId, true);
-              if (typeof showToast === "function") showToast("Added to wishlist");
-              if (callback) callback(true);
+            }).then(function (r) { return r.json(); }).then(function (d) {
+              if (d.success) {
+                updateWishlistIcons(productId, true);
+                if (typeof showToast === "function") showToast("Added to wishlist");
+                if (callback) callback(true);
+              } else { if (typeof showToast === "function") showToast(d.message || "Failed"); if (callback) callback(null); }
             }).catch(function () { if (callback) callback(null); });
           }
         }).catch(function () { if (callback) callback(null); });
@@ -77,9 +81,38 @@
       }
     },
     renderWishlistPage: function () {
-      if (!isLoggedIn()) return false;
-      var container = document.getElementById("wishlistGrid") || document.getElementById("wishlistItems");
+      var container = document.getElementById("wishlistGrid") || document.getElementById("wishlistItems") || document.getElementById("wishlistContainer");
       if (!container) return false;
+
+      if (!isLoggedIn()) {
+        var localItems = JSON.parse(localStorage.getItem("wishlist")) || [];
+        if (localItems.length === 0) {
+          container.innerHTML = '<div style="text-align:center;padding:60px 20px;"><i class="fa-regular fa-heart" style="font-size:48px;color:#333;margin-bottom:16px;display:block;"></i><h3 style="color:#666;">Your wishlist is empty</h3><p style="color:#999;">Browse our collection and save items you love</p><a href="/shop" style="display:inline-block;margin-top:16px;padding:12px 32px;background:#ff6b00;color:#fff;text-decoration:none;border-radius:8px;font-weight:600;">Shop Now</a></div>';
+        } else {
+          var html = '<div class="rv-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:16px;">';
+          localItems.forEach(function (item) {
+            var price = Number(item.price) || 0;
+            var orig = Math.round(price * 1.5);
+            var disc = orig > price ? Math.round((1 - price / orig) * 100) : 0;
+            html += '<div class="product-card revealed" style="position:relative;">' +
+              '<div class="product-image">' +
+              (disc > 0 ? '<span class="product-badge">-' + disc + '%</span>' : '') +
+              '<a href="/product?id=' + item.id + '"><img src="' + (item.image || "../images/product1.png") + '" alt="' + item.name + '"></a>' +
+              '</div><div class="product-content">' +
+              '<h3>' + item.name + '</h3>' +
+              '<div class="price">&#8377;' + price.toFixed(0) +
+              (disc > 0 ? '<span class="orig">&#8377;' + orig + '</span>' : '') + '</div>' +
+              '<div style="display:flex;gap:8px;margin-top:8px;">' +
+              '<button class="add-cart-btn" onclick="addLocalWishItemToCart(' + item.id + ')" style="flex:1;padding:8px;background:#ff6b00;color:#fff;border:none;border-radius:4px;cursor:pointer;font-size:12px;"><i class="fa-solid fa-cart-plus"></i> Add to Cart</button>' +
+              '<button onclick="PehrawaWishlist.toggle(' + item.id + ',\'' + item.name.replace(/'/g, "\\'") + '\',' + price + ',\'' + (item.image || "").replace(/'/g, "\\'") + '\'); PehrawaWishlist.renderWishlistPage();" style="padding:8px 12px;background:none;border:1px solid #333;color:#e74c3c;border-radius:4px;cursor:pointer;"><i class="fa-solid fa-trash"></i></button>' +
+              '</div></div></div>';
+          });
+          html += '</div>';
+          container.innerHTML = html;
+        }
+        return true;
+      }
+
       container.innerHTML = '<div style="text-align:center;padding:40px;color:#888;"><i class="fa-solid fa-spinner fa-spin"></i></div>';
       fetch(api, { headers: { "Authorization": "Bearer " + getToken() } })
         .then(function (r) { return r.json(); })
@@ -158,6 +191,19 @@
         if (typeof showToast === "function") showToast(p.name + " added to cart");
       }
     });
+  };
+
+  window.addLocalWishItemToCart = function (productId) {
+    var items = JSON.parse(localStorage.getItem("wishlist")) || [];
+    var item = items.find(function (i) { return i.id == productId; });
+    if (!item) {
+      window.addWishItemToCart(productId);
+      return;
+    }
+    var cart = JSON.parse(localStorage.getItem("cart")) || [];
+    cart.push({ id: item.id, name: item.name, price: Number(item.price) || 0, image: item.image || "../images/product1.png", size: "M", quantity: 1 });
+    localStorage.setItem("cart", JSON.stringify(cart));
+    if (typeof showToast === "function") showToast(item.name + " added to cart");
   };
 
   if (document.readyState === "loading") {
