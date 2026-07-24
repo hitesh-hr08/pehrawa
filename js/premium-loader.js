@@ -57,4 +57,10 @@
   } else {
     create();
   }
+
+  window.addEventListener("pageshow", function () {
+    var el = document.getElementById("premiumLoader");
+    if (el) { el.classList.add("pl-hide"); el.remove(); }
+    document.body.style.overflow = "";
+  });
 })();

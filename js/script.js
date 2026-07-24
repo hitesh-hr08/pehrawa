@@ -638,5 +638,7 @@ window.addEventListener('pageshow', function(){
   if(menu) menu.classList.remove('open');
   if(overlay) overlay.classList.remove('open');
   document.body.style.overflow = '';
+  var loader = document.getElementById('premiumLoader');
+  if(loader) { loader.classList.add('pl-hide'); loader.remove(); }
 });
 
