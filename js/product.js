@@ -67,10 +67,9 @@ async function loadProductDetails() {
         var icon = document.getElementById("wishlistHeartIcon");
         var text = document.getElementById("wishlistBtnText");
         if (inWishlist) {
-          if (icon) { icon.classList.add("fa-solid"); icon.classList.remove("fa-regular"); icon.style.color = "#e74c3c"; }
+          if (icon) { icon.classList.add("fa-solid"); icon.classList.remove("fa-regular"); }
           if (text) text.textContent = "Wishlisted";
-          wishlistBtn.style.borderColor = "#e74c3c";
-          wishlistBtn.style.color = "#e74c3c";
+          wishlistBtn.classList.add("active");
         }
       });
       wishlistBtn.addEventListener("click", function () {
@@ -79,15 +78,13 @@ async function loadProductDetails() {
           var icon = document.getElementById("wishlistHeartIcon");
           var text = document.getElementById("wishlistBtnText");
           if (inWishlist) {
-            if (icon) { icon.classList.add("fa-solid"); icon.classList.remove("fa-regular"); icon.style.color = "#e74c3c"; }
+            if (icon) { icon.classList.add("fa-solid"); icon.classList.remove("fa-regular"); }
             if (text) text.textContent = "Wishlisted";
-            wishlistBtn.style.borderColor = "#e74c3c";
-            wishlistBtn.style.color = "#e74c3c";
+            wishlistBtn.classList.add("active");
           } else {
-            if (icon) { icon.classList.remove("fa-solid"); icon.classList.add("fa-regular"); icon.style.color = ""; }
+            if (icon) { icon.classList.remove("fa-solid"); icon.classList.add("fa-regular"); }
             if (text) text.textContent = "Wishlist";
-            wishlistBtn.style.borderColor = "#333";
-            wishlistBtn.style.color = "#ccc";
+            wishlistBtn.classList.remove("active");
           }
         });
       });

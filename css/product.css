@@ -365,6 +365,46 @@
   border-top:1px solid rgba(255,255,255,0.06);
 }
 
+/* SECONDARY ACTIONS (Wishlist + Price Alert) */
+.product-secondary-actions{
+  display:flex;
+  gap:10px;
+  margin-top:4px;
+}
+.product-secondary-actions button{
+  flex:1;
+  height:44px;
+  border:1px solid #333;
+  border-radius:10px;
+  background:rgba(255,255,255,0.04);
+  color:#aaa;
+  font-size:13px;
+  font-weight:600;
+  cursor:pointer;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:7px;
+  transition:all .3s ease;
+}
+.product-secondary-actions button:hover{
+  border-color:#555;
+  color:#fff;
+  background:rgba(255,255,255,0.08);
+  transform:translateY(-1px);
+}
+.wishlist-toggle-btn.active,
+.wishlist-toggle-btn[style*="color: rgb(231, 76, 60)"]{
+  border-color:#e74c3c !important;
+  color:#e74c3c !important;
+  background:rgba(231,76,60,0.08) !important;
+}
+.price-alert-btn.active{
+  border-color:#f39c12;
+  color:#f39c12;
+  background:rgba(243,156,18,0.08);
+}
+
 .product-features .pf-item{
   display:flex;
   align-items:center;
