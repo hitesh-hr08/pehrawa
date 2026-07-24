@@ -191,6 +191,81 @@ var categoryConfig = {
       "Scratch Resistant Lenses",
       "1-Year Warranty Included"
     ]
+  },
+  "PERFUME": {
+    sizes: [],
+    sizeLabel: "",
+    highlights: [
+      {icon:"fa-solid fa-wind", text:"Long Lasting"},
+      {icon:"fa-solid fa-flask", text:"Premium Fragrance"},
+      {icon:"fa-solid fa-truck", text:"Free Shipping"}
+    ],
+    features: [
+      "Premium Long-Lasting Fragrance",
+      "Alcohol-Free & Skin Safe",
+      "Elegant Glass Bottle Design",
+      "Easy 30-Day Returns & Exchange"
+    ]
+  },
+  "FRAGRANCE": {
+    sizes: [],
+    sizeLabel: "",
+    highlights: [
+      {icon:"fa-solid fa-wind", text:"Long Lasting"},
+      {icon:"fa-solid fa-flask", text:"Premium Fragrance"},
+      {icon:"fa-solid fa-truck", text:"Free Shipping"}
+    ],
+    features: [
+      "Premium Long-Lasting Fragrance",
+      "Alcohol-Free & Skin Safe",
+      "Elegant Glass Bottle Design",
+      "Easy 30-Day Returns & Exchange"
+    ]
+  },
+  "JACKETS": {
+    sizes: ["S","M","L","XL","XXL"],
+    sizeLabel: "Select Size",
+    highlights: [
+      {icon:"fa-solid fa-wind", text:"Wind Resistant"},
+      {icon:"fa-solid fa-shirt", text:"Premium Build"},
+      {icon:"fa-solid fa-truck", text:"Free Shipping"}
+    ],
+    features: [
+      "Premium Quality Outerwear Fabric",
+      "All-Weather Protection & Comfort",
+      "Reinforced Stitching & Finish",
+      "Easy 30-Day Returns & Exchange"
+    ]
+  },
+  "HOODIES": {
+    sizes: ["S","M","L","XL","XXL"],
+    sizeLabel: "Select Size",
+    highlights: [
+      {icon:"fa-solid fa-temperature-half", text:"Warm & Cozy"},
+      {icon:"fa-solid fa-shirt", text:"Premium Cotton"},
+      {icon:"fa-solid fa-truck", text:"Free Shipping"}
+    ],
+    features: [
+      "Premium Cotton Fleece Fabric",
+      "Brushed Interior for Extra Warmth",
+      "Kangaroo Pocket & Adjustable Hood",
+      "Easy 30-Day Returns & Exchange"
+    ]
+  },
+  "ACCESSORIES": {
+    sizes: [],
+    sizeLabel: "",
+    highlights: [
+      {icon:"fa-solid fa-gem", text:"Premium Quality"},
+      {icon:"fa-solid fa-certificate", text:"Authentic"},
+      {icon:"fa-solid fa-truck", text:"Free Shipping"}
+    ],
+    features: [
+      "Premium Quality Materials",
+      "Authentic & Original Design",
+      "Perfect Gift Option",
+      "Easy 30-Day Returns & Exchange"
+    ]
   }
 };
 
@@ -201,13 +276,35 @@ categoryConfig["GRAPHIC"] = categoryConfig["SHIRTS"];
 categoryConfig["MINIMAL"] = categoryConfig["SHIRTS"];
 categoryConfig["OVERSIZED"] = categoryConfig["SHIRTS"];
 categoryConfig["PRINTED T-SHIRTS"] = categoryConfig["SHIRTS"];
+categoryConfig["PLAIN"] = categoryConfig["SHIRTS"];
+categoryConfig["POLO"] = categoryConfig["SHIRTS"];
+categoryConfig["JOGGERS"] = categoryConfig["PANTS"];
+categoryConfig["TRACKPANTS"] = categoryConfig["PANTS"];
+categoryConfig["CHINOS"] = categoryConfig["PANTS"];
+categoryConfig["BOOTS"] = categoryConfig["FOOTWEAR"];
+categoryConfig["SNEAKERS"] = categoryConfig["FOOTWEAR"];
+categoryConfig["SANDALS"] = categoryConfig["FOOTWEAR"];
+categoryConfig["COLOGNE"] = categoryConfig["PERFUME"];
+categoryConfig["MISTS"] = categoryConfig["PERFUME"];
+categoryConfig["DEODORANT"] = categoryConfig["PERFUME"];
+categoryConfig["BODY SPRAY"] = categoryConfig["PERFUME"];
 
 function getCategoryConfig(cat) {
   if (!cat) return categoryConfig["SHIRTS"];
   var upper = cat.toUpperCase();
   for (var key in categoryConfig) {
-    if (upper.includes(key)) return categoryConfig[key];
+    if (upper === key || upper.includes(key)) return categoryConfig[key];
   }
+  if (upper.indexOf("PERFUME") !== -1 || upper.indexOf("FRAGRANCE") !== -1 || upper.indexOf("COLOGNE") !== -1 || upper.indexOf("SCENT") !== -1) return categoryConfig["PERFUME"];
+  if (upper.indexOf("HOODIE") !== -1 || upper.indexOf("HOOD") !== -1 || upper.indexOf("SWEAT") !== -1) return categoryConfig["HOODIES"];
+  if (upper.indexOf("JACKET") !== -1 || upper.indexOf("COAT") !== -1 || upper.indexOf("BLAZER") !== -1) return categoryConfig["JACKETS"];
+  if (upper.indexOf("JEAN") !== -1 || upper.indexOf("DENIM") !== -1) return categoryConfig["JEANS"];
+  if (upper.indexOf("PANT") !== -1 || upper.indexOf("TROUSER") !== -1 || upper.indexOf("CHINO") !== -1 || upper.indexOf("JOGGER") !== -1) return categoryConfig["PANTS"];
+  if (upper.indexOf("SHIRT") !== -1 || upper.indexOf("T-SHIRT") !== -1 || upper.indexOf("TEE") !== -1 || upper.indexOf("TOP") !== -1) return categoryConfig["SHIRTS"];
+  if (upper.indexOf("WATCH") !== -1 || upper.indexOf("TIMEPIECE") !== -1) return categoryConfig["WATCHES"];
+  if (upper.indexOf("SUNGLASS") !== -1 || upper.indexOf("EYEWEAR") !== -1 || upper.indexOf("GLASS") !== -1) return categoryConfig["SUNGLASSES"];
+  if (upper.indexOf("SHOE") !== -1 || upper.indexOf("FOOTWEAR") !== -1 || upper.indexOf("SNEAKER") !== -1 || upper.indexOf("BOOT") !== -1 || upper.indexOf("SANDAL") !== -1) return categoryConfig["FOOTWEAR"];
+  if (upper.indexOf("ACCESSOR") !== -1 || upper.indexOf("BELT") !== -1 || upper.indexOf("CAP") !== -1 || upper.indexOf("HAT") !== -1 || upper.indexOf("BAG") !== -1 || upper.indexOf("WALLET") !== -1 || upper.indexOf("SCARF") !== -1 || upper.indexOf("JEWEL") !== -1 || upper.indexOf("CHAIN") !== -1 || upper.indexOf("RING") !== -1) return categoryConfig["ACCESSORIES"];
   return categoryConfig["SHIRTS"];
 }
 
@@ -342,10 +439,13 @@ function renderProduct(product, images) {
   // Recently viewed on product page
   if (window.PehrawaRecentlyViewed) PehrawaRecentlyViewed.render();
 
+  // Load related products
+  if (product.category) loadRelatedProducts(product.category, product.id);
+
 }
 
 function loadRelatedProducts(category, excludeId) {
-  var el = document.getElementById("relatedProducts");
+  var el = document.getElementById("relatedGrid");
   if (!el) return;
   el.innerHTML = '<div style="text-align:center;padding:20px;color:#888;"><i class="fa-solid fa-spinner fa-spin"></i></div>';
   fetch(API_URL)

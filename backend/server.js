@@ -65,6 +65,15 @@ app.use(express.static(path.join(__dirname, "..", "frontend")));
 app.use(express.static(path.join(__dirname, "..")));
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
+// Clean URL support: /shop -> shop.html, /login -> login.html, etc.
+app.use(function (req, res, next) {
+  if (req.method === "GET" && !path.extname(req.path) && req.path !== "/") {
+    var htmlFile = path.join(__dirname, "..", "frontend", req.path + ".html");
+    if (fs.existsSync(htmlFile)) return res.sendFile(htmlFile);
+  }
+  next();
+});
+
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
     const dir = path.join(__dirname, "uploads");

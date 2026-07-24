@@ -83,7 +83,30 @@
       } else {
         matchesFilter = activeCats.some(function(cat) {
           if (cat === "T-SHIRTS") {
-            return ["ANIME","GRAPHIC","MINIMAL","OVERSIZED","PRINTED T-SHIRTS","T-SHIRTS"].some(function(k) {
+            return ["ANIME","GRAPHIC","MINIMAL","OVERSIZED","PRINTED T-SHIRTS","T-SHIRTS","PLAIN","POLO"].some(function(k) {
+              return category.includes(k);
+            });
+          }
+          if (cat === "SHIRTS") {
+            return category.includes("SHIRT") && !category.includes("T-SHIRT");
+          }
+          if (cat === "PANTS") {
+            return ["JEANS","PANT","TROUSER","CHINO","JOGGER","TRACKPANT","DENIM","JEAN"].some(function(k) {
+              return category.includes(k);
+            });
+          }
+          if (cat === "HOODIES") {
+            return ["HOODIE","HOOD","SWEAT","SWEATER"].some(function(k) {
+              return category.includes(k);
+            });
+          }
+          if (cat === "PERFUME") {
+            return ["PERFUME","FRAGRANCE","COLOGNE","SCENT","MIST","DEODORANT","BODY SPRAY"].some(function(k) {
+              return category.includes(k);
+            });
+          }
+          if (cat === "ACCESSORIES") {
+            return ["ACCESSOR","BELT","CAP","HAT","BAG","WALLET","SCARF","JEWEL","CHAIN","RING","WATCH","SUNGLASS","GLASS","EYEWEAR"].some(function(k) {
               return category.includes(k);
             });
           }
