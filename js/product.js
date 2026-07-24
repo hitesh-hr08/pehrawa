@@ -88,8 +88,6 @@ async function loadProductDetails() {
           }
         });
       });
-        });
-      });
     }
   } catch (err) {
     document.getElementById("productName").innerText = "Server Not Connected";
