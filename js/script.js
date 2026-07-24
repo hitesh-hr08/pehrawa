@@ -131,10 +131,14 @@ updateCartCount();
 
 let wishlist = JSON.parse(localStorage.getItem("wishlist")) || [];
 
-function updateWishlistCount() {
-  const wishBadge = document.querySelector(".fa-heart + span");
+function updateWishlistCount(count) {
+  const wishBadge = document.querySelector(".fa-heart") && document.querySelector(".fa-heart").parentElement.querySelector("span");
   if (wishBadge) {
-    wishBadge.innerText = wishlist.length;
+    if (typeof count === "number") {
+      wishBadge.innerText = count;
+    } else {
+      wishBadge.innerText = wishlist.length;
+    }
   }
 }
 
@@ -155,6 +159,23 @@ function addToWishlist(productId) {
 }
 
 updateWishlistCount();
+
+function syncBadgeCounts() {
+  var token = window.getCustomerToken ? window.getCustomerToken() : "";
+  if (token) {
+    var api = (window.PEHRAWA_API_BASE || "http://localhost:5000") + "/api/user/wishlist";
+    fetch(api, { headers: { "Authorization": "Bearer " + token } })
+      .then(function (r) { return r.json(); })
+      .then(function (data) {
+        if (data.success && typeof data.wishlist.length === "number") {
+          updateWishlistCount(data.wishlist.length);
+        }
+      }).catch(function () {});
+  }
+  updateCartCount();
+}
+
+setTimeout(syncBadgeCounts, 300);
 
 function findProductInDOM(productId) {
   var card = document.querySelector('.product-card .buy-now-btn[data-id="' + productId + '"]');
