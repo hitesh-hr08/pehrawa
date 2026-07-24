@@ -33,6 +33,7 @@
               if (d.success) {
                 updateWishlistIcons(productId, false);
                 if (typeof showToast === "function") showToast("Removed from wishlist");
+                self._refreshBadge();
                 if (callback) callback(false);
               } else { if (callback) callback(null); }
             }).catch(function () { if (callback) callback(null); });
@@ -45,6 +46,7 @@
               if (d.success) {
                 updateWishlistIcons(productId, true);
                 if (typeof showToast === "function") showToast("Added to wishlist");
+                self._refreshBadge();
                 if (callback) callback(true);
               } else { if (typeof showToast === "function") showToast(d.message || "Failed"); if (callback) callback(null); }
             }).catch(function () { if (callback) callback(null); });
@@ -152,8 +154,19 @@
             data.wishlist.forEach(function (item) {
               updateWishlistIcons(item.product_id, true);
             });
+            updateWishlistCount(data.wishlist.length);
           }
         });
+    },
+    _refreshBadge: function () {
+      var self = this;
+      if (!isLoggedIn()) { updateWishlistCount(); updateCartBadge(); return; }
+      fetch(api, { headers: { "Authorization": "Bearer " + getToken() } })
+        .then(function (r) { return r.json(); })
+        .then(function (data) {
+          if (data.success) updateWishlistCount(data.wishlist ? data.wishlist.length : 0);
+        }).catch(function () {});
+      updateCartBadge();
     }
   };
 
@@ -172,11 +185,23 @@
     });
   }
 
-  function updateWishlistCount() {
+  function updateWishlistCount(serverCount) {
     var badge = document.querySelector(".fa-heart") && document.querySelector(".fa-heart").parentElement.querySelector("span");
     if (badge) {
-      var items = JSON.parse(localStorage.getItem("wishlist")) || [];
-      badge.textContent = items.length;
+      if (typeof serverCount === "number") {
+        badge.textContent = serverCount;
+      } else {
+        var items = JSON.parse(localStorage.getItem("wishlist")) || [];
+        badge.textContent = items.length;
+      }
+    }
+  }
+
+  function updateCartBadge() {
+    var cartBadge = document.querySelector(".fa-cart-shopping") && document.querySelector(".fa-cart-shopping").parentElement.querySelector("span");
+    if (cartBadge) {
+      var cart = JSON.parse(localStorage.getItem("cart")) || [];
+      cartBadge.textContent = cart.length;
     }
   }
 
