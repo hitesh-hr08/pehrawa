@@ -12,6 +12,11 @@ async function upload(filePath, folder) {
   const result = await cloudinary.uploader.upload(filePath, {
     folder: folder || "pehrawa",
     resource_type: "image",
+    quality: "auto:good",
+    fetch_format: "auto",
+    transformation: [
+      { width: 1200, height: 1600, crop: "limit" }
+    ]
   });
   fs.unlink(filePath, function () {});
   return { url: result.secure_url, public_id: result.public_id };

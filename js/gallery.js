@@ -39,25 +39,46 @@
       input.onchange = function () {
         var file = input.files[0];
         if (!file) return;
-        var fd = new FormData();
-        fd.append("image", file);
-        fd.append("caption", "Styled by Pehrawa");
-        var token = window.getCustomerToken ? window.getCustomerToken() : "";
-        fetch(api, {
-          method: "POST",
-          headers: token ? { "Authorization": "Bearer " + token } : {},
-          body: fd
-        })
-          .then(function (r) { return r.json(); })
-          .then(function (data) {
-            if (data.success) {
-              if (typeof showToast === "function") showToast("Photo submitted for review!");
-              init();
-            }
+        function doUpload(f) {
+          var fd = new FormData();
+          fd.append("image", f);
+          fd.append("caption", "Styled by Pehrawa");
+          var token = window.getCustomerToken ? window.getCustomerToken() : "";
+          fetch(api, {
+            method: "POST",
+            headers: token ? { "Authorization": "Bearer " + token } : {},
+            body: fd
           })
-          .catch(function () {
-            if (typeof showToast === "function") showToast("Upload failed");
-          });
+            .then(function (r) { return r.json(); })
+            .then(function (data) {
+              if (data.success) {
+                if (typeof showToast === "function") showToast("Photo submitted for review!");
+                init();
+              }
+            })
+            .catch(function () {
+              if (typeof showToast === "function") showToast("Upload failed");
+            });
+        }
+        if (file.size > 500000) {
+          var img = new Image();
+          var url = URL.createObjectURL(file);
+          img.onload = function () {
+            var w = img.width, h = img.height;
+            if (w > 1200) { h = h * 1200 / w; w = 1200; }
+            if (h > 1600) { w = w * 1600 / h; h = 1600; }
+            var canvas = document.createElement("canvas");
+            canvas.width = w; canvas.height = h;
+            canvas.getContext("2d").drawImage(img, 0, 0, w, h);
+            canvas.toBlob(function (blob) {
+              URL.revokeObjectURL(url);
+              doUpload(new File([blob], file.name, { type: "image/jpeg" }));
+            }, "image/jpeg", 0.8);
+          };
+          img.src = url;
+        } else {
+          doUpload(file);
+        }
       };
       input.click();
     }
