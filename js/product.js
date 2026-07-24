@@ -194,7 +194,7 @@ var categoryConfig = {
   },
   "PERFUME": {
     sizes: [],
-    sizeLabel: "",
+    sizeLabel: "Select Volume",
     highlights: [
       {icon:"fa-solid fa-wind", text:"Long Lasting"},
       {icon:"fa-solid fa-flask", text:"Premium Fragrance"},
@@ -209,7 +209,7 @@ var categoryConfig = {
   },
   "FRAGRANCE": {
     sizes: [],
-    sizeLabel: "",
+    sizeLabel: "Select Volume",
     highlights: [
       {icon:"fa-solid fa-wind", text:"Long Lasting"},
       {icon:"fa-solid fa-flask", text:"Premium Fragrance"},
@@ -374,8 +374,8 @@ function renderProduct(product, images) {
   if (!availableSizes || !availableSizes.length) availableSizes = config.sizes;
   if (availableSizes.length > 0) {
     sizeSection.style.display = "block";
-    sizeLabel.innerText = "Select Size";
-    var allSizes = config.sizes.length ? config.sizes : ["S","M","L","XL","XXL"];
+    sizeLabel.innerText = config.sizeLabel || "Select Size";
+    var allSizes = config.sizes.length ? config.sizes : availableSizes;
     sizeContainer.innerHTML = allSizes.map(function(s){
       var avail = availableSizes.indexOf(s) !== -1;
       return '<button class="size-btn' + (avail ? '' : ' size-na') + '"' + (avail ? '' : ' disabled') + '>' + s + '</button>';
