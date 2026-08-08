@@ -33,7 +33,8 @@
   });
 
   function fetchSuggestions(q, dropdown) {
-    var api = (window.PEHRAWA_API_BASE || "http://localhost:5000") + "/api/public/search?q=" + encodeURIComponent(q);
+    var vid = localStorage.getItem("pehrawa_visitor_id") || "";
+    var api = (window.PEHRAWA_API_BASE || "http://localhost:5000") + "/api/public/search?q=" + encodeURIComponent(q) + "&visitor_id=" + encodeURIComponent(vid);
     fetch(api)
       .then(function (r) { return r.json(); })
       .then(function (data) {

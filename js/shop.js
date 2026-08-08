@@ -221,7 +221,16 @@
 
   productGrid.innerHTML = '<div class="shop-state"><i class="fa-solid fa-spinner fa-spin"></i> Loading products...</div>';
 
-  fetch(API_URL)
+  var urlParams = new URLSearchParams(window.location.search);
+  var urlSearch = (urlParams.get("search") || "").trim();
+  if (urlSearch && searchInput) searchInput.value = urlSearch;
+  searchTerm = urlSearch.toLowerCase();
+
+  var vid = localStorage.getItem("pehrawa_visitor_id") || "";
+  var apiUrl = API_URL;
+  if (urlSearch) apiUrl += "?search=" + encodeURIComponent(urlSearch) + "&visitor_id=" + encodeURIComponent(vid);
+
+  fetch(apiUrl)
     .then(function(r) {
       if (!r.ok) throw new Error("HTTP " + r.status);
       return r.json();

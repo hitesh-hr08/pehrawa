@@ -270,6 +270,10 @@ app.get("/api/public/products", async (req, res) => {
     query += " ORDER BY id DESC";
 
     const result = await pool.query(query, params);
+    pool.query(
+      "INSERT INTO search_logs (query, results_count, visitor_id) VALUES ($1, $2, $3)",
+      [search.trim(), result.rows.length, req.query.visitor_id || ""]
+    ).catch(function () {});
     res.json({ success: true, products: result.rows });
   } catch (err) {
     res.status(500).json({ success: false, message: "Failed to load products" });
@@ -811,6 +815,7 @@ app.get("/api/admin/analytics", verifyAdmin, async (req, res) => {
     const revenueToday = await pool.query("SELECT COALESCE(SUM(total_amount), 0) AS coalesce FROM orders WHERE payment_status = 'paid' AND created_at::date = CURRENT_DATE");
     const topPages = await pool.query("SELECT page_path, COUNT(*) as cnt FROM page_views GROUP BY page_path ORDER BY cnt DESC LIMIT 10");
     const dailyViews = await pool.query("SELECT DATE(created_at) as day, COUNT(*) as cnt FROM page_views WHERE created_at >= CURRENT_DATE - 6 GROUP BY DATE(created_at) ORDER BY day");
+    const topSearchKeywords = await pool.query("SELECT query, COUNT(*) as cnt, MAX(created_at) as last_searched FROM search_logs WHERE query != '' GROUP BY LOWER(query), query ORDER BY cnt DESC LIMIT 25");
 
     res.json({
       success: true,
@@ -827,11 +832,12 @@ app.get("/api/admin/analytics", verifyAdmin, async (req, res) => {
         revenue_today: parseFloat(revenueToday.rows[0].coalesce),
         top_pages: topPages.rows,
         daily_views: dailyViews.rows,
+        top_search_keywords: topSearchKeywords.rows,
       }
     });
   } catch (err) {
     console.error("Analytics error:", err.message);
-    res.json({ success: true, analytics: { total_views: 0, today_views: 0, yesterday_views: 0, unique_visitors: 0, total_customers: 0, new_customers_today: 0, total_orders: 0, new_orders_today: 0, total_revenue: 0, revenue_today: 0, top_pages: [], daily_views: [] } });
+    res.json({ success: true, analytics: { total_views: 0, today_views: 0, yesterday_views: 0, unique_visitors: 0, total_customers: 0, new_customers_today: 0, total_orders: 0, new_orders_today: 0, total_revenue: 0, revenue_today: 0, top_pages: [], daily_views: [], top_search_keywords: [] } });
   }
 });
 
@@ -1231,6 +1237,24 @@ var HOST = process.env.HOST || "0.0.0.0";
     console.log("Database migration: page_views table created");
   } catch (err) {
     console.error("Page views migration error (non-fatal):", err.message);
+  }
+
+  // ===========================
+  // SEARCH LOGS TABLE (most searched keywords)
+  // ===========================
+  try {
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS search_logs (
+        id SERIAL PRIMARY KEY,
+        query VARCHAR(255) NOT NULL,
+        results_count INTEGER DEFAULT 0,
+        visitor_id VARCHAR(255) DEFAULT '',
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      )
+    `);
+    console.log("Database migration: search_logs table created");
+  } catch (err) {
+    console.error("Search logs migration error (non-fatal):", err.message);
   }
 
   // ===========================
@@ -2111,6 +2135,12 @@ var HOST = process.env.HOST || "0.0.0.0";
       else query += " ORDER BY id DESC";
 
       var result = await pool.query(query, params);
+      if (q && q.trim()) {
+        pool.query(
+          "INSERT INTO search_logs (query, results_count, visitor_id) VALUES ($1, $2, $3)",
+          [q.trim(), result.rows.length, req.query.visitor_id || ""]
+        ).catch(function () {});
+      }
       res.json({ success: true, products: result.rows, total: result.rows.length });
     } catch (err) {
       console.error("Search error:", err.message);

@@ -1462,6 +1462,49 @@ select:focus {
   font-weight: 700;
 }
 
+.kw-panel {
+  grid-column: 1 / -1;
+}
+
+.kw-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.kw-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 20px;
+  background: rgba(255, 107, 0, 0.12);
+  border: 1px solid rgba(255, 107, 0, 0.35);
+  color: #ffb26b;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.kw-tag b {
+  color: #fff;
+  background: rgba(255, 107, 0, 0.6);
+  border-radius: 12px;
+  padding: 1px 7px;
+  font-size: 11px;
+}
+
+.kw-hint {
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.kw-hint b {
+  color: #ffb26b;
+}
+
+
 .ov-table {
   width: 100%;
   border-collapse: collapse;
