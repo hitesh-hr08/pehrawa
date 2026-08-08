@@ -332,6 +332,25 @@ function renderProduct(product, images) {
     product.description || "Premium Pehrawa menswear product crafted for comfort and style.";
   document.getElementById("productSku").innerText = "PHR-" + String(product.id).padStart(6, "0");
 
+  // Key Points (searchable product highlights) - one bullet per point
+  var kpEl = document.getElementById("productKeyPoints");
+  if (kpEl) {
+    var kp = product.key_points;
+    if (typeof kp === "string") kp = kp.split(",");
+    if (Array.isArray(kp)) {
+      var kpList = kp.map(function(s){ return typeof s === "string" ? s.trim() : ""; }).filter(Boolean);
+      if (kpList.length > 0) {
+        kpEl.innerHTML = '<div class="kp-title"><i class="fa-solid fa-circle-check"></i> Key Points</div><ul>' +
+          kpList.map(function(s){ return '<li>' + s + '</li>'; }).join("") + '</ul>';
+        kpEl.style.display = "block";
+      } else {
+        kpEl.style.display = "none";
+      }
+    } else {
+      kpEl.style.display = "none";
+    }
+  }
+
   // Limited edition display
   if (product.is_limited_edition && product.edition_number && product.edition_total) {
     var edEl = document.getElementById("productEdition");

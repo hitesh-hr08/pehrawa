@@ -263,7 +263,7 @@ app.get("/api/public/products", async (req, res) => {
     let params = [];
 
     if (search.trim()) {
-      query += " WHERE LOWER(name) LIKE LOWER($1) OR LOWER(description) LIKE LOWER($1) OR LOWER(category) LIKE LOWER($1)";
+      query += " WHERE LOWER(name) LIKE LOWER($1) OR LOWER(description) LIKE LOWER($1) OR LOWER(category) LIKE LOWER($1) OR LOWER(COALESCE(key_points, '')) LIKE LOWER($1)";
       params.push("%" + search.trim() + "%");
     }
 
@@ -1127,6 +1127,17 @@ var HOST = process.env.HOST || "0.0.0.0";
     console.log("Database migration: sizes column added/verified");
   } catch (err) {
     console.error("Sizes migration error (non-fatal):", err.message);
+  }
+
+  // Add key_points column (searchable product highlights, comma/newline separated)
+  try {
+    await pool.query(`
+      ALTER TABLE products
+        ADD COLUMN IF NOT EXISTS key_points TEXT DEFAULT NULL
+    `);
+    console.log("Database migration: key_points column added/verified");
+  } catch (err) {
+    console.error("Key points migration error (non-fatal):", err.message);
   }
 
   // Create product_images table
@@ -2069,7 +2080,7 @@ var HOST = process.env.HOST || "0.0.0.0";
       var idx = 1;
 
       if (q && q.trim()) {
-        query += " AND (LOWER(name) LIKE LOWER($" + idx + ") OR LOWER(description) LIKE LOWER($" + idx + ") OR LOWER(category) LIKE LOWER($" + idx + ") OR LOWER(name) LIKE LOWER($" + (idx + 1) + "))";
+        query += " AND (LOWER(name) LIKE LOWER($" + idx + ") OR LOWER(description) LIKE LOWER($" + idx + ") OR LOWER(category) LIKE LOWER($" + idx + ") OR LOWER(COALESCE(key_points, '')) LIKE LOWER($" + idx + ") OR LOWER(name) LIKE LOWER($" + (idx + 1) + "))";
         params.push("%" + q.trim() + "%", q.trim().split(/\s+/).join("%"));
         idx += 2;
       }

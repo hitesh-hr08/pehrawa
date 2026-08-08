@@ -22,7 +22,7 @@ router.get("/count", async (req, res) => {
 
 router.post("/", async (req, res) => {
   try {
-    const { name, description, price, original_price, image_url, images, stock, category, stock_status, is_new_arrival, is_trending, is_hot_seller, sizes } = req.body;
+    const { name, description, price, original_price, image_url, images, stock, category, stock_status, is_new_arrival, is_trending, is_hot_seller, sizes, key_points } = req.body;
 
     if (!name || price === undefined || price === "") {
       return res.status(400).json({
@@ -32,12 +32,13 @@ router.post("/", async (req, res) => {
     }
 
     const sizesJson = sizes && Array.isArray(sizes) ? JSON.stringify(sizes) : null;
+    const keyPointsText = Array.isArray(key_points) ? key_points.join(", ") : (key_points || null);
 
     const result = await pool.query(
-      `INSERT INTO products (name, description, price, original_price, image_url, stock, category, stock_status, is_new_arrival, is_trending, is_hot_seller, sizes)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
+      `INSERT INTO products (name, description, price, original_price, image_url, stock, category, stock_status, is_new_arrival, is_trending, is_hot_seller, sizes, key_points)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
        RETURNING *`,
-      [name, description || null, price, original_price || null, image_url || null, stock || 0, category || null, stock_status || 'in_stock', is_new_arrival || false, is_trending || false, is_hot_seller || false, sizesJson]
+      [name, description || null, price, original_price || null, image_url || null, stock || 0, category || null, stock_status || 'in_stock', is_new_arrival || false, is_trending || false, is_hot_seller || false, sizesJson, keyPointsText]
     );
 
     const product = result.rows[0];
@@ -57,9 +58,10 @@ router.post("/", async (req, res) => {
 router.put("/:id", async (req, res) => {
   try {
     const { id } = req.params;
-    const { name, description, price, original_price, image_url, images, stock, category, stock_status, is_new_arrival, is_trending, is_hot_seller, sizes } = req.body;
+    const { name, description, price, original_price, image_url, images, stock, category, stock_status, is_new_arrival, is_trending, is_hot_seller, sizes, key_points } = req.body;
 
     const sizesJson = sizes && Array.isArray(sizes) ? JSON.stringify(sizes) : null;
+    const keyPointsText = Array.isArray(key_points) ? key_points.join(", ") : (key_points || null);
 
     const result = await pool.query(
       `UPDATE products
@@ -74,10 +76,11 @@ router.put("/:id", async (req, res) => {
            is_new_arrival = $9,
            is_trending = $10,
            is_hot_seller = $11,
-           sizes = $13
+           sizes = $13,
+           key_points = $14
        WHERE id = $12
        RETURNING *`,
-      [name, description || null, price, original_price || null, image_url || null, stock || 0, category || null, stock_status || 'in_stock', is_new_arrival || false, is_trending || false, is_hot_seller || false, id, sizesJson]
+      [name, description || null, price, original_price || null, image_url || null, stock || 0, category || null, stock_status || 'in_stock', is_new_arrival || false, is_trending || false, is_hot_seller || false, id, sizesJson, keyPointsText]
     );
 
     if (result.rows.length === 0) {
