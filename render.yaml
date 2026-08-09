@@ -24,6 +24,12 @@ services:
         sync: false
       - key: ADMIN_NAME
         sync: false
+      - key: SMTP_USER
+        sync: false
+      - key: SMTP_PASS
+        sync: false
+      - key: EMAIL_FROM
+        sync: false
 
 databases:
   - name: pehrawa-db

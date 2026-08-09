@@ -6,6 +6,7 @@ const pool = require("../db");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const multer = require("multer");
+const mailer = require("../services/email");
 
 const profileDir = path.join(__dirname, "..", "uploads");
 if (!fs.existsSync(profileDir)) {
@@ -149,6 +150,8 @@ router.post("/register", async (req, res) => {
         image_url: customer.image_url || null
       }
     });
+
+    mailer.sendNewAccountNotification(customer).catch(function () {});
   } catch (err) {
     if (err.code === "23505") {
       return res.status(409).json({

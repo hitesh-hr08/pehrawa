@@ -34,6 +34,8 @@ const authRoutes = require("./routes/authRoutes");
 const Razorpay = require("razorpay");
 const shiprocket = require("./services/shiprocket");
 const cloudinaryUpload = require("./services/cloudinary");
+const mailer = require("./services/email");
+const { buildInvoicePdf, parseItems } = require("./services/invoice");
 
 const app = express();
 
@@ -430,6 +432,30 @@ app.post("/api/public/orders", async (req, res) => {
     });
 
     res.status(201).json({ success: true, order: order });
+
+    // Email notifications (only after payment is confirmed)
+    if ((payment_status || "").toLowerCase() === "paid") {
+      var orderItems = [];
+      try { orderItems = JSON.parse(itemsDataStr); } catch (e) {}
+      var customerEmail = null;
+      if (customerId) {
+        var emailRes = await pool.query("SELECT email FROM customers WHERE id = $1", [customerId]).catch(function () { return { rows: [] }; });
+        if (emailRes && emailRes.rows.length > 0) customerEmail = emailRes.rows[0].email;
+      }
+      (async function () {
+        try {
+          var pdfBuffer = await buildInvoicePdf(order, orderItems, "PEHRAWA");
+          var attachment = { filename: "Pehrawa-Invoice-" + order.tracking_id + ".pdf", content: pdfBuffer, contentType: "application/pdf" };
+          order.invoiceAttachment = attachment;
+          await mailer.sendNewOrderNotification(order, orderItems, customerEmail);
+          if (customerEmail) {
+            await mailer.sendOrderConfirmationEmail(order, orderItems, customerEmail);
+          }
+        } catch (e) {
+          console.error("Email notification error for order " + order.id + ":", e.message);
+        }
+      })();
+    }
 
     if (customerId) {
       var rewardPts = Math.floor(Number(total_amount) || 0);

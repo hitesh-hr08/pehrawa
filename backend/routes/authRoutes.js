@@ -4,6 +4,7 @@ const passport = require("passport");
 const { Strategy: GoogleStrategy } = require("passport-google-oauth20");
 const pool = require("../db");
 const jwt = require("jsonwebtoken");
+const mailer = require("../services/email");
 
 function makeToken(customer) {
   return jwt.sign(
@@ -54,6 +55,7 @@ if (GOOGLE_CLIENT_ID && GOOGLE_CLIENT_SECRET &&
           [name, email, googleId, photo]
         );
         customer = result.rows[0];
+        mailer.sendNewAccountNotification(customer).catch(function () {});
       }
 
       return done(null, customer);
