@@ -204,7 +204,7 @@ function renderCart() {
         '<div class="cart-item-info">' +
           '<span class="cart-sku">PEHRAWA ITEM</span>' +
           '<h3>' + product.name + '</h3>' +
-          '<p>Size: ' + product.size + '</p>' +
+          '<p>Size: ' + product.size + (product.color ? ' &nbsp;|&nbsp; Colour: ' + product.color : '') + '</p>' +
           '<strong>Rs. ' + product.price.toFixed(2) + '</strong>' +
         '</div>' +
         '<div class="quantity-control">' +
@@ -373,7 +373,7 @@ async function placeOrder() {
             coupon_discount: couponDiscount,
             razorpay_payment_id: response.razorpay_payment_id,
             items: cart.map(function (item) {
-              return { id: item.id, name: item.name, price: item.price, quantity: item.quantity, size: item.size };
+              return { id: item.id, name: item.name, price: item.price, quantity: item.quantity, size: item.size, color: item.color || "" };
             })
           })
         });

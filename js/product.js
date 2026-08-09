@@ -1,5 +1,14 @@
 let selectedSize = "";
+let selectedColor = "";
 let currentProduct = null;
+
+var PRODUCT_COLORS = {
+  "Black": "#111111", "White": "#ffffff", "Grey": "#808080", "Navy": "#1b2a4a",
+  "Blue": "#2563eb", "Sky Blue": "#87ceeb", "Red": "#e11d2e", "Maroon": "#7c1423",
+  "Orange": "#ff6b00", "Yellow": "#facc15", "Green": "#16a34a", "Olive": "#6b8e23",
+  "Purple": "#7c3aed", "Pink": "#ec4899", "Brown": "#7c4a2d", "Beige": "#e8d7b5",
+  "Teal": "#0d9488", "Mustard": "#e5a50a"
+};
 
 function switchProductImage(thumb, url) {
   document.getElementById("productImage").src = url;
@@ -414,6 +423,34 @@ function renderProduct(product, images) {
     selectedSize = "ONE";
   }
 
+  // Colours - use product.colors from DB if available
+  var colorSection = document.getElementById("colorSection");
+  var colorContainer = document.getElementById("colorContainer");
+  var productColors = product.colors;
+  if (typeof productColors === "string") { try { productColors = JSON.parse(productColors); } catch(e) { productColors = null; } }
+  if (colorSection && colorContainer) {
+    if (Array.isArray(productColors) && productColors.length > 0) {
+      colorSection.style.display = "block";
+      colorContainer.innerHTML = productColors.map(function(name){
+        var hex = PRODUCT_COLORS[name] || "#888";
+        return '<button class="color-btn" data-color="' + name + '" style="--c:' + hex + '" title="' + name + '" aria-label="' + name + '"><span class="color-dot"></span></button>';
+      }).join("");
+      selectedColor = productColors[0];
+      var firstColor = colorContainer.querySelector(".color-btn");
+      if (firstColor) firstColor.classList.add("active");
+      colorContainer.querySelectorAll(".color-btn").forEach(function(btn){
+        btn.addEventListener("click", function(){
+          colorContainer.querySelectorAll(".color-btn").forEach(function(b){ b.classList.remove("active"); });
+          btn.classList.add("active");
+          selectedColor = btn.getAttribute("data-color");
+        });
+      });
+    } else {
+      colorSection.style.display = "none";
+      selectedColor = "";
+    }
+  }
+
   // Hide AI size recommendation & size guide for non-clothing categories (perfume, watches, etc.)
   var aiSizeRec = document.querySelector(".size-rec-trigger");
   var sgLink2 = document.querySelector(".size-guide-link");
@@ -510,6 +547,7 @@ document.getElementById("addCartBtn").addEventListener("click", () => {
     price: Number(currentProduct.price),
     image: currentProduct.image_url || "../images/product1.png",
     size: selectedSize,
+    color: selectedColor,
     quantity: qty
   });
 
@@ -543,6 +581,8 @@ document.getElementById("buyBtn").addEventListener("click", () => {
     var qty = document.getElementById("quantity").value;
     document.getElementById("buyQty").value = qty;
     document.getElementById("buySize").value = selectedSize || "M";
+    var buyColorEl = document.getElementById("buyColor");
+    if (buyColorEl) buyColorEl.value = selectedColor || "";
 
     var cust = window.getCustomer ? window.getCustomer() : null;
     if (cust) {
@@ -791,13 +831,17 @@ function populateBuyConfirmation() {
   if (!state) state = document.getElementById("buyState").value;
   var size = document.getElementById("buySize").value;
   var qty = document.getElementById("buyQty").value;
+  var buyColorEl = document.getElementById("buyColor");
+  var color = buyColorEl ? buyColorEl.value : "";
   var productName = document.getElementById("productName").innerText;
   var price = getProductPrice();
   var total = price * parseInt(qty);
 
+  var colorRow = color ? '<div class="buy-summary-row"><span>Colour</span><span>' + color + '</span></div>' : '';
   document.querySelector("#buyStep2 .buy-summary").innerHTML =
     '<div class="buy-summary-row"><span>Product</span><span>' + productName + '</span></div>' +
     '<div class="buy-summary-row"><span>Size</span><span>' + size + '</span></div>' +
+    colorRow +
     '<div class="buy-summary-row"><span>Quantity</span><span>' + qty + '</span></div>' +
     '<div class="buy-summary-row"><span>Name</span><span>' + name + '</span></div>' +
     '<div class="buy-summary-row"><span>Address</span><span style="font-size:12px;">' + address + ', ' + city + ', ' + state + ' - ' + pincode + '</span></div>' +
@@ -845,6 +889,8 @@ async function placeBuyOrder() {
   }
 
   var size = document.getElementById("buySize").value;
+  var buyColorEl = document.getElementById("buyColor");
+  var color = buyColorEl ? buyColorEl.value : "";
   var productName = document.getElementById("productName").innerText;
   var district = document.getElementById("buyDistrict")?.value || "";
   var fullAddress = address + (district ? ", " + district : "") + ", " + city + ", " + state + " - " + pincode;
@@ -895,7 +941,7 @@ async function placeBuyOrder() {
             payment_status: "paid",
             razorpay_payment_id: response.razorpay_payment_id,
             customer_id: cust ? cust.id : (localStorage.getItem("customerId") || null),
-            items: [{ name: productName, size: size, quantity: qty, price: price }]
+            items: [{ name: productName, size: size, color: color, quantity: qty, price: price }]
           })
         });
         var data = await res.json();

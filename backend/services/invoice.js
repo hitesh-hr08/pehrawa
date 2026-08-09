@@ -85,9 +85,10 @@ function buildInvoicePdf(order, items, storeName) {
   // Items table
   doc.rect(48, y, doc.page.width - 96, 24).fill("#f4f4f4");
   doc.fill(dark).font("Helvetica-Bold").fontSize(9);
-  const colX = { item: 56, size: 260, qty: 330, price: 400, total: 480 };
+  const colX = { item: 56, size: 235, color: 300, qty: 345, price: 405, total: 480 };
   doc.text("ITEM", colX.item, y + 8);
   doc.text("SIZE", colX.size, y + 8);
+  doc.text("COLOUR", colX.color, y + 8);
   doc.text("QTY", colX.qty, y + 8);
   doc.text("PRICE", colX.price, y + 8);
   doc.text("TOTAL", colX.total, y + 8);
@@ -98,8 +99,9 @@ function buildInvoicePdf(order, items, storeName) {
   safeItems.forEach(function (it, i) {
     if (y > doc.page.height - 130) { doc.addPage(); y = 48; }
     if (i % 2 === 1) { doc.rect(48, y, doc.page.width - 96, 20).fill("#fafafa"); }
-    doc.text(String(it.name || ""), colX.item, y + 6, { width: 190 });
+    doc.text(String(it.name || ""), colX.item, y + 6, { width: 175 });
     doc.text(String(it.size || "M"), colX.size, y + 6);
+    doc.text(String(it.color || "-"), colX.color, y + 6);
     doc.text(String(it.quantity || 1), colX.qty, y + 6);
     doc.text(formatMoney(it.price), colX.price, y + 6);
     doc.text(formatMoney((it.price || 0) * (it.quantity || 1)), colX.total, y + 6);

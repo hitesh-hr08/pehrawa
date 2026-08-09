@@ -52,8 +52,9 @@ function orderToTable(order, items) {
   if (!items || !items.length) return "";
   let rows = "";
   items.forEach(function (it) {
+    const colourCell = it.color ? `<br><span style="color:#888;font-size:11px;">Colour: ${escapeHtml(it.color)}</span>` : "";
     rows += `<tr>
-      <td style="padding:10px;border-bottom:1px solid #eee;">${escapeHtml(it.name || "")}</td>
+      <td style="padding:10px;border-bottom:1px solid #eee;">${escapeHtml(it.name || "")}${colourCell}</td>
       <td style="padding:10px;border-bottom:1px solid #eee;text-align:center;">${escapeHtml(it.size || "M")}</td>
       <td style="padding:10px;border-bottom:1px solid #eee;text-align:center;">${it.quantity || 1}</td>
       <td style="padding:10px;border-bottom:1px solid #eee;text-align:right;">${formatMoney(it.price)}</td>
