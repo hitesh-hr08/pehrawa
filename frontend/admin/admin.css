@@ -1023,6 +1023,47 @@ select:focus {
   box-shadow: 0 0 10px rgba(255,107,0,0.2);
 }
 
+.color-checkboxes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.color-cb {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px 6px 8px;
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 999px;
+  background: rgba(255,255,255,0.04);
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+  color: #aaa;
+  transition: all .2s;
+  user-select: none;
+}
+.color-cb:hover {
+  border-color: #ff6b00;
+  color: #fff;
+}
+.color-cb input { display: none; }
+.color-swatch {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  display: inline-block;
+  flex-shrink: 0;
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.2);
+}
+.color-cb:has(input:checked) {
+  border-color: #ff6b00;
+  background: rgba(255,107,0,0.15);
+  color: #fff;
+  box-shadow: 0 0 10px rgba(255,107,0,0.2);
+}
+
 .status-stack {
   display: flex;
   flex-wrap: wrap;

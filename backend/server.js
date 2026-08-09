@@ -1172,6 +1172,17 @@ var HOST = process.env.HOST || "0.0.0.0";
     console.error("Key points migration error (non-fatal):", err.message);
   }
 
+  // Add colors column (available color options, JSONB array)
+  try {
+    await pool.query(`
+      ALTER TABLE products
+        ADD COLUMN IF NOT EXISTS colors JSONB DEFAULT NULL
+    `);
+    console.log("Database migration: colors column added/verified");
+  } catch (err) {
+    console.error("Colors migration error (non-fatal):", err.message);
+  }
+
   // Create product_images table
   try {
     await pool.query(`
