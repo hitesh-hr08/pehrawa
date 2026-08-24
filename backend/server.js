@@ -1453,6 +1453,7 @@ var HOST = process.env.HOST || "0.0.0.0";
       )
     `);
     await pool.query(`CREATE INDEX IF NOT EXISTS idx_product_variants_product ON product_variants(product_id)`);
+    await pool.query(`ALTER TABLE products ADD COLUMN IF NOT EXISTS color_images JSONB DEFAULT '{}'::jsonb`);
     console.log("Database migration: product_variants table created/verified");
   } catch (err) {
     console.error("Product variants migration error (non-fatal):", err.message);

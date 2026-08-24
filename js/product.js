@@ -65,6 +65,38 @@ function switchProductImage(thumb, url) {
   document.getElementById("productImage").src = url;
   document.querySelectorAll("#productThumbs img").forEach(function(t) { t.classList.remove("active"); });
   thumb.classList.add("active");
+  window.colorImageOverride = false;
+}
+
+window.colorImageOverride = false;
+function getProductColorImages() {
+  var ci = currentProduct && currentProduct.color_images;
+  if (typeof ci === "string") { try { ci = JSON.parse(ci); } catch(e) { ci = {}; } }
+  return (ci && typeof ci === "object" && !Array.isArray(ci)) ? ci : {};
+}
+function getColorImage(colorName) {
+  if (!colorName) return "";
+  var map = getProductColorImages();
+  var url = map[colorName];
+  if (url && url.indexOf("http") !== 0 && url.indexOf("/") !== 0) url = "/" + url;
+  return url || "";
+}
+function applyColorImage(colorName) {
+  var url = getColorImage(colorName);
+  var img = document.getElementById("productImage");
+  if (!img) return;
+  if (url) {
+    img.src = url;
+    window.colorImageOverride = true;
+    document.querySelectorAll("#productThumbs img").forEach(function(t) { t.classList.remove("active"); });
+  } else if (!window.colorImageOverride) {
+    return;
+  } else {
+    var thumbs = document.querySelectorAll("#productThumbs img");
+    if (thumbs.length) { thumbs[0].click ? thumbs[0].click() : switchProductImage(thumbs[0], thumbs[0].src); }
+    else { img.src = currentProduct.image_url || "../images/product1.png"; }
+    window.colorImageOverride = false;
+  }
 }
 
 const API_URL = `${window.PEHRAWA_API_BASE || "http://localhost:5000"}/api/public/products`;
@@ -374,6 +406,7 @@ function renderProduct(product, images) {
   if (!allImages.length) allImages = ["../images/product1.png"];
   document.getElementById("productImage").src = allImages[0];
   document.getElementById("productImage").alt = product.name;
+  window.colorImageOverride = false;
   var thumbsEl = document.getElementById("productThumbs");
   if (allImages.length > 1) {
     thumbsEl.style.display = "flex";
@@ -499,9 +532,11 @@ function renderProduct(product, images) {
           colorContainer.querySelectorAll(".color-btn").forEach(function(b){ b.classList.remove("active"); });
           btn.classList.add("active");
           selectedColor = btn.getAttribute("data-color");
+          applyColorImage(selectedColor);
           refreshSizeAvailability();
         });
       });
+      applyColorImage(selectedColor);
       refreshSizeAvailability();
     } else {
       colorSection.style.display = "none";
@@ -622,7 +657,7 @@ document.getElementById("addCartBtn").addEventListener("click", () => {
     id: currentProduct.id,
     name: currentProduct.name,
     price: Number(currentProduct.price),
-    image: currentProduct.image_url || "../images/product1.png",
+    image: getColorImage(selectedColor) || currentProduct.image_url || "../images/product1.png",
     size: selectedSize,
     color: selectedColor,
     quantity: qty
