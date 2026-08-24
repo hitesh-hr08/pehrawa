@@ -1,6 +1,57 @@
 let selectedSize = "";
 let selectedColor = "";
 let currentProduct = null;
+window.productVariants = [];
+
+function getVariantStock(color, size) {
+  var list = window.productVariants || [];
+  for (var i = 0; i < list.length; i++) {
+    var v = list[i];
+    if (String(v.color || "").toLowerCase() === String(color || "").toLowerCase() &&
+        String(v.size || "").toLowerCase() === String(size || "").toLowerCase()) {
+      return parseInt(v.stock, 10) || 0;
+    }
+  }
+  return null;
+}
+
+function hasVariantStockForColor(color) {
+  var list = window.productVariants || [];
+  if (!list.length) return true;
+  for (var i = 0; i < list.length; i++) {
+    if (String(list[i].color || "").toLowerCase() === String(color || "").toLowerCase() && (parseInt(list[i].stock, 10) || 0) > 0) return true;
+  }
+  return false;
+}
+
+function refreshSizeAvailability() {
+  var sizeContainer2 = document.getElementById("sizeContainer");
+  if (!sizeContainer2 || !(window.productVariants || []).length || !selectedColor) return;
+  var anyAvailable = false;
+  sizeContainer2.querySelectorAll(".size-btn").forEach(function(btn){
+    var stockLeft = getVariantStock(selectedColor, btn.innerText);
+    if (stockLeft !== null) {
+      if (stockLeft > 0) {
+        btn.classList.remove("size-na");
+        btn.disabled = false;
+        btn.title = "";
+        anyAvailable = true;
+      } else {
+        btn.classList.add("size-na");
+        btn.disabled = true;
+        btn.title = "Out of stock";
+      }
+    } else {
+      if (!btn.classList.contains("size-na")) anyAvailable = true;
+    }
+  });
+  var activeBtn = sizeContainer2.querySelector(".size-btn.active");
+  if (!activeBtn || activeBtn.disabled) {
+    var firstOk = sizeContainer2.querySelector(".size-btn:not(.size-na):not([disabled])");
+    sizeContainer2.querySelectorAll(".size-btn").forEach(function(b){ b.classList.remove("active"); });
+    if (firstOk) { firstOk.classList.add("active"); selectedSize = firstOk.innerText; }
+  }
+}
 
 var PRODUCT_COLORS = {
   "Black": "#111111", "White": "#ffffff", "Grey": "#808080", "Navy": "#1b2a4a",
@@ -56,6 +107,7 @@ async function loadProductDetails() {
     }
 
     currentProduct = data.product;
+    window.productVariants = data.variants || [];
     renderProduct(currentProduct, data.images || []);
     if (window.PehrawaRecentlyViewed) PehrawaRecentlyViewed.add(currentProduct);
 
@@ -404,6 +456,10 @@ function renderProduct(product, images) {
     var allSizes = config.sizes.length ? config.sizes : availableSizes;
     sizeContainer.innerHTML = allSizes.map(function(s){
       var avail = availableSizes.indexOf(s) !== -1;
+      if (avail && (window.productVariants || []).length && selectedColor) {
+        var vs = getVariantStock(selectedColor, s);
+        if (vs !== null && vs <= 0) { avail = false; }
+      }
       return '<button class="size-btn' + (avail ? '' : ' size-na') + '"' + (avail ? '' : ' disabled') + '>' + s + '</button>';
     }).join("");
     selectedSize = availableSizes[1] || availableSizes[0] || "";
@@ -443,8 +499,10 @@ function renderProduct(product, images) {
           colorContainer.querySelectorAll(".color-btn").forEach(function(b){ b.classList.remove("active"); });
           btn.classList.add("active");
           selectedColor = btn.getAttribute("data-color");
+          refreshSizeAvailability();
         });
       });
+      refreshSizeAvailability();
     } else {
       colorSection.style.display = "none";
       selectedColor = "";
@@ -470,11 +528,17 @@ function renderProduct(product, images) {
     }).join("");
   }
 
-  if (product.stock_status === "out_of_stock") {
+  var totalVariantStock = 0;
+  var usesVariants = (window.productVariants || []).length > 0;
+  window.productVariants.forEach(function(v){ totalVariantStock += parseInt(v.stock, 10) || 0; });
+  var effectivelyOut = product.stock_status === "out_of_stock" || (usesVariants && totalVariantStock <= 0);
+  if (effectivelyOut) {
     document.getElementById("addCartBtn").disabled = true;
     document.getElementById("addCartBtn").style.opacity = "0.5";
     document.getElementById("addCartBtn").style.cursor = "not-allowed";
     document.getElementById("addCartBtn").innerText = "OUT OF STOCK";
+    var buyBtnEl2 = document.getElementById("buyBtn");
+    if (buyBtnEl2) { buyBtnEl2.disabled = true; buyBtnEl2.style.opacity = "0.5"; buyBtnEl2.style.cursor = "not-allowed"; buyBtnEl2.innerText = "OUT OF STOCK"; }
   } else {
     document.getElementById("addCartBtn").disabled = false;
     document.getElementById("addCartBtn").style.opacity = "1";
@@ -483,9 +547,9 @@ function renderProduct(product, images) {
   }
 
   // Limited Stock Psychology
-  var stock = parseInt(product.stock) || 0;
+  var stock = usesVariants ? totalVariantStock : (parseInt(product.stock) || 0);
   var stockEl = document.getElementById("stockUrgency");
-  if (stockEl && product.stock_status !== "out_of_stock" && stock > 0 && stock <= 10) {
+  if (stockEl && !effectivelyOut && stock > 0 && stock <= 10) {
     stockEl.innerHTML = '<i class="fa-solid fa-fire"></i> Only <strong>' + stock + '</strong> left in stock — order soon!' +
       '<div class="p-stock-bar"><div class="p-stock-bar-fill" style="width:' + Math.max(10, stock * 10) + '%"></div></div>';
     stockEl.style.display = "block";
@@ -495,7 +559,7 @@ function renderProduct(product, images) {
 
   // Social proof
   var socialEl = document.getElementById("socialProof");
-  if (socialEl && product.stock_status !== "out_of_stock") {
+  if (socialEl && !effectivelyOut) {
     var viewers = Math.floor(Math.random() * 30) + 5;
     socialEl.innerHTML = '<i class="fa-solid fa-eye"></i> ' + viewers + ' people are viewing this right now';
     socialEl.style.display = "flex";
@@ -539,6 +603,19 @@ document.getElementById("addCartBtn").addEventListener("click", () => {
   if (!currentProduct) return;
 
   const qty = Number(document.getElementById("quantity").value) || 1;
+
+  if ((window.productVariants || []).length && selectedColor) {
+    var vs = getVariantStock(selectedColor, selectedSize);
+    if (vs === null || vs <= 0) {
+      if (typeof showToast === "function") showToast(selectedColor + " / " + selectedSize + " is out of stock — please pick another combination");
+      return;
+    }
+    if (qty > vs) {
+      if (typeof showToast === "function") showToast("Only " + vs + " left in " + selectedColor + " / " + selectedSize);
+      return;
+    }
+  }
+
   const cart = JSON.parse(localStorage.getItem("cart")) || [];
 
   cart.push({
@@ -574,6 +651,14 @@ var buyUseNewAddress = false;
 
 document.getElementById("buyBtn").addEventListener("click", () => {
   if (!currentProduct) return;
+
+  if ((window.productVariants || []).length && selectedColor) {
+    var bvs = getVariantStock(selectedColor, selectedSize);
+    if (bvs === null || bvs <= 0) {
+      if (typeof showToast === "function") showToast(selectedColor + " / " + selectedSize + " is out of stock — please pick another combination");
+      return;
+    }
+  }
 
     window.requireAuth(function (loggedIn) {
     if (!loggedIn) return;
@@ -941,7 +1026,7 @@ async function placeBuyOrder() {
             payment_status: "paid",
             razorpay_payment_id: response.razorpay_payment_id,
             customer_id: cust ? cust.id : (localStorage.getItem("customerId") || null),
-            items: [{ name: productName, size: size, color: color, quantity: qty, price: price }]
+            items: [{ id: currentProduct.id, name: productName, size: size, color: color, quantity: qty, price: price }]
           })
         });
         var data = await res.json();

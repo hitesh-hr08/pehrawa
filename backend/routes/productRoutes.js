@@ -2,10 +2,49 @@ const express = require("express");
 const router = express.Router();
 const pool = require("../db");
 
+async function saveVariants(productId, variants) {
+  if (!Array.isArray(variants)) return null;
+  await pool.query("DELETE FROM product_variants WHERE product_id = $1", [productId]);
+  var cleaned = [];
+  for (var v of variants) {
+    if (!v || typeof v !== "object") continue;
+    var color = String(v.color || "").trim();
+    var size = String(v.size || "").trim();
+    var stock = Math.max(0, parseInt(v.stock, 10) || 0);
+    if (!color && !size) continue;
+    cleaned.push({ color: color, size: size, stock: stock });
+  }
+  for (var item of cleaned) {
+    await pool.query(
+      `INSERT INTO product_variants (product_id, color, size, stock)
+       VALUES ($1, $2, $3, $4)
+       ON CONFLICT (product_id, color, size) DO UPDATE SET stock = EXCLUDED.stock`,
+      [productId, item.color, item.size, item.stock]
+    );
+  }
+  if (cleaned.length > 0) {
+    var total = cleaned.reduce(function(sum, v){ return sum + v.stock; }, 0);
+    await pool.query("UPDATE products SET stock = $1 WHERE id = $2", [total, productId]);
+    return { saved: cleaned.length, totalStock: total };
+  }
+  return { saved: 0, totalStock: null };
+}
+
 router.get("/", async (req, res) => {
   try {
     const result = await pool.query("SELECT * FROM products ORDER BY id DESC");
-    res.json({ success: true, products: result.rows });
+    let variantsByProduct = {};
+    try {
+      const vr = await pool.query("SELECT product_id, color, size, stock FROM product_variants ORDER BY id");
+      vr.rows.forEach(function(row){
+        if (!variantsByProduct[row.product_id]) variantsByProduct[row.product_id] = [];
+        variantsByProduct[row.product_id].push({ color: row.color, size: row.size, stock: row.stock });
+      });
+    } catch (e) {}
+    res.json({ success: true, products: result.rows.map(function(p){
+      p.variants = variantsByProduct[p.id] || [];
+      return p;
+    }) });
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });
   }
@@ -50,7 +89,10 @@ router.post("/", async (req, res) => {
       }
     }
 
-    res.status(201).json({ success: true, product });
+    let variantInfo = null;
+    try { variantInfo = await saveVariants(product.id, req.body.variants); } catch (e) { variantInfo = null; }
+
+    res.status(201).json({ success: true, product: product, variants_saved: variantInfo ? variantInfo.saved : 0 });
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });
   }
@@ -97,7 +139,12 @@ router.put("/:id", async (req, res) => {
       }
     }
 
-    res.json({ success: true, product: result.rows[0] });
+    let variantInfo = null;
+    try { variantInfo = await saveVariants(id, req.body.variants); } catch (e) { variantInfo = null; }
+    let finalProduct = result.rows[0];
+    if (variantInfo) finalProduct.stock = variantInfo.totalStock;
+
+    res.json({ success: true, product: finalProduct, variants_saved: variantInfo ? variantInfo.saved : 0 });
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });
   }

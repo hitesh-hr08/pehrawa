@@ -261,7 +261,7 @@ app.get("/api/public/razorpay-key", function (req, res) {
 app.get("/api/public/products", async (req, res) => {
   try {
     const search = req.query.search || "";
-    let query = "SELECT *, COALESCE(stock, 0) as stock_count FROM products";
+    let query = "SELECT *, COALESCE(stock, 0) as stock_count, (SELECT COALESCE(SUM(stock), 0) FROM product_variants pv WHERE pv.product_id = products.id) AS variants_stock, CASE WHEN EXISTS(SELECT 1 FROM product_variants pv2 WHERE pv2.product_id = products.id) AND (SELECT COALESCE(SUM(stock), 0) FROM product_variants pv3 WHERE pv3.product_id = products.id) <= 0 THEN 'out_of_stock' WHEN COALESCE(stock, 0) <= 0 THEN 'out_of_stock' ELSE COALESCE(stock_status, 'in_stock') END AS stock_status FROM products";
     let params = [];
 
     if (search.trim()) {
@@ -289,7 +289,11 @@ app.get("/api/public/products/:id", async (req, res) => {
       return res.status(404).json({ success: false, message: "Product not found" });
     }
     const images = await pool.query("SELECT id, image_url, sort_order FROM product_images WHERE product_id = $1 ORDER BY sort_order, id", [req.params.id]);
-    res.json({ success: true, product: result.rows[0], images: images.rows });
+    let variants = [];
+    try {
+      variants = (await pool.query("SELECT color, size, stock FROM product_variants WHERE product_id = $1 ORDER BY id", [req.params.id])).rows;
+    } catch (e) { variants = []; }
+    res.json({ success: true, product: result.rows[0], images: images.rows, variants: variants });
   } catch (err) {
     res.status(500).json({ success: false, message: "Failed to load product" });
   }
@@ -335,18 +339,55 @@ app.post("/api/public/orders", async (req, res) => {
       } catch (e) {}
     }
 
+    var variantDecrements = [];
     for (const item of items) {
-      if (item.id) {
-        const stockResult = await pool.query("SELECT stock FROM products WHERE id = $1", [item.id]);
-        if (stockResult.rows.length > 0) {
-          const currentStock = stockResult.rows[0].stock;
-          const qty = Number(item.quantity) || 1;
-          if (currentStock < qty) {
-            return res.status(400).json({
-              success: false,
-              message: "Insufficient stock for " + item.name + ". Available: " + currentStock
-            });
-          }
+      if (!item.id) continue;
+      const prodExists = await pool.query("SELECT id FROM products WHERE id = $1", [item.id]);
+      if (prodExists.rows.length === 0) continue;
+      const qty = Number(item.quantity) || 1;
+      let variantRows = [];
+      try {
+        const vRes = await pool.query(
+          "SELECT id, stock FROM product_variants WHERE product_id = $1 AND LOWER(color) = LOWER($2) AND LOWER(size) = LOWER($3)",
+          [item.id, String(item.color || "").trim(), String(item.size || "").trim()]
+        );
+        variantRows = vRes.rows;
+      } catch (e) { variantRows = []; }
+
+      if (variantRows.length > 0) {
+        const available = variantRows[0].stock || 0;
+        if (available < qty) {
+          return res.status(400).json({
+            success: false,
+            message: "Insufficient stock for " + item.name + (item.color ? " (" + item.color + " / " + item.size + ")" : "") + ". Available: " + available
+          });
+        }
+        variantDecrements.push({ variantId: variantRows[0].id, productId: item.id, qty: qty });
+        continue;
+      }
+
+      let variantCount = { rows: [{ n: 0 }] };
+      try {
+        variantCount = await pool.query("SELECT COUNT(*)::int AS n FROM product_variants WHERE product_id = $1", [item.id]);
+      } catch (e) {}
+      if (variantCount.rows[0].n > 0 && !String(item.color || "").trim() && !String(item.size || "").trim()) {
+        continue; // product uses variants but request has no combo info — skip legacy check
+      }
+      if (variantCount.rows[0].n > 0) {
+        return res.status(400).json({
+          success: false,
+          message: item.name + " is not available in the selected Colour (" + (item.color || "-") + ") / Size (" + (item.size || "-") + ") combination."
+        });
+      }
+
+      const stockResult = await pool.query("SELECT stock FROM products WHERE id = $1", [item.id]);
+      if (stockResult.rows.length > 0) {
+        const currentStock = stockResult.rows[0].stock;
+        if (currentStock < qty) {
+          return res.status(400).json({
+            success: false,
+            message: "Insufficient stock for " + item.name + ". Available: " + currentStock
+          });
         }
       }
     }
@@ -392,8 +433,18 @@ app.post("/api/public/orders", async (req, res) => {
       [customerId, customer_name, phone, address, total_amount, status || "Pending", itemSummary, payment_status || "unpaid", razorpay_payment_id || null, itemsDataStr]
     );
 
+    for (const vd of variantDecrements) {
+      await pool.query(
+        "UPDATE product_variants SET stock = GREATEST(stock - $1, 0) WHERE id = $2",
+        [vd.qty, vd.variantId]
+      );
+      await pool.query(
+        "UPDATE products SET stock = GREATEST(stock - $1, 0) WHERE id = $2",
+        [vd.qty, vd.productId]
+      );
+    }
     for (const item of items) {
-      if (item.id) {
+      if (item.id && !variantDecrements.some(function(v){ return v.productId === item.id; })) {
         await pool.query(
           "UPDATE products SET stock = GREATEST(stock - $1, 0) WHERE id = $2",
           [Number(item.quantity) || 1, item.id]
@@ -1236,7 +1287,7 @@ var HOST = process.env.HOST || "0.0.0.0";
     `);
     await pool.query(`
       INSERT INTO coupons (code, discount_type, discount_value, min_order_amount, is_active)
-      VALUES ('WELCOME20', 'percentage', 20, 499, NULL, TRUE)
+      VALUES ('WELCOME20', 'percentage', 20, 499, TRUE)
       ON CONFLICT (code) DO NOTHING
     `);
     console.log("Database migration: coupons table created/verified");
@@ -1370,19 +1421,6 @@ var HOST = process.env.HOST || "0.0.0.0";
   }
 
   // ===========================
-  // MIGRATE existing total_points to lifetime_points + redeemable_points
-  // ===========================
-  try {
-    await pool.query(`
-      UPDATE customers SET lifetime_points = total_points, redeemable_points = total_points
-      WHERE lifetime_points = 0 AND total_points > 0
-    `);
-    console.log("Database migration: migrated existing points to lifetime/redeemable");
-  } catch (err) {
-    console.error("Points migration error (non-fatal):", err.message);
-  }
-
-  // ===========================
   // DAILY DROP TABLE
   // ===========================
   try {
@@ -1398,6 +1436,26 @@ var HOST = process.env.HOST || "0.0.0.0";
     console.log("Database migration: daily_drops table created");
   } catch (err) {
     console.error("Daily drops migration error (non-fatal):", err.message);
+  }
+
+  // ===========================
+  // PRODUCT VARIANTS (per colour+size stock)
+  // ===========================
+  try {
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS product_variants (
+        id SERIAL PRIMARY KEY,
+        product_id INTEGER NOT NULL REFERENCES products(id) ON DELETE CASCADE,
+        color VARCHAR(100) DEFAULT '',
+        size VARCHAR(50) DEFAULT '',
+        stock INTEGER DEFAULT 0,
+        UNIQUE(product_id, color, size)
+      )
+    `);
+    await pool.query(`CREATE INDEX IF NOT EXISTS idx_product_variants_product ON product_variants(product_id)`);
+    console.log("Database migration: product_variants table created/verified");
+  } catch (err) {
+    console.error("Product variants migration error (non-fatal):", err.message);
   }
 
   // ===========================
@@ -1553,6 +1611,19 @@ var HOST = process.env.HOST || "0.0.0.0";
     console.log("Database migration: customer membership columns added");
   } catch (err) {
     console.error("Membership columns migration error (non-fatal):", err.message);
+  }
+
+  // ===========================
+  // MIGRATE existing total_points to lifetime_points + redeemable_points
+  // ===========================
+  try {
+    await pool.query(`
+      UPDATE customers SET lifetime_points = total_points, redeemable_points = total_points
+      WHERE lifetime_points = 0 AND total_points > 0
+    `);
+    console.log("Database migration: migrated existing points to lifetime/redeemable");
+  } catch (err) {
+    console.error("Points migration error (non-fatal):", err.message);
   }
 
   // Add color/tags to products
