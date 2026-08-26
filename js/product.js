@@ -54,7 +54,7 @@ function refreshSizeAvailability() {
 }
 
 var PRODUCT_COLORS = {
-  "Black": "#111111", "White": "#ffffff", "Grey": "#808080", "Navy": "#1b2a4a",
+  "Black": "#111111", "White": "#ffffff", "Grey": "#808080", "Light Grey": "#d3d3d3", "Navy": "#1b2a4a",
   "Blue": "#2563eb", "Sky Blue": "#87ceeb", "Red": "#e11d2e", "Maroon": "#7c1423",
   "Orange": "#ff6b00", "Yellow": "#facc15", "Green": "#16a34a", "Olive": "#6b8e23",
   "Purple": "#7c3aed", "Pink": "#ec4899", "Brown": "#7c4a2d", "Beige": "#e8d7b5",
