@@ -54,11 +54,14 @@ function refreshSizeAvailability() {
 }
 
 var PRODUCT_COLORS = {
-  "Black": "#111111", "White": "#ffffff", "Grey": "#808080", "Light Grey": "#d3d3d3", "Navy": "#1b2a4a",
-  "Blue": "#2563eb", "Sky Blue": "#87ceeb", "Red": "#e11d2e", "Maroon": "#7c1423",
-  "Orange": "#ff6b00", "Yellow": "#facc15", "Green": "#16a34a", "Olive": "#6b8e23",
-  "Purple": "#7c3aed", "Pink": "#ec4899", "Brown": "#7c4a2d", "Beige": "#e8d7b5",
-  "Teal": "#0d9488", "Mustard": "#e5a50a"
+  "Black": "#111111", "White": "#ffffff", "Grey": "#808080", "Dark Grey": "#4d4d4d", "Light Grey": "#d3d3d3",
+  "Navy": "#1b2a4a", "Blue": "#2563eb", "Sky Blue": "#87ceeb", "Royal Blue": "#2563eb",
+  "Red": "#e11d2e", "Maroon": "#7c1423", "Orange": "#ff6b00", "Coral": "#ff7f50",
+  "Yellow": "#facc15", "Mustard": "#e5a50a",
+  "Green": "#16a34a", "Forest Green": "#228b22", "Olive": "#6b8e23", "Mint": "#98fb98",
+  "Purple": "#7c3aed", "Lavender": "#b57edc", "Pink": "#ec4899", "Rust Pink": "#c96f7a",
+  "Brown": "#7c4a2d", "Camel Brown": "#c19a6b", "Beige": "#e8d7b5", "Cream": "#f0e6d0",
+  "Teal": "#0d9488", "Burgundy": "#8c001a", "Khakhi": "#c3b091", "Denim Blue": "#5d7e9c"
 };
 
 function switchProductImage(thumb, url) {
