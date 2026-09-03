@@ -333,45 +333,6 @@
 
         <div class="hero-bottom">
           <div>
-            <!-- Reviews Strip -->
-            <div class="reviews-strip">
-              <h4><i class="fa-solid fa-star"></i> What Customers Say</h4>
-              <div class="reviews-scroll">
-                <div class="review-card">
-                  <div class="review-stars"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i></div>
-                  <p class="review-text">"The quality is unmatched. Every piece feels premium. Pehrawa has become my go-to for all occasions."</p>
-                  <div class="review-author">
-                    <div class="review-avatar">R</div>
-                    <div><div class="review-name">Rohit S.</div><div class="review-verified"><i class="fa-solid fa-circle-check"></i> Verified Buyer</div></div>
-                  </div>
-                </div>
-                <div class="review-card">
-                  <div class="review-stars"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i></div>
-                  <p class="review-text">"Fits perfectly. The fabric is luxurious and the designs are trendy. Worth every rupee!"</p>
-                  <div class="review-author">
-                    <div class="review-avatar">A</div>
-                    <div><div class="review-name">Arjun M.</div><div class="review-verified"><i class="fa-solid fa-circle-check"></i> Verified Buyer</div></div>
-                  </div>
-                </div>
-                <div class="review-card">
-                  <div class="review-stars"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i></div>
-                  <p class="review-text">"Fast delivery, premium packaging, and the product exceeded my expectations. Highly recommend!"</p>
-                  <div class="review-author">
-                    <div class="review-avatar">V</div>
-                    <div><div class="review-name">Vikram P.</div><div class="review-verified"><i class="fa-solid fa-circle-check"></i> Verified Buyer</div></div>
-                  </div>
-                </div>
-                <div class="review-card">
-                  <div class="review-stars"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i></div>
-                  <p class="review-text">"Bought the black shirt for a wedding — got so many compliments. Pehrawa is fire!"</p>
-                  <div class="review-author">
-                    <div class="review-avatar">K</div>
-                    <div><div class="review-name">Karan D.</div><div class="review-verified"><i class="fa-solid fa-circle-check"></i> Verified Buyer</div></div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
             <!-- Social Proof -->
             <div class="social-proof">
               <div class="avatar-stack">
@@ -408,7 +369,7 @@
       <div><img src="images/logo.png" alt="Pehrawa Logo"><p>HOME OF HM - Premium printed and custom printed t-shirts for men who love to stand out.</p><div class="socials"><a href="#"><i class="fab fa-facebook-f"></i></a><a href="#"><i class="fab fa-instagram"></i></a><a href="#"><i class="fab fa-youtube"></i></a></div></div>
       <div><h4>SHOP</h4><a href="/shop">All Products</a><a href="/shop">T-Shirts</a><a href="/shop">Hoodies</a><a href="/collections">Collections</a></div>
       <div><h4>HELP</h4><a href="/size-guide">Size Guide</a><a href="/shipping-policy">Shipping Policy</a><a href="/privacy-policy">Privacy Policy</a><a href="/track-order">Track Order</a><a href="/terms">Terms &amp; Conditions</a><a href="/coming-soon">Coming Soon</a></div>
-      <div><h4>ACCOUNT</h4><a href="/login">Login</a><a href="/passport">My Passport</a><a href="/rewards">Rewards</a><a href="/my-orders">My Orders</a><a href="/style-quiz">Style DNA Quiz</a></div>
+      <div><h4>ACCOUNT</h4><a href="/login">Login / Register</a><a href="/my-orders">My Orders</a><a href="/wishlist">Wishlist</a></div>
       <div><h4>CONTACT</h4><p><i class="fa-solid fa-phone"></i> +91 9855707708</p><p><i class="fa-solid fa-envelope"></i> heypehrawa@gmail.com</p><p><i class="fa-solid fa-location-dot"></i> Punjab, India</p></div>
     </div>
     <div class="copyright">&copy; 2026 Pehrawa. All Rights Reserved.</div>
@@ -470,7 +431,7 @@
         if (e.isIntersecting) { e.target.style.opacity = '1'; e.target.style.transform = 'translateY(0)'; }
       });
     }, { threshold: 0.1 });
-    document.querySelectorAll('.review-card, .todays-drop, .social-proof').forEach(function(el) {
+    document.querySelectorAll('.todays-drop, .social-proof').forEach(function(el) {
       el.style.opacity = '0';
       el.style.transform = 'translateY(20px)';
       el.style.transition = 'opacity .6s ease, transform .6s ease';
