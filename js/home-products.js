@@ -4,8 +4,6 @@
     var origPrice = p.original_price ? Number(p.original_price) : Math.round(Number(p.price) * 1.5);
     var pr = Number(p.price) || 0;
     var disc = origPrice > pr ? Math.round((1 - pr / origPrice) * 100) : 0;
-    var rating = (3.5 + Math.random() * 1.5).toFixed(1);
-    var reviews = Math.floor(Math.random() * 500) + 20;
     var badges = "";
     if (p.stock_status === "out_of_stock") badges += '<span class="p-status p-out-of-stock">Out of Stock</span>';
     else if (p.stock_status === "limited_stock") badges += '<span class="p-status p-limited">Limited</span>';
@@ -24,10 +22,6 @@
       '</div>' +
       '<div class="product-content">' +
         '<h3><a href="product.html?id=' + p.id + '" class="product-link">' + p.name + '</a></h3>' +
-        '<div class="product-rating">' +
-          '<span class="stars">' + '&#9733;'.repeat(Math.round(rating)) + '</span>' +
-          '<span class="count">' + rating + ' (' + reviews + ')</span>' +
-        '</div>' +
         '<div class="price">&#8377;' + pr.toFixed(0) +
           '<span class="orig">&#8377;' + origPrice + '</span>' +
           '<span class="discount">' + disc + '% off</span>' +
