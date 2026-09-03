@@ -39,13 +39,26 @@
       selectedVariants = selectedVariants || [];
       var sizes = Array.from(document.querySelectorAll(".size-chk:checked")).map(function(cb) { return cb.value; });
       var colors = Array.from(document.querySelectorAll(".color-chk:checked")).map(function(cb) { return cb.value; });
-      if (!sizes.length || !colors.length) {
+      if (!sizes.length) {
         document.getElementById("variantMatrixGroup").style.display = "none";
         return;
       }
       document.getElementById("variantMatrixGroup").style.display = "block";
       var lookup = {};
       selectedVariants.forEach(function(v) { lookup[v.color + "|" + v.size] = v.stock; });
+      if (!colors.length) {
+        var h = '<div style="overflow-x:auto;border:1px solid #2a2a2a;border-radius:8px;"><table style="border-collapse:collapse;width:100%;min-width:320px;font-size:13px;"><tr><th style="padding:8px 10px;background:#1c1c1c;text-align:left;color:#aaa;">Size</th><th style="padding:8px 10px;background:#1c1c1c;color:#ddd;">Stock (pcs)</th></tr>';
+        sizes.forEach(function(s) {
+          var val = lookup["|" + s] !== undefined ? lookup["|" + s] : "";
+          if (val === undefined || val === null) val = "";
+          h += '<tr><td style="padding:6px 10px;border-top:1px solid #262626;color:#ccc;">' + s + '</td>';
+          h += '<td style="padding:4px 6px;border-top:1px solid #262626;"><input type="number" min="0" step="1" class="variant-stock" data-color="" data-size="' + s.replace(/"/g,"") + '" value="' + val + '" placeholder="0" style="width:64px;min-height:34px;padding:4px 8px;border:1px solid #333;border-radius:5px;background:#111;color:#fff;" /></td>';
+          h += "</tr>";
+        });
+        h += "</table></div>";
+        wrap.innerHTML = h;
+        return;
+      }
       var html = '<div style="overflow-x:auto;border:1px solid #2a2a2a;border-radius:8px;"><table style="border-collapse:collapse;width:100%;min-width:420px;font-size:13px;"><tr><th style="padding:8px 10px;background:#1c1c1c;text-align:left;color:#aaa;">Colour \ Size</th>';
       sizes.forEach(function(s) { html += '<th style="padding:8px 10px;background:#1c1c1c;color:#ddd;">' + s + "</th>"; });
       html += "</tr>";
