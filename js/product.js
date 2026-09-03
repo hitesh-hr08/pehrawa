@@ -584,24 +584,7 @@ function renderProduct(product, images) {
     document.getElementById("addCartBtn").innerText = "ADD TO CART";
   }
 
-  // Limited Stock Psychology
-  var stock = usesVariants ? totalVariantStock : (parseInt(product.stock) || 0);
-  var stockEl = document.getElementById("stockUrgency");
-  if (stockEl && !effectivelyOut && stock > 0 && stock <= 10) {
-    stockEl.innerHTML = '<i class="fa-solid fa-fire"></i> Only <strong>' + stock + '</strong> left in stock — order soon!' +
-      '<div class="p-stock-bar"><div class="p-stock-bar-fill" style="width:' + Math.max(10, stock * 10) + '%"></div></div>';
-    stockEl.style.display = "block";
-  } else if (stockEl) {
-    stockEl.style.display = "none";
-  }
-
-  // Social proof
-  var socialEl = document.getElementById("socialProof");
-  if (socialEl && !effectivelyOut) {
-    var viewers = Math.floor(Math.random() * 30) + 5;
-    socialEl.innerHTML = '<i class="fa-solid fa-eye"></i> ' + viewers + ' people are viewing this right now';
-    socialEl.style.display = "flex";
-  }
+  // Social proof removed
 
   // Recently viewed on product page
   if (window.PehrawaRecentlyViewed) PehrawaRecentlyViewed.render();

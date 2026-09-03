@@ -39,14 +39,12 @@
       '<p class="dd-desc">' + (drop.description || "Premium limited edition piece. Once it's gone, it's gone.") + '</p>' +
       '<div class="dd-price">&#8377;' + price.toFixed(0) + '<span class="dd-orig">&#8377;' + orig + '</span><span class="dd-disc">' + disc + '% OFF</span></div>' +
       countdownHtml +
-      '<div class="dd-stock"><i class="fa-solid fa-fire"></i> <span id="ddViewers">' + (Math.floor(Math.random() * 40) + 15) + '</span> people viewing this right now</div>' +
       '<div class="dd-actions">' +
       '<a href="/product?id=' + drop.product_id + '" class="dd-buy"><i class="fa-solid fa-bag-shopping"></i> GRAB IT NOW</a>' +
       '<button class="dd-wishlist-btn" onclick="addDropToWishlist(' + drop.product_id + ')"><i class="fa-regular fa-heart"></i></button>' +
       '</div></div></div>';
 
     startCountdown();
-    animateViewers();
   }
 
   function startCountdown() {
@@ -69,17 +67,6 @@
     }
     update();
     countdownInterval = setInterval(update, 1000);
-  }
-
-  function animateViewers() {
-    setInterval(function () {
-      var el = document.getElementById("ddViewers");
-      if (el) {
-        var v = parseInt(el.textContent) || 20;
-        var delta = Math.floor(Math.random() * 5) - 2;
-        el.textContent = Math.max(10, v + delta);
-      }
-    }, 3000);
   }
 
   window.addDropToWishlist = function (id) {
