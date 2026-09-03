@@ -220,6 +220,19 @@
   if (urlSearch && searchInput) searchInput.value = urlSearch;
   searchTerm = urlSearch.toLowerCase();
 
+  var urlCategory = (urlParams.get("category") || "").trim().toUpperCase();
+  if (urlCategory) {
+    var allCb = document.querySelector('.filter-cb[data-category="ALL"]');
+    if (allCb) allCb.checked = false;
+    var target = document.querySelector('.filter-cb[data-category="' + urlCategory + '"]');
+    if (target) {
+      target.checked = true;
+    } else {
+      var allFilterCbs = document.querySelectorAll(".filter-cb");
+      allFilterCbs.forEach(function(cb) { cb.checked = false; });
+    }
+  }
+
   var vid = localStorage.getItem("pehrawa_visitor_id") || "";
   var apiUrl = API_URL;
   if (urlSearch) apiUrl += "?search=" + encodeURIComponent(urlSearch) + "&visitor_id=" + encodeURIComponent(vid);
