@@ -84,7 +84,7 @@
           if (cat === "SHIRTS") {
             return category.includes("SHIRT") && !category.includes("T-SHIRT");
           }
-          if (cat === "PANTS") {
+          if (cat === "TROUSERS") {
             return ["JEANS","PANT","TROUSER","CHINO","JOGGER","TRACKPANT","DENIM","JEAN"].some(function(k) {
               return category.includes(k);
             });
