@@ -60,7 +60,7 @@ var PRODUCT_COLORS = {
   "Yellow": "#facc15", "Mustard": "#e5a50a",
   "Green": "#16a34a", "Forest Green": "#228b22", "Olive": "#6b8e23", "Mint": "#98fb98",
   "Purple": "#7c3aed", "Lavender": "#b57edc", "Pink": "#ec4899", "Rust Pink": "#c96f7a",
-  "Brown": "#7c4a2d", "Camel Brown": "#c19a6b", "Beige": "#e8d7b5", "Cream": "#f0e6d0",
+  "Brown": "#7c4a2d", "Dark Brown": "#3e2215", "Camel Brown": "#c19a6b", "Beige": "#e8d7b5", "Cream": "#f0e6d0",
   "Teal": "#0d9488", "Burgundy": "#8c001a", "Khakhi": "#c3b091", "Denim Blue": "#5d7e9c"
 };
 
