@@ -54,8 +54,8 @@
 }
 
 .gallery-thumbs img.active{
-  border-color:#ff6b00;
-  box-shadow:0 0 8px rgba(255,107,0,0.3);
+  border-color:#ffffff;
+  box-shadow:0 0 8px rgba(255,255,255,0.3);
 }
 
 .product-detail-image{
@@ -155,7 +155,7 @@
   margin-bottom:12px;
 }
 .product-keypoints .kp-title i{
-  color:#ff6b00;
+  color:#ffffff;
   margin-right:6px;
 }
 .product-keypoints ul{
@@ -181,7 +181,7 @@
   width:6px;
   height:6px;
   border-radius:50%;
-  background:#ff6b00;
+  background:#ffffff;
 }
 @media (min-width:600px){
   .product-keypoints ul{ grid-template-columns:1fr 1fr; }

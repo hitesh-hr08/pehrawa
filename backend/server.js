@@ -2466,7 +2466,7 @@ var HOST = process.env.HOST || "0.0.0.0";
   // ===========================
   var styleProfiles = {
     minimal: { name: "Clean Minimalist", description: "You love clean lines, solid colors, and understated elegance. Less is more for you.", icon: "fa-minus", color: "#888", categories: ["Plain T-Shirt", "Oversized T-Shirt", "Jeans"] },
-    bold: { name: "Bold Trendsetter", description: "You stand out with eye-catching prints and vibrant energy. Fashion is your expression.", icon: "fa-fire", color: "#ff6b00", categories: ["Graphic T-Shirt", "Oversized T-Shirt", "Hoodie"] },
+    bold: { name: "Bold Trendsetter", description: "You stand out with eye-catching prints and vibrant energy. Fashion is your expression.", icon: "fa-fire", color: "#ffffff", categories: ["Graphic T-Shirt", "Oversized T-Shirt", "Hoodie"] },
     classic: { name: "Classic Gentleman", description: "Timeless style that never goes out of fashion. Quality over trends.", icon: "fa-crown", color: "#ffd700", categories: ["Plain T-Shirt", "Hoodie", "Jeans"] },
     street: { name: "Street Style King", description: "Urban, relaxed, effortlessly cool. You set the streetwear trends.", icon: "fa-city", color: "#3498db", categories: ["Oversized T-Shirt", "Graphic T-Shirt", "Hoodie"] },
     sporty: { name: "Active Athlete", description: "Comfort meets performance. You need clothes that keep up with your lifestyle.", icon: "fa-person-running", color: "#2ecc71", categories: ["Oversized T-Shirt", "Plain T-Shirt", "Hoodie"] }

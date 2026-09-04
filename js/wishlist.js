@@ -89,7 +89,7 @@
       if (!isLoggedIn()) {
         var localItems = JSON.parse(localStorage.getItem("wishlist")) || [];
         if (localItems.length === 0) {
-          container.innerHTML = '<div style="text-align:center;padding:60px 20px;"><i class="fa-regular fa-heart" style="font-size:48px;color:#333;margin-bottom:16px;display:block;"></i><h3 style="color:#666;">Your wishlist is empty</h3><p style="color:#999;">Browse our collection and save items you love</p><a href="/shop" style="display:inline-block;margin-top:16px;padding:12px 32px;background:#ff6b00;color:#fff;text-decoration:none;border-radius:8px;font-weight:600;">Shop Now</a></div>';
+          container.innerHTML = '<div style="text-align:center;padding:60px 20px;"><i class="fa-regular fa-heart" style="font-size:48px;color:#333;margin-bottom:16px;display:block;"></i><h3 style="color:#666;">Your wishlist is empty</h3><p style="color:#999;">Browse our collection and save items you love</p><a href="/shop" style="display:inline-block;margin-top:16px;padding:12px 32px;background:#ffffff;color:#000;text-decoration:none;border-radius:8px;font-weight:600;">Shop Now</a></div>';
         } else {
           var html = '<div class="rv-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:16px;">';
           localItems.forEach(function (item) {
@@ -105,7 +105,7 @@
               '<div class="price">&#8377;' + price.toFixed(0) +
               (disc > 0 ? '<span class="orig">&#8377;' + orig + '</span>' : '') + '</div>' +
               '<div style="display:flex;gap:8px;margin-top:8px;">' +
-              '<button class="add-cart-btn" onclick="addLocalWishItemToCart(' + item.id + ')" style="flex:1;padding:8px;background:#ff6b00;color:#fff;border:none;border-radius:4px;cursor:pointer;font-size:12px;"><i class="fa-solid fa-cart-plus"></i> Add to Cart</button>' +
+              '<button class="add-cart-btn" onclick="addLocalWishItemToCart(' + item.id + ')" style="flex:1;padding:8px;background:#ffffff;color:#000;border:none;border-radius:4px;cursor:pointer;font-size:12px;"><i class="fa-solid fa-cart-plus"></i> Add to Cart</button>' +
               '<button onclick="PehrawaWishlist.toggle(' + item.id + ',\'' + item.name.replace(/'/g, "\\'") + '\',' + price + ',\'' + (item.image || "").replace(/'/g, "\\'") + '\'); PehrawaWishlist.renderWishlistPage();" style="padding:8px 12px;background:none;border:1px solid #333;color:#e74c3c;border-radius:4px;cursor:pointer;"><i class="fa-solid fa-trash"></i></button>' +
               '</div></div></div>';
           });
@@ -133,14 +133,14 @@
                 '<div class="price">&#8377;' + (Number(item.price) || 0).toFixed(0) +
                 (disc > 0 ? '<span class="orig">&#8377;' + orig + '</span>' : '') + '</div>' +
                 '<div style="display:flex;gap:8px;margin-top:8px;">' +
-                '<button class="add-cart-btn" onclick="addWishItemToCart(' + item.product_id + ')" style="flex:1;padding:8px;background:#ff6b00;color:#fff;border:none;border-radius:4px;cursor:pointer;font-size:12px;"><i class="fa-solid fa-cart-plus"></i> Add to Cart</button>' +
+                '<button class="add-cart-btn" onclick="addWishItemToCart(' + item.product_id + ')" style="flex:1;padding:8px;background:#ffffff;color:#000;border:none;border-radius:4px;cursor:pointer;font-size:12px;"><i class="fa-solid fa-cart-plus"></i> Add to Cart</button>' +
                 '<button onclick="PehrawaWishlist.toggle(' + item.product_id + ')" style="padding:8px 12px;background:none;border:1px solid #333;color:#e74c3c;border-radius:4px;cursor:pointer;"><i class="fa-solid fa-trash"></i></button>' +
                 '</div></div></div>';
             });
             html += '</div>';
             container.innerHTML = html;
           } else {
-            container.innerHTML = '<div style="text-align:center;padding:60px 20px;"><i class="fa-regular fa-heart" style="font-size:48px;color:#333;margin-bottom:16px;display:block;"></i><h3 style="color:#666;">Your wishlist is empty</h3><p style="color:#999;">Browse our collection and save items you love</p><a href="/shop" style="display:inline-block;margin-top:16px;padding:12px 32px;background:#ff6b00;color:#fff;text-decoration:none;border-radius:8px;font-weight:600;">Shop Now</a></div>';
+            container.innerHTML = '<div style="text-align:center;padding:60px 20px;"><i class="fa-regular fa-heart" style="font-size:48px;color:#333;margin-bottom:16px;display:block;"></i><h3 style="color:#666;">Your wishlist is empty</h3><p style="color:#999;">Browse our collection and save items you love</p><a href="/shop" style="display:inline-block;margin-top:16px;padding:12px 32px;background:#ffffff;color:#000;text-decoration:none;border-radius:8px;font-weight:600;">Shop Now</a></div>';
           }
         });
       return true;

@@ -461,7 +461,7 @@ if (checkoutForm) {
       currency: "INR",
       name: "Pehrawa",
       order_id: rzpData.order_id,
-      theme: { color: "#ff6b00" },
+      theme: { color: "#ffffff" },
       handler: async function (response) {
         try {
           var res = await fetch(api + "/api/public/orders", {

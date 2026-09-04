@@ -176,7 +176,7 @@ flex:0 0 220px;
 border-color:#555;
 }
 
-.search-input:focus{border-color:#ff6b00;}
+.search-input:focus{border-color:#ffffff;}
 
 .login-btn{
 display:flex;
@@ -1138,7 +1138,7 @@ transition:.3s;
 
 .pagination button:hover{background:#ffffff;}
 
-.pagination button.pg-btn.active{background:#ff6b00;color:#fff;border-color:#ff6b00;}
+.pagination button.pg-btn.active{background:#ffffff;color:#000;border-color:#ffffff;}
 .pagination button.pg-btn:disabled{opacity:.3;cursor:not-allowed;background:#090909;color:#666;}
 
 /* =======================

@@ -612,7 +612,7 @@ function loadRelatedProducts(category, excludeId) {
           '<div style="border:1px solid #333;border-radius:8px;overflow:hidden;background:#1a1a1a;">' +
           '<img src="' + img + '" style="width:100%;height:180px;object-fit:cover;" onerror="this.src=\'../images/product1.png\'">' +
           '<div style="padding:8px 12px;"><div style="font-size:14px;">' + p.name + '</div>' +
-          '<div style="color:#ff6b00;font-weight:600;">&#8377;' + (Number(p.price) || 0).toFixed(0) + '</div></div></div></a>';
+          '<div style="color:#ffffff;font-weight:600;">&#8377;' + (Number(p.price) || 0).toFixed(0) + '</div></div></div></a>';
       });
       html += '</div>';
       el.innerHTML = html;
@@ -951,7 +951,7 @@ function populateBuyConfirmation() {
     '<div class="buy-summary-row"><span>Quantity</span><span>' + qty + '</span></div>' +
     '<div class="buy-summary-row"><span>Name</span><span>' + name + '</span></div>' +
     '<div class="buy-summary-row"><span>Address</span><span style="font-size:12px;">' + address + ', ' + city + ', ' + state + ' - ' + pincode + '</span></div>' +
-    '<div class="buy-summary-row" style="border-top:1px solid #333;padding-top:10px;margin-top:6px;text-align:center;"><span style="font-weight:700;font-size:16px;">Total Amount</span><span style="color:#ff6b00;font-weight:700;font-size:18px;display:block;text-align:center;margin-top:4px;">&#8377;' + total.toFixed(2) + '</span></div>';
+    '<div class="buy-summary-row" style="border-top:1px solid #333;padding-top:10px;margin-top:6px;text-align:center;"><span style="font-weight:700;font-size:16px;">Total Amount</span><span style="color:#ffffff;font-weight:700;font-size:18px;display:block;text-align:center;margin-top:4px;">&#8377;' + total.toFixed(2) + '</span></div>';
 }
 
 async function placeBuyOrder() {
@@ -1032,7 +1032,7 @@ async function placeBuyOrder() {
     currency: "INR",
     name: "Pehrawa",
     order_id: rzpData.order_id,
-    theme: { color: "#ff6b00" },
+    theme: { color: "#ffffff" },
     handler: async function (response) {
       try {
         var res = await fetch(api + "/api/public/orders", {

@@ -55,7 +55,7 @@ border-color:#ffffff;
 padding:15px;
 background:#ffffff;
 border:none;
-color:#fff;
+color:#000;
 font-weight:600;
 cursor:pointer;
 transition:.3s;
@@ -71,7 +71,7 @@ background:#e0e0e0;
 .track-card { background: #111; border: 1px solid #333; border-radius: 12px; padding: 30px; }
 .track-status-bar { text-align: center; margin-bottom: 20px; }
 .track-status-badge { display: inline-block; padding: 8px 24px; border-radius: 20px; font-weight: 600; font-size: 14px; text-transform: uppercase; background: #ffffff; color: #000; }
-.status-pending .track-status-badge { background: #f59e0b; }
+.status-pending .track-status-badge { background: #ffffff; }
 .status-processing .track-status-badge { background: #3b82f6; }
 .status-shipped .track-status-badge { background: #8b5cf6; }
 .status-delivered .track-status-badge { background: #10b981; }

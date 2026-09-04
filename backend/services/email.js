@@ -84,7 +84,7 @@ function escapeHtml(str) {
 
 async function sendNewAccountNotification(customer) {
   const html = `<div style="font-family:Arial,sans-serif;max-width:560px;margin:auto;background:#fff;border:1px solid #eee;border-radius:12px;overflow:hidden;">
-    <div style="background:#ff6b00;color:#fff;padding:22px 28px;"><h2 style="margin:0;font-size:20px;">New Account Registered</h2></div>
+    <div style="background:#ffffff;color:#000;padding:22px 28px;"><h2 style="margin:0;font-size:20px;">New Account Registered</h2></div>
     <div style="padding:24px 28px;color:#333;font-size:14px;line-height:1.7;">
       <p style="margin:0 0 14px;">A new customer just created an account on Pehrawa.</p>
       <table style="width:100%;border-collapse:collapse;">
@@ -102,7 +102,7 @@ async function sendNewAccountNotification(customer) {
 async function sendNewOrderNotification(order, items, customerEmail) {
   const trackingId = "PHR-" + String(order.id).padStart(6, "0");
   const html = `<div style="font-family:Arial,sans-serif;max-width:600px;margin:auto;background:#fff;border:1px solid #eee;border-radius:12px;overflow:hidden;">
-    <div style="background:#ff6b00;color:#fff;padding:22px 28px;"><h2 style="margin:0;font-size:20px;">New Order Received 💰</h2></div>
+    <div style="background:#ffffff;color:#000;padding:22px 28px;"><h2 style="margin:0;font-size:20px;">New Order Received 💰</h2></div>
     <div style="padding:24px 28px;color:#333;font-size:14px;line-height:1.7;">
       <p style="margin:0 0 14px;">Order <b>#${trackingId}</b> has been placed and payment is received.</p>
       <table style="width:100%;border-collapse:collapse;">
@@ -111,7 +111,7 @@ async function sendNewOrderNotification(order, items, customerEmail) {
         <tr><td style="padding:8px 0;color:#888;">Email</td><td><b>${escapeHtml(customerEmail || "—")}</b></td></tr>
         <tr><td style="padding:8px 0;color:#888;">Address</td><td><b>${escapeHtml(order.address || "—")}</b></td></tr>
         <tr><td style="padding:8px 0;color:#888;">Payment ID</td><td><b>${escapeHtml(order.razorpay_payment_id || "—")}</b></td></tr>
-        <tr><td style="padding:8px 0;color:#888;">Order Total</td><td><b style="color:#ff6b00;font-size:16px;">${formatMoney(order.total_amount)}</b></td></tr>
+        <tr><td style="padding:8px 0;color:#888;">Order Total</td><td><b style="color:#ffffff;font-size:16px;">${formatMoney(order.total_amount)}</b></td></tr>
       </table>
       <div style="margin:18px 0 0;">${orderToTable(order, items)}</div>
       <p style="margin:18px 0 0;padding-top:14px;border-top:1px solid #eee;color:#999;font-size:12px;">Pehrawa Admin Notification</p>
@@ -124,7 +124,7 @@ async function sendOrderConfirmationEmail(order, items, customerEmail) {
   if (!customerEmail) return { success: false, reason: "no_customer_email" };
   const trackingId = "PHR-" + String(order.id).padStart(6, "0");
   const html = `<div style="font-family:Arial,sans-serif;max-width:600px;margin:auto;background:#fff;border:1px solid #eee;border-radius:12px;overflow:hidden;">
-    <div style="background:#ff6b00;color:#fff;padding:22px 28px;">
+    <div style="background:#ffffff;color:#000;padding:22px 28px;">
       <h2 style="margin:0;font-size:20px;">Thank you, ${escapeHtml(order.customer_name || "customer")}!</h2>
       <p style="margin:6px 0 0;opacity:.9;">Your order has been placed successfully 🎉</p>
     </div>
@@ -140,7 +140,7 @@ async function sendOrderConfirmationEmail(order, items, customerEmail) {
       <table style="width:100%;margin-top:14px;font-size:14px;">
         <tr><td style="padding:6px 0;color:#888;">Subtotal</td><td style="text-align:right;">${formatMoney(order.total_amount)}</td></tr>
         <tr><td style="padding:6px 0;color:#888;">Shipping</td><td style="text-align:right;">FREE</td></tr>
-        <tr><td style="padding:8px 0;font-size:16px;"><b>Total Paid</b></td><td style="text-align:right;"><b style="color:#ff6b00;font-size:16px;">${formatMoney(order.total_amount)}</b></td></tr>
+        <tr><td style="padding:8px 0;font-size:16px;"><b>Total Paid</b></td><td style="text-align:right;"><b style="color:#ffffff;font-size:16px;">${formatMoney(order.total_amount)}</b></td></tr>
       </table>
       <p style="margin:18px 0 0;">Your invoice is attached as a PDF. Track your order anytime at <a href="${process.env.FRONTEND_URL || "https://pehrawa.store"}/track-order">pehrawa.store/track-order</a> (use Order ID <b>#${trackingId}</b> and your phone number).</p>
       <p style="margin:18px 0 0;padding-top:14px;border-top:1px solid #eee;color:#999;font-size:12px;">For any help, reply to this email or contact us at ${escapeHtml(FROM_EMAIL)}.</p>

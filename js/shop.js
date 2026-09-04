@@ -1,4 +1,4 @@
-﻿(function () {
+(function () {
   const API_URL = `${window.PEHRAWA_API_BASE || "http://localhost:5000"}/api/public/products`;
   const productGrid = document.getElementById("shopProductGrid");
   const searchInput = document.querySelector(".search-input");
@@ -288,6 +288,6 @@
       }
     })
     .catch(function() {
-      productGrid.innerHTML = '<div class="shop-state">Server not connected. <button onclick="location.reload()" style="background:#ff6b00;color:#fff;border:none;padding:8px 20px;border-radius:6px;cursor:pointer;margin-top:10px;">Retry</button></div>';
+      productGrid.innerHTML = '<div class="shop-state">Server not connected. <button onclick="location.reload()" style="background:#ffffff;color:#000;border:none;padding:8px 20px;border-radius:6px;cursor:pointer;margin-top:10px;">Retry</button></div>';
     });
 })();

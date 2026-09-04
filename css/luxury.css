@@ -109,7 +109,7 @@ SCRATCH CARD
 .sc-float.sc-show{opacity:1;transform:translateX(0);}
 .sc-float-inner{display:flex;align-items:center;gap:10px;padding:12px 20px;background:#222;color:#fff;border-radius:30px;cursor:pointer;box-shadow:0 6px 24px rgba(0,0,0,0.4);animation:scPulse 2s infinite;font-size:13px;font-weight:600;white-space:nowrap;}
 .sc-float-inner i{font-size:18px;}
-@keyframes scPulse{0%,100%{box-shadow:0 6px 24px rgba(255,107,0,0.4);}50%{box-shadow:0 6px 36px rgba(255,107,0,0.7);}}
+@keyframes scPulse{0%,100%{box-shadow:0 6px 24px rgba(255,255,255,0.4);}50%{box-shadow:0 6px 36px rgba(255,255,255,0.7);}}
 
 .sc-modal{text-align:center;position:relative;}
 .sc-title{font-size:24px;margin-bottom:8px;}
@@ -239,9 +239,9 @@ LIMITED STOCK PSYCHOLOGY
 @keyframes urgencyPulse{0%,100%{opacity:1;transform:scale(1);}50%{opacity:.6;transform:scale(1.15);}}
 
 .p-stock-bar{height:3px;background:#1a1a1a;border-radius:3px;margin-top:8px;overflow:hidden;}
-.p-stock-bar-fill{height:100%;background:linear-gradient(90deg,#ff3f3f,#ff6b00);border-radius:3px;transition:width 1s ease;}
+.p-stock-bar-fill{height:100%;background:linear-gradient(90deg,#ff3f3f,#ffffff);border-radius:3px;transition:width 1s ease;}
 
-.p-viewing{display:flex;align-items:center;gap:6px;font-size:11px;color:#ff6b00;font-weight:500;margin-top:8px;}
+.p-viewing{display:flex;align-items:center;gap:6px;font-size:11px;color:#ffffff;font-weight:500;margin-top:8px;}
 .p-viewing i{font-size:10px;}
 
 .p-social-proof{display:flex;align-items:center;gap:6px;font-size:11px;color:#36b37e;margin-top:6px;}
@@ -280,7 +280,7 @@ CART PROGRESS BAR
 #cartProgressSection{padding:0 0 20px;}
 .cpb-bar-wrap{padding:0 4px;margin-bottom:12px;}
 .cpb-bar{position:relative;height:8px;background:#1a1a1a;border-radius:4px;overflow:visible;}
-.cpb-bar-fill{height:100%;background:linear-gradient(90deg,#ff6b00,#ff8c33);border-radius:4px;transition:width .6s ease;}
+.cpb-bar-fill{height:100%;background:linear-gradient(90deg,#ffffff,#ffffff);border-radius:4px;transition:width .6s ease;}
 .cpb-marker{position:absolute;top:50%;transform:translate(-50%,-50%);z-index:2;}
 .cpb-marker-dot{width:28px;height:28px;border-radius:50%;background:#1a1a1a;border:2px solid #333;display:flex;align-items:center;justify-content:center;font-size:11px;color:#666;transition:all .3s;}
 .cpb-unlocked .cpb-marker-dot{background:#22c55e;border-color:#22c55e;color:#fff;box-shadow:0 0 12px rgba(34,197,94,.4);}
@@ -290,9 +290,9 @@ CART PROGRESS BAR
 .cpb-milestone.cpb-unlocked{color:#22c55e;}
 .cpb-milestone.cpb-unlocked i{color:#22c55e;}
 .cpb-status{text-align:center;padding:10px;border-radius:8px;font-size:13px;font-weight:600;margin-top:8px;}
-.cpb-encourage{background:rgba(255,107,0,.08);color:#ff8c33;border:1px solid rgba(255,107,0,.2);}
+.cpb-encourage{background:rgba(255,255,255,.08);color:#ffffff;border:1px solid rgba(255,255,255,.2);}
 .cpb-shipping{background:rgba(34,197,94,.08);color:#22c55e;border:1px solid rgba(34,197,94,.2);}
-.cpb-all{background:linear-gradient(135deg,rgba(34,197,94,.1),rgba(255,107,0,.1));color:#fff;border:1px solid rgba(255,107,0,.2);}
+.cpb-all{background:linear-gradient(135deg,rgba(34,197,94,.1),rgba(255,255,255,.1));color:#fff;border:1px solid rgba(255,255,255,.2);}
 
 @media(max-width:480px){
   .cpb-milestones{flex-direction:column;align-items:center;gap:4px;}
@@ -303,7 +303,7 @@ PEHRAWA PASSPORT
 =========================== */
 .pp-container{max-width:800px;margin:0 auto;padding:20px 16px 60px;}
 .pp-hero{background:linear-gradient(135deg,#1a1a1a,#222);border:1px solid #333;border-radius:16px;padding:40px 24px;text-align:center;margin-bottom:24px;position:relative;overflow:hidden;}
-.pp-hero::before{content:"";position:absolute;top:-50%;left:-50%;width:200%;height:200%;background:radial-gradient(circle at 30% 50%,rgba(255,107,0,.06),transparent 60%);pointer-events:none;}
+.pp-hero::before{content:"";position:absolute;top:-50%;left:-50%;width:200%;height:200%;background:radial-gradient(circle at 30% 50%,rgba(255,255,255,.06),transparent 60%);pointer-events:none;}
 .pp-avatar{width:80px;height:80px;border-radius:50%;background:#333;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;font-size:36px;color:#fff;}
 .pp-name{color:#fff;font-size:26px;font-weight:800;margin-bottom:8px;}
 .pp-tier-badge{display:inline-flex;align-items:center;gap:6px;color:#fff;padding:6px 16px;border-radius:20px;font-size:13px;font-weight:700;letter-spacing:.5px;}
@@ -332,7 +332,7 @@ PEHRAWA PASSPORT
 .pp-empty{color:#666;font-size:13px;text-align:center;padding:20px 0;}
 .pp-benefits-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;}
 .pp-benefit{background:#1a1a1a;border:1px solid #222;border-radius:10px;padding:14px 8px;text-align:center;opacity:.4;transition:opacity .2s;}
-.pp-benefit.pp-active{opacity:1;border-color:rgba(255,107,0,.3);}
+.pp-benefit.pp-active{opacity:1;border-color:rgba(255,255,255,.3);}
 .pp-benefit i{font-size:22px;color:#555;display:block;margin-bottom:6px;}
 .pp-benefit.pp-active i{color:#fff;}
 .pp-benefit span{display:block;color:#fff;font-size:12px;font-weight:600;}
@@ -340,7 +340,7 @@ PEHRAWA PASSPORT
 .pp-scratch-stats{display:flex;gap:16px;flex-wrap:wrap;}
 .pp-scratch-stat{background:#1a1a1a;border-radius:8px;padding:10px 16px;color:#888;font-size:13px;}
 .pp-scratch-stat span{color:#fff;font-weight:700;margin-right:4px;}
-.pp-scratch-stat.pp-unrevealed{border:1px solid rgba(255,107,0,.3);color:#ff8c33;}
+.pp-scratch-stat.pp-unrevealed{border:1px solid rgba(255,255,255,.3);color:#ffffff;}
 .pp-scratch-stat.pp-unrevealed span{color:#fff;}
 .pp-scratch-stat.pp-unredeemed{border:1px solid rgba(34,197,94,.3);color:#22c55e;}
 .pp-scratch-stat.pp-unredeemed span{color:#22c55e;}
@@ -354,7 +354,7 @@ REFERRAL PROGRAM
 =========================== */
 .pp-referral-wrap{max-width:800px;margin:0 auto;padding:0 16px 60px;}
 .ref-card{background:linear-gradient(135deg,#1a1a1a,#222);border:1px solid #333;border-radius:16px;padding:28px 24px;overflow:hidden;position:relative;}
-.ref-card::before{content:"";position:absolute;top:-30%;right:-20%;width:300px;height:300px;background:radial-gradient(circle,rgba(255,107,0,.08),transparent 70%);pointer-events:none;}
+.ref-card::before{content:"";position:absolute;top:-30%;right:-20%;width:300px;height:300px;background:radial-gradient(circle,rgba(255,255,255,.08),transparent 70%);pointer-events:none;}
 .ref-header{margin-bottom:24px;}
 .ref-header h3{color:#fff;font-size:20px;font-weight:800;}
 .ref-header h3 i{color:#fff;margin-right:8px;}
@@ -364,11 +364,11 @@ REFERRAL PROGRAM
 .ref-code-display{display:flex;align-items:center;gap:12px;}
 .ref-code{color:#fff;font-size:28px;font-weight:800;letter-spacing:3px;font-family:monospace;}
 .ref-copy-btn{background:rgba(255,255,255,.08);color:#fff;border:1px solid #333;padding:8px 16px;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;transition:background .2s;}
-.ref-copy-btn:hover{background:rgba(255,107,0,.25);}
+.ref-copy-btn:hover{background:rgba(255,255,255,.25);}
 .ref-link-display{display:flex;gap:8px;}
 .ref-link-input{flex:1;background:#0a0a0a;border:1px solid #333;border-radius:8px;padding:10px 14px;color:#ccc;font-size:12px;font-family:monospace;outline:none;}
 .ref-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:20px 0;}
-.ref-stat{text-align:center;background:rgba(255,107,0,.05);border:1px solid rgba(255,107,0,.15);border-radius:10px;padding:14px 8px;}
+.ref-stat{text-align:center;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.15);border-radius:10px;padding:14px 8px;}
 .ref-stat-val{color:#fff;font-size:24px;font-weight:800;}
 .ref-stat-label{color:#888;font-size:11px;margin-top:2px;}
 .ref-share{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px;}
@@ -456,7 +456,7 @@ PERSONALIZED RECOMMENDATIONS
 /* ===========================
 LIMITED EDITION BADGE
 =========================== */
-.p-edition{background:linear-gradient(135deg,rgba(255,215,0,.15),rgba(255,107,0,.15));color:#ffd700;border:1px solid rgba(255,215,0,.3);}
+.p-edition{background:linear-gradient(135deg,rgba(255,215,0,.15),rgba(255,255,255,.15));color:#ffd700;border:1px solid rgba(255,215,0,.3);}
 .p-edition i{margin-right:3px;}
 
 /* ===========================
@@ -481,15 +481,15 @@ VAULT PAGE
 /* ===========================
 AI CHATBOT
 =========================== */
-.ai-chat-btn{position:fixed;bottom:96px;right:28px;width:56px;height:56px;border-radius:50%;background:linear-gradient(135deg,#ff6b00,#ff8c33);color:#fff;display:flex;align-items:center;justify-content:center;font-size:24px;cursor:pointer;z-index:10001;box-shadow:0 4px 20px rgba(255,107,0,.4);transition:all .3s;}
-.ai-chat-btn:hover{transform:scale(1.1);box-shadow:0 6px 30px rgba(255,107,0,.6);}
+.ai-chat-btn{position:fixed;bottom:96px;right:28px;width:56px;height:56px;border-radius:50%;background:linear-gradient(135deg,#ffffff,#ffffff);color:#fff;display:flex;align-items:center;justify-content:center;font-size:24px;cursor:pointer;z-index:10001;box-shadow:0 4px 20px rgba(255,255,255,.4);transition:all .3s;}
+.ai-chat-btn:hover{transform:scale(1.1);box-shadow:0 6px 30px rgba(255,255,255,.6);}
 .ai-chat-btn.ai-chat-pulse{animation:aiPulse 2s infinite;}
-@keyframes aiPulse{0%,100%{box-shadow:0 4px 20px rgba(255,107,0,.4);}50%{box-shadow:0 4px 40px rgba(255,107,0,.8);}}
+@keyframes aiPulse{0%,100%{box-shadow:0 4px 20px rgba(255,255,255,.4);}50%{box-shadow:0 4px 40px rgba(255,255,255,.8);}}
 .ai-chat-window{position:fixed;bottom:164px;right:28px;width:380px;max-height:560px;background:#0a0a0a;border:1px solid #222;border-radius:16px;z-index:10002;display:flex;flex-direction:column;opacity:0;visibility:hidden;transform:translateY(20px) scale(.95);transition:all .3s ease;box-shadow:0 20px 60px rgba(0,0,0,.6);overflow:hidden;}
 .ai-chat-window.ai-chat-open{opacity:1;visibility:visible;transform:translateY(0) scale(1);}
 .ai-chat-header{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;background:#111;border-bottom:1px solid #222;}
 .ai-chat-header-left{display:flex;align-items:center;gap:10px;}
-.ai-chat-avatar{width:36px;height:36px;border-radius:50%;background:#ff6b00;display:flex;align-items:center;justify-content:center;color:#fff;font-size:16px;}
+.ai-chat-avatar{width:36px;height:36px;border-radius:50%;background:#ffffff;display:flex;align-items:center;justify-content:center;color:#000;font-size:16px;}
 .ai-chat-name{color:#fff;font-size:14px;font-weight:700;}
 .ai-chat-status{color:#888;font-size:11px;display:flex;align-items:center;gap:4px;}
 .ai-status-dot{width:6px;height:6px;border-radius:50%;background:#22c55e;display:inline-block;}
@@ -502,11 +502,11 @@ AI CHATBOT
 .ai-msg{display:flex;gap:8px;max-width:90%;}
 .ai-msg-bot{align-self:flex-start;}
 .ai-msg-user{align-self:flex-end;flex-direction:row-reverse;}
-.ai-msg-avatar{width:28px;height:28px;border-radius:50%;background:#ff6b00;display:flex;align-items:center;justify-content:center;color:#fff;font-size:12px;flex-shrink:0;}
+.ai-msg-avatar{width:28px;height:28px;border-radius:50%;background:#ffffff;display:flex;align-items:center;justify-content:center;color:#000;font-size:12px;flex-shrink:0;}
 .ai-msg-bot .ai-msg-avatar{display:block;}
 .ai-msg-user .ai-msg-avatar{display:none;}
 .ai-msg-content{background:#151515;border:1px solid #222;border-radius:12px;padding:10px 14px;}
-.ai-msg-user .ai-msg-content{background:#ff6b00;border-color:#ff6b00;color:#fff;}
+.ai-msg-user .ai-msg-content{background:#ffffff;border-color:#ffffff;color:#000;}
 .ai-msg-text{color:#ddd;font-size:13px;line-height:1.5;white-space:pre-wrap;}
 .ai-msg-user .ai-msg-text{color:#fff;}
 .ai-typing-dots{display:flex;gap:4px;padding:4px 0;}
@@ -516,26 +516,26 @@ AI CHATBOT
 @keyframes aiDot{0%,60%,100%{opacity:.3;transform:scale(.8);}30%{opacity:1;transform:scale(1);}}
 .ai-chat-suggestions{display:flex;gap:6px;padding:8px 12px;flex-wrap:wrap;}
 .ai-sug-btn{background:#151515;border:1px solid #333;color:#aaa;padding:6px 12px;border-radius:16px;font-size:11px;cursor:pointer;white-space:nowrap;transition:all .2s;}
-.ai-sug-btn:hover{background:#222;color:#fff;border-color:#ff6b00;}
+.ai-sug-btn:hover{background:#222;color:#fff;border-color:#ffffff;}
 .ai-msg-products{display:flex;gap:8px;flex-wrap:wrap;}
 .ai-prod-card{background:#1a1a1a;border:1px solid #222;border-radius:8px;overflow:hidden;text-decoration:none;width:140px;transition:transform .2s;}
 .ai-prod-card:hover{transform:translateY(-2px);}
 .ai-prod-card img{width:100%;height:100px;object-fit:cover;}
 .ai-prod-info{padding:8px;}
 .ai-prod-name{display:block;color:#fff;font-size:11px;font-weight:600;margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.ai-prod-price{color:#ff6b00;font-size:13px;font-weight:700;}
+.ai-prod-price{color:#ffffff;font-size:13px;font-weight:700;}
 .ai-chat-input-area{display:flex;gap:8px;padding:12px;border-top:1px solid #222;background:#111;}
 .ai-chat-input{flex:1;background:#1a1a1a;border:1px solid #333;border-radius:10px;padding:10px 14px;color:#fff;font-size:13px;outline:none;font-family:Poppins,sans-serif;}
-.ai-chat-input:focus{border-color:#ff6b00;}
+.ai-chat-input:focus{border-color:#ffffff;}
 .ai-chat-input::placeholder{color:#666;}
-.ai-chat-send{width:40px;height:40px;border-radius:50%;background:#ff6b00;border:none;color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:background .2s;flex-shrink:0;}
-.ai-chat-send:hover{background:#e55d00;}
+.ai-chat-send{width:40px;height:40px;border-radius:50%;background:#ffffff;border:none;color:#000;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:background .2s;flex-shrink:0;}
+.ai-chat-send:hover{background:#ffffff;}
 @media(max-width:768px){
   .ai-chat-btn{bottom:80px;right:20px;width:52px;height:52px;font-size:22px;}
   .ai-chat-window{width:calc(100vw - 32px);right:16px;bottom:148px;max-height:60vh;}
 }
 @media(max-width:480px){
-  .ai-chat-btn{bottom:72px;right:14px;width:48px;height:48px;font-size:20px;box-shadow:0 4px 16px rgba(255,107,0,.5);}
+  .ai-chat-btn{bottom:72px;right:14px;width:48px;height:48px;font-size:20px;box-shadow:0 4px 16px rgba(255,255,255,.5);}
   .ai-chat-window{width:calc(100vw - 16px);right:8px;bottom:134px;max-height:65vh;border-radius:14px;}
   .ai-chat-header{padding:12px 14px;}
   .ai-chat-body{padding:10px;}
@@ -554,10 +554,10 @@ STYLE DNA QUIZ
 .quiz-start-features{display:flex;justify-content:center;gap:24px;margin-bottom:28px;flex-wrap:wrap;}
 .quiz-feature{display:flex;align-items:center;gap:6px;color:#aaa;font-size:13px;}
 .quiz-feature i{color:#fff;}
-.quiz-start-btn{padding:14px 40px;background:linear-gradient(135deg,#ff6b00,#e55d00);color:#fff;border:none;border-radius:10px;font-size:16px;font-weight:700;cursor:pointer;transition:all .3s;font-family:Poppins,sans-serif;}
-.quiz-start-btn:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(255,107,0,.4);}
+.quiz-start-btn{padding:14px 40px;background:linear-gradient(135deg,#ffffff,#ffffff);color:#fff;border:none;border-radius:10px;font-size:16px;font-weight:700;cursor:pointer;transition:all .3s;font-family:Poppins,sans-serif;}
+.quiz-start-btn:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(255,255,255,.4);}
 .quiz-progress-bar{height:4px;background:#1a1a1a;border-radius:2px;margin-bottom:8px;overflow:hidden;}
-.quiz-progress-fill{height:100%;background:linear-gradient(90deg,#ff6b00,#9b59b6);border-radius:2px;transition:width .4s ease;}
+.quiz-progress-fill{height:100%;background:linear-gradient(90deg,#ffffff,#9b59b6);border-radius:2px;transition:width .4s ease;}
 .quiz-progress-text{color:#666;font-size:12px;margin-bottom:20px;text-align:center;}
 .quiz-question{background:#0a0a0a;border:1px solid #222;border-radius:16px;padding:32px;}
 .quiz-question h3{color:#fff;font-size:20px;font-weight:700;text-align:center;margin-bottom:24px;line-height:1.4;}
@@ -570,8 +570,8 @@ STYLE DNA QUIZ
 .quiz-nav{display:flex;justify-content:space-between;margin-top:20px;}
 .quiz-prev{background:#1a1a1a;border:1px solid #333;color:#aaa;padding:12px 24px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;transition:all .2s;font-family:Poppins,sans-serif;}
 .quiz-prev:hover{color:#fff;border-color:#555;}
-.quiz-next{background:#ff6b00;border:none;color:#fff;padding:12px 24px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;transition:all .2s;font-family:Poppins,sans-serif;}
-.quiz-next:hover{background:#e55d00;}
+.quiz-next{background:#ffffff;border:none;color:#000;padding:12px 24px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;transition:all .2s;font-family:Poppins,sans-serif;}
+.quiz-next:hover{background:#ffffff;}
 .quiz-next:disabled{opacity:.4;cursor:not-allowed;}
 .quiz-loading{text-align:center;padding:60px 20px;}
 .quiz-loading-spinner{width:50px;height:50px;border:3px solid #1a1a1a;border-top-color:#fff;border-radius:50%;margin:0 auto 16px;animation:spin 1s linear infinite;}
@@ -579,7 +579,7 @@ STYLE DNA QUIZ
 .quiz-loading p{color:#888;font-size:14px;}
 .quiz-error{text-align:center;padding:60px 20px;color:#888;}
 .quiz-error i{font-size:48px;color:#ff3f3f;margin-bottom:16px;display:block;}
-.quiz-error button{margin-top:16px;padding:12px 24px;background:#ff6b00;color:#fff;border:none;border-radius:8px;font-weight:600;cursor:pointer;}
+.quiz-error button{margin-top:16px;padding:12px 24px;background:#ffffff;color:#000;border:none;border-radius:8px;font-weight:600;cursor:pointer;}
 .quiz-result{text-align:center;}
 .quiz-result-hero{background:#0a0a0a;border:1px solid #222;border-radius:16px;padding:40px 32px;margin-bottom:24px;}
 .quiz-result-icon{width:70px;height:70px;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;font-size:30px;color:#fff;}
@@ -605,8 +605,8 @@ STYLE DNA QUIZ
 .quiz-prod-name{display:block;color:#fff;font-size:12px;font-weight:600;margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .quiz-prod-price{color:#fff;font-size:14px;font-weight:700;}
 .quiz-actions{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;}
-.quiz-action-primary{padding:14px 32px;background:#ff6b00;color:#fff;text-decoration:none;border-radius:10px;font-weight:700;font-size:14px;transition:all .2s;}
-.quiz-action-primary:hover{background:#e55d00;}
+.quiz-action-primary{padding:14px 32px;background:#ffffff;color:#000;text-decoration:none;border-radius:10px;font-weight:700;font-size:14px;transition:all .2s;}
+.quiz-action-primary:hover{background:#ffffff;}
 .quiz-action-secondary{padding:14px 32px;background:#1a1a1a;border:1px solid #333;color:#ccc;text-decoration:none;border-radius:10px;font-weight:600;font-size:14px;cursor:pointer;transition:all .2s;font-family:Poppins,sans-serif;}
 .quiz-action-secondary:hover{border-color:#fff;color:#fff;}
 @media(max-width:768px){

@@ -6,7 +6,7 @@
   var userData = localStorage.getItem("pehrawa_customer");
 
   if (!token || !userData) {
-    container.innerHTML = '<div class="shop-state">Please <a href="login.html" style="color:#ff6b00;margin-left:6px;">login</a> to view your orders.</div>';
+    container.innerHTML = '<div class="shop-state">Please <a href="login.html" style="color:#ffffff;margin-left:6px;">login</a> to view your orders.</div>';
     return;
   }
 
@@ -49,12 +49,12 @@
       return;
     }
     if (!data.orders || data.orders.length === 0) {
-      container.innerHTML = '<div class="shop-state">No orders yet. <a href="shop.html" style="color:#ff6b00;margin-left:6px;">Start shopping</a></div>';
+      container.innerHTML = '<div class="shop-state">No orders yet. <a href="shop.html" style="color:#ffffff;margin-left:6px;">Start shopping</a></div>';
       return;
     }
     var html = '<div style="display:flex;flex-direction:column;gap:16px;">';
     data.orders.forEach(function (o) {
-      var statusColor = "#f59e0b";
+      var statusColor = "#ffffff";
       var s = (o.status || "").toLowerCase();
       if (s === "processing") statusColor = "#8b5cf6";
       else if (s === "shipped") statusColor = "#3b82f6";
@@ -75,7 +75,7 @@
         '<div style="color:#555;font-size:11px;">' + new Date(o.created_at).toLocaleDateString() + "</div>" +
         '<div style="display:flex;gap:8px;">' +
         (canCancel ? '<button onclick="cancelOrder(' + o.id + ', this)" style="padding:8px 14px;font-size:12px;font-weight:600;color:#ef4444;border:1px solid #ef4444;border-radius:6px;background:transparent;cursor:pointer;transition:.2s;" onmouseover="this.style.background=\'#ef4444\';this.style.color=\'#fff\';" onmouseout="this.style.background=\'transparent\';this.style.color=\'#ef4444\';">Cancel</button>' : "") +
-        '<a href="' + trackUrl + '" style="display:inline-flex;align-items:center;gap:6px;padding:8px 18px;font-size:12px;font-weight:600;color:#ff6b00;border:1px solid #ff6b00;border-radius:6px;text-decoration:none;transition:.2s;" onmouseover="this.style.background=\'#ff6b00\';this.style.color=\'#000\';" onmouseout="this.style.background=\'transparent\';this.style.color=\'#ff6b00\';">Track</a>' +
+        '<a href="' + trackUrl + '" style="display:inline-flex;align-items:center;gap:6px;padding:8px 18px;font-size:12px;font-weight:600;color:#ffffff;border:1px solid #ffffff;border-radius:6px;text-decoration:none;transition:.2s;" onmouseover="this.style.background=\'#ffffff\';this.style.color=\'#000\';" onmouseout="this.style.background=\'transparent\';this.style.color=\'#ffffff\';">Track</a>' +
         "</div>" +
         "</div>" +
         "</div>";

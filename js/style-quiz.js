@@ -142,10 +142,10 @@
     var products = result.products || [];
 
     var html = '<div class="quiz-result">';
-    html += '<div class="quiz-result-hero" style="border-color:' + (profile.color || "#ff6b00") + '">';
-    html += '<div class="quiz-result-icon" style="background:' + (profile.color || "#ff6b00") + '"><i class="fa-solid ' + (profile.icon || "fa-star") + '"></i></div>';
+    html += '<div class="quiz-result-hero" style="border-color:' + (profile.color || "#ffffff") + '">';
+    html += '<div class="quiz-result-icon" style="background:' + (profile.color || "#ffffff") + '"><i class="fa-solid ' + (profile.icon || "fa-star") + '"></i></div>';
     html += '<h2>Your Style DNA</h2>';
-    html += '<div class="quiz-result-type" style="color:' + (profile.color || "#ff6b00") + '">' + (profile.name || "Trendsetter") + '</div>';
+    html += '<div class="quiz-result-type" style="color:' + (profile.color || "#ffffff") + '">' + (profile.name || "Trendsetter") + '</div>';
     html += '<p class="quiz-result-desc">' + (profile.description || "You have a unique style!") + '</p>';
     html += '</div>';
 
@@ -154,7 +154,7 @@
     html += '<h3>Your Style Breakdown</h3>';
     var maxScore = 15;
     var styleNames = { minimal: "Minimalist", bold: "Bold", classic: "Classic", street: "Street", sporty: "Sporty" };
-    var styleColors = { minimal: "#888", bold: "#ff6b00", classic: "#ffd700", street: "#3498db", sporty: "#2ecc71" };
+    var styleColors = { minimal: "#888", bold: "#ffffff", classic: "#ffd700", street: "#3498db", sporty: "#2ecc71" };
     for (var style in scores) {
       var pct = Math.min(100, (scores[style] / maxScore) * 100);
       html += '<div class="quiz-score-row">';

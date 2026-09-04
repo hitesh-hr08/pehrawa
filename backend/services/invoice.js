@@ -38,7 +38,7 @@ function buildInvoicePdf(order, items, storeName) {
   const chunks = [];
   doc.on("data", (chunk) => chunks.push(chunk));
 
-  const accent = "#ff6b00";
+  const accent = "#ffffff";
   const dark = "#1a1a1a";
   const grey = "#777777";
   const lineColor = "#e8e8e8";

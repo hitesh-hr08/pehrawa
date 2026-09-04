@@ -38,7 +38,7 @@
 
       // Rank badge
       if (i < 3) {
-        var rankColors = ["#ff6b00", "#c0c0c0", "#cd7f32"];
+        var rankColors = ["#ffffff", "#c0c0c0", "#cd7f32"];
         html += '<div class="tr-rank" style="background:' + rankColors[i] + '">#' + (i + 1) + '</div>';
       }
 
