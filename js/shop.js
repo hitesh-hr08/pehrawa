@@ -4,7 +4,7 @@
   const searchInput = document.querySelector(".search-input");
   let shopProducts = [];
   let searchTerm = "";
-  const PER_PAGE = 15;
+  const PER_PAGE = 30;
   let currentPage = 1;
 
   if (!productGrid) return;
