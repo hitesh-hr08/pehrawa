@@ -4,6 +4,8 @@
   const searchInput = document.querySelector(".search-input");
   let shopProducts = [];
   let searchTerm = "";
+  const PER_PAGE = 15;
+  let currentPage = 1;
 
   if (!productGrid) return;
 
@@ -113,9 +115,30 @@
 
     if (filtered.length === 0) {
       productGrid.innerHTML = '<div class="shop-state">No products found.</div>';
+      var pager0 = document.getElementById("shopPagination");
+      if (pager0) pager0.innerHTML = "";
       return;
     }
-    productGrid.innerHTML = filtered.map(renderCard).join("");
+    var totalPages = Math.max(1, Math.ceil(filtered.length / PER_PAGE));
+    if (currentPage > totalPages) currentPage = totalPages;
+    if (currentPage < 1) currentPage = 1;
+    var start = (currentPage - 1) * PER_PAGE;
+    var pageItems = filtered.slice(start, start + PER_PAGE);
+    productGrid.innerHTML = pageItems.map(renderCard).join("");
+    renderPagination(totalPages, filtered.length);
+  }
+
+  function renderPagination(totalPages, totalCount) {
+    var pager = document.getElementById("shopPagination");
+    if (!pager) return;
+    if (totalPages <= 1) { pager.innerHTML = ""; return; }
+    var html = "";
+    html += '<button class="pg-btn" data-page="' + (currentPage - 1) + '"' + (currentPage === 1 ? ' disabled' : '') + '>&#8592;</button>';
+    for (var i = 1; i <= totalPages; i++) {
+      html += '<button class="pg-btn' + (i === currentPage ? ' active' : '') + '" data-page="' + i + '">' + i + '</button>';
+    }
+    html += '<button class="pg-btn" data-page="' + (currentPage + 1) + '"' + (currentPage === totalPages ? ' disabled' : '') + '>&#8594;</button>';
+    pager.innerHTML = html;
   }
 
   function findProduct(productId) {
@@ -153,6 +176,19 @@
     if (id) window.addToCart(id);
   });
 
+  var pager = document.getElementById("shopPagination");
+  if (pager) {
+    pager.addEventListener("click", function(e) {
+      var btn = e.target.closest(".pg-btn");
+      if (!btn || btn.disabled) return;
+      var page = parseInt(btn.getAttribute("data-page"), 10);
+      if (!page || page < 1) return;
+      currentPage = page;
+      renderProducts();
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    });
+  }
+
   document.addEventListener("change", function(e) {
     var cb = e.target.closest(".filter-cb");
     if (!cb) return;
@@ -173,6 +209,7 @@
       allCb.checked = true;
     }
 
+    currentPage = 1;
     renderProducts();
   });
 
@@ -208,6 +245,7 @@
   if (searchInput) {
     searchInput.addEventListener("input", function() {
       searchTerm = searchInput.value.trim().toLowerCase();
+      currentPage = 1;
       renderProducts();
     });
   }

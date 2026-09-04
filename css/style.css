@@ -1138,6 +1138,9 @@ transition:.3s;
 
 .pagination button:hover{background:#ffffff;}
 
+.pagination button.pg-btn.active{background:#ff6b00;color:#fff;border-color:#ff6b00;}
+.pagination button.pg-btn:disabled{opacity:.3;cursor:not-allowed;background:#090909;color:#666;}
+
 /* =======================
 COLLECTIONS PAGE
 ======================= */
