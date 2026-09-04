@@ -76,7 +76,7 @@
     function collectVariants() {
       return Array.from(document.querySelectorAll(".variant-stock")).map(function(inp) {
         return { color: inp.getAttribute("data-color"), size: inp.getAttribute("data-size"), stock: inp.value === "" ? 0 : (parseInt(inp.value, 10) || 0) };
-      }).filter(function(v) { return v.color && v.size; });
+      }).filter(function(v) { return v.size; });
     }
     window.colorImageMap = {};
     function renderColorImages(selectedMap) {
