@@ -481,8 +481,8 @@ VAULT PAGE
 /* ===========================
 AI CHATBOT
 =========================== */
-.ai-chat-btn{position:fixed;bottom:96px;right:28px;width:56px;height:56px;border-radius:50%;background:linear-gradient(135deg,#ffffff,#ffffff);color:#fff;display:flex;align-items:center;justify-content:center;font-size:24px;cursor:pointer;z-index:10001;box-shadow:0 4px 20px rgba(255,255,255,.4);transition:all .3s;}
-.ai-chat-btn:hover{transform:scale(1.1);box-shadow:0 6px 30px rgba(255,255,255,.6);}
+.ai-chat-btn{position:fixed;bottom:96px;right:28px;width:56px;height:56px;border-radius:50%;background:#ffffff;color:#000;display:flex;align-items:center;justify-content:center;font-size:24px;cursor:pointer;z-index:10001;box-shadow:0 4px 20px rgba(0,0,0,.4);transition:all .3s;border:1px solid #222;}
+.ai-chat-btn:hover{transform:scale(1.1);box-shadow:0 6px 30px rgba(0,0,0,.5);}
 .ai-chat-btn.ai-chat-pulse{animation:aiPulse 2s infinite;}
 @keyframes aiPulse{0%,100%{box-shadow:0 4px 20px rgba(255,255,255,.4);}50%{box-shadow:0 4px 40px rgba(255,255,255,.8);}}
 .ai-chat-window{position:fixed;bottom:164px;right:28px;width:380px;max-height:560px;background:#0a0a0a;border:1px solid #222;border-radius:16px;z-index:10002;display:flex;flex-direction:column;opacity:0;visibility:hidden;transform:translateY(20px) scale(.95);transition:all .3s ease;box-shadow:0 20px 60px rgba(0,0,0,.6);overflow:hidden;}
@@ -535,7 +535,7 @@ AI CHATBOT
   .ai-chat-window{width:calc(100vw - 32px);right:16px;bottom:148px;max-height:60vh;}
 }
 @media(max-width:480px){
-  .ai-chat-btn{bottom:72px;right:14px;width:48px;height:48px;font-size:20px;box-shadow:0 4px 16px rgba(255,255,255,.5);}
+  .ai-chat-btn{bottom:72px;right:14px;width:48px;height:48px;font-size:20px;box-shadow:0 4px 16px rgba(0,0,0,.5);}
   .ai-chat-window{width:calc(100vw - 16px);right:8px;bottom:134px;max-height:65vh;border-radius:14px;}
   .ai-chat-header{padding:12px 14px;}
   .ai-chat-body{padding:10px;}
